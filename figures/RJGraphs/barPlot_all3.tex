@@ -1,0 +1,58 @@
+\begin{tikzpicture}
+\pgfplotstableread{\rjDataFileName}\datatable
+\begin{axis}[name=symb,
+width=0.39\textwidth, height=4cm, 
+ybar,
+bar width=3.5pt, 
+ymode=normal, 
+log origin=infty,
+ymin=0,
+%ymax=12,
+axis lines*=left, 
+ymajorgrids, yminorgrids,
+%xticklabels from table={\datatable}{THREADS},
+xticklabels={1,2,4,8,16},
+xtick={1, 2, 3, 4, 5, 6, 7, 8},
+xticklabel style={align=center, rotate=0, xshift=-0.0cm, anchor=north, font=\scriptsize},
+%ytick={0,2,...,12},
+try min ticks=7,
+enlarge y limits={value=0.17,upper},
+%yticklabels={$10^{-1}$, , , , , , , , $10^0$, , , , , , , , ,$10^1$},
+yticklabel style={font=\scriptsize},
+ylabel style={font=\scriptsize},
+%xlabel style={font=\scriptsize},
+%ylabel=\ifrjYLabel {Performance Improvement} \else {} \fi,
+%xlabel={Benchmark},
+%legend style={at={(1.0,1.07)},fill=white,legend cell align=left,align=right,draw=white!85!black,font=\scriptsize,legend columns=4}
+legend style={at={(1.0,1.50)},fill=white,legend cell align=left,align=right,draw=white!85!black,font=\tiny,legend columns=1},
+title=\rjTitle,
+every axis title/.style={below right,at={(0,1)},font=\footnotesize,yshift=5pt,xshift=1pt,fill=white}
+]
+\ifrjYLabel
+   \pgfplotsset{ylabel={Performance Improvement}}
+\else
+\fi
+\ifrjXTicks
+   \pgfplotsset{xlabel=threads,xlabel style={font=\footnotesize,yshift=4pt}}
+\else
+   \pgfplotsset{xmajorticks=true}
+\fi
+%\addplot[fill=mycolor0] table[x=ID, y=TTOTAL] {\datatable};
+%\addlegendentry{Overall time}
+\addplot[fill=mycolor1, postaction={pattern=north east lines}] table[x=ID, y=MKL_PARDISO] {\datatable}; 
+\ifrjLegend
+\addlegendentry{MKL PARDISO}
+\fi
+%\addplot[fill=mycolor2, postaction={pattern=north west lines}] table[x=ID, y=TFEVAL] {\datatable}; 
+%\addlegendentry{Function evaluations}
+\addplot[fill=mycolor3, postaction={pattern=crosshatch}] table[x=ID, y=PARDISO_6_0] {\datatable}; 
+\ifrjLegend
+\addlegendentry{PARDISO 6.2}
+\fi
+\addplot[fill=mycolor2, postaction={pattern=horizontal lines}] table[x=ID, y=KLU] {\datatable}; 
+\ifrjLegend
+\addlegendentry{KLU}
+\fi
+
+\end{axis}
+\end{tikzpicture}

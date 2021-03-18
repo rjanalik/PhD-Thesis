@@ -1,0 +1,418 @@
+\documentclass[]{usiinfthesis}
+\usepackage{lipsum}
+
+% TODO remove this
+\usepackage{comment}
+
+%% from the book %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\usepackage{amsthm}
+
+\newcommand{\ml}       {\textsc{Matlab}}
+\newcommand{\blas}       {\textsc{Blas}}
+\newcommand{\lapack}       {\textsc{Lapack}}
+\newcommand{\nl}{\scriptstyle{0}}
+\newcommand{\mmd}       {\textsc{Mmd}}
+\newcommand{\amd}       {\textsc{Amd}}
+\newcommand{\cC}{\mathcal{C}}
+\newcommand{\cI}{\mathcal{I}}
+\newcommand{\cK}{\mathcal{K}}
+\newcommand{\cM}{\mathcal{M}}
+\newcommand{\colamd}       {\textsc{Colamd}}
+\newcommand{\rcm}       {\textsc{Rcm}}
+\newcommand{\metis}     {\textsc{Metis}}
+\newcommand{\parmetis}     {\textsc{ParMetis}}
+\newcommand{\mtmetis}     {\textsc{MT-Metis}}
+\newcommand{\scotch}     {\textsc{Scotch}}
+\newcommand{\mat}[1]{\left(\begin{array}{#1}}
+\newcommand{\rix}{\end{array}\right)}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\circn}[1]{{\Large$\bigcirc\mkern-12.0mu$}$#1\;$}
+% bold math and symbol, e.g. for vector
+%\newcommand{\bm}[1]{\textbf{#1}}
+%\newcommand{\bs}[1]{\boldsymbol{#1}}
+%
+%\newcommand{\mctwo}[1]{\multicolumn{2}{c}{#1}}
+%\newcommand{\mltwo}[1]{\multicolumn{2}{l|}{#1}}
+%
+%\newcommand{\nxlnz}{xl}
+%\newcommand{\nlnz}{l}
+%\newcommand{\nindx}{id}
+%\newcommand{\nxindx}{xid}
+%\newcommand{\nr}{r}
+%\newcommand{\ntemp}{t}
+%
+%\newcommand{\vxlnz}{\texttt{\nxlnz{}}}
+%\newcommand{\vlnz}{\texttt{\nlnz}}
+%\newcommand{\vxindx}{\texttt{\nxindx}}
+%\newcommand{\vindx}{\texttt{\nindx}}
+%\newcommand{\vr}{\texttt{\nr}}
+%\newcommand{\vtemp}{\texttt{\ntemp}}
+%
+%\newcommand{\cyw}{\text{cy}}
+%\newcommand{\mv}[1]{\textbf{#1}}
+%
+%\newcommand{\bi}{\begin{itemize}}
+%\newcommand{\ei}{\end{itemize}}
+%
+%\newcommand{\be}{\begin{equation}}
+%\newcommand{\ee}{\end{equation}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% I hope this works %%%%%%%%%%%%%%%%%%%%%%%%%
+%\usepackage{amsthm}
+%\theoremstyle{definition}
+%\newenvironment{definition}[1][section]{Definition: #1}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{definition}{Definition}[section]
+\newtheorem{remark}{Remark}[section]
+%\theoremstyle{definition}
+
+\def\formtmp#1#2{{\vskip12pt\noindent\fboxsep=0pt\colorbox{#1}{\vbox{\vskip3pt\hbox to \textwidth{\hskip3pt\vbox{\raggedright\noindent\textbf{#2\vphantom{Qy}}}\hfill}\vspace*{3pt}}}\par\vskip2pt%
+\noindent\kern0pt}}
+
+\RequirePackage[x11names]{xcolor}
+\definecolor{example}{gray}{0.85}
+%\newenvironment{example}[1]{\ignorespaces\def\stmtopen##1{##1}%
+%\formtmp{example}{#1}}{\par\noindent\textcolor{example}{\rule{\columnwidth}{1pt}}\vskip2pt\par\addvspace{\baselineskip}}%
+\newenvironment{example}[1]{\ignorespaces\def\stmtopen##1{##1}%
+\formtmp{example}{#1}}{\par\noindent\textcolor{example}{\rule{\columnwidth}{1pt}}\vskip2pt\par\addvspace{\baselineskip}}%
+
+\definecolor{programcode}{gray}{0.65}
+\newenvironment{programcode}[1]{\ignorespaces\def\stmtopen##1{##1}%
+\formtmp{programcode}{#1}}{\noindent\textcolor{programcode}{\rule{\columnwidth}{1pt}}\vskip2pt\par\addvspace{\baselineskip}}%
+
+\usepackage{multirow}
+
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+
+
+%4-class OrRd Tokyo SIAM PP18
+\definecolor{mycolor0}{HTML}{2B83BA}
+\definecolor{mycolor1}{HTML}{D7301F}
+\definecolor{mycolor2}{HTML}{FC8D59}
+\definecolor{mycolor3}{HTML}{abdda4}
+\definecolor{mycolor4}{HTML}{e9a3c9}
+\definecolor{mycolor5}{HTML}{FEF0D9}
+
+
+\usepackage{wrapfig}
+
+
+\usepackage{graphicx}
+\usepackage[caption=false]{subfig}
+\usepackage{sidecap}
+
+%\newcommand{\panelsize}{s}
+
+\usepackage{algorithm}
+\usepackage{algpseudocode} % part of the algorithmicx package
+  % Indent each nesting level only by 1em 
+  \algrenewcommand\algorithmicindent{1em}%
+  
+  
+%\usepackage[
+%  debug,
+%  a4paper, 
+%  colorlinks=true, 
+%  linkcolor=blue, 
+%  citecolor=blue, 
+%  urlcolor=blue, 
+%  bookmarksopen=true, 
+%  bookmarksnumbered=true
+%]{hyperref}
+
+\newcommand{\xximg}[3]{%
+  \subfloat[#2]{%
+    \includegraphics[height=3cm,clip=true]{{{images/perf/p-80/p-#1-#3}}}%
+  } \,%
+}
+
+\newcommand{\perfimages}[1]{
+  \xximg{#1}{lapl1}{n-40-b-4}
+  \xximg{#1}{lapl2}{n-70-b-1}
+  \xximg{#1}{omen1}{omen-rgf-tc2.5-lc160}
+  \xximg{#1}{omen2}{omen-rgf-tc3.5}
+  \xximg{#1}{omen3}{omen-rgf-tc4.5}
+}
+
+\newcommand{\ximg}[3]{%
+  \subfloat[#1]{%
+    \includegraphics[height=3cm,clip=true]{{{images/perf/p-80/p-#3-#2}}}%
+  } \,%
+}
+
+\newcommand{\pimages}[2]{
+  \ximg{#1}{#2}{emmy}%
+  \ximg{#1}{#2}{hasep1}%
+  \ximg{#1}{#2}{woody-hsw}%
+  \ximg{#1}{#2}{meggie}%
+  \ximg{#1}{#2}{knightmare1}%
+  \ximg{#1}{#2}{summitridge1}%
+  \ximg{#1}{#2}{sxace}
+
+}
+
+\newcommand{\mv}[1]{\textbf{#1}}
+
+\newcommand{\bi}{\begin{itemize}}
+\newcommand{\ei}{\end{itemize}}
+
+\newcommand{\be}{\begin{equation}}
+\newcommand{\ee}{\end{equation}}
+
+\newcommand{\todo}[1]{ {\quad\color{red}!!!#1!!!\quad} }
+
+%\newcommand{\doiurl}[2][]{#1\href{http://dx.doi.org/#2}{\nolinkurl{#2}}}
+%%\newcommand{\bibdoiurl}[1]{\doiurl[doi:]{#1}}
+%\newcommand{\bibdoiurl}[1]{DOI:#1}
+
+\newcommand{\arxurl}[2][]{#1\href{http://arxiv.org/abs/#2}{\nolinkurl{#2}}}
+% \newcommand{\bibarxurl}[1]{\arxurl[arXiv:]{#1}}
+\newcommand{\bibarxurl}[1]{arXiv:#1}
+
+% bold math and symbol, e.g. for vector
+\newcommand{\bm}[1]{\textbf{#1}}
+\newcommand{\bs}[1]{\boldsymbol{#1}}
+
+\newcommand{\mymat}[1]{\textit{#1}}
+
+\newcommand{\mctwo}[1]{\multicolumn{2}{c}{#1}}
+%\newcommand{\mltwo}[1]{\multicolumn{2}{l|}{#1}}
+\newcommand{\mltwo}[1]{\multicolumn{2}{l}{#1}}
+\newcommand{\mlfour}[1]{\multicolumn{4}{l}{\scriptsize #1}}
+\newcommand{\mcct}[1]{\multicolumn{3}{c}{#1}}
+
+%\usepackage{ulem} % sout uwave
+
+
+\newcommand{\nxlnz}{xl}
+\newcommand{\nlnz}{l}
+\newcommand{\nindx}{id}
+\newcommand{\nxindx}{xid}
+\newcommand{\nr}{r}
+\newcommand{\ntemp}{t}
+
+\newcommand{\vxlnz}{\texttt{\nxlnz{}}}
+\newcommand{\vlnz}{\texttt{\nlnz}}
+\newcommand{\vxindx}{\texttt{\nxindx}}
+\newcommand{\vindx}{\texttt{\nindx}}
+\newcommand{\vr}{\texttt{\nr}}
+\newcommand{\vtemp}{\texttt{\ntemp}}
+
+\newcommand{\cyw}{\text{cy}}
+
+% Symbol used to denote the panel size.
+\newcommand{\panelsize}{s}
+
+\setlength{\tabcolsep}{1pt}
+
+
+\usepackage{algorithmicx}
+
+
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.8}
+%\usetikzlibrary{automata}
+\usetikzlibrary{patterns}
+\usepackage{float}
+\usepackage{listings}
+
+\usepackage{color}
+\newcommand{\todol}[1]{\textbf{\textcolor{red}{[[#1]]}}}
+\newcommand{\todop}[1]{\noindent\textbf{\textcolor{red}{[[#1]]}}\\}
+
+\newcommand{\doiurl}[2][]{#1\href{http://dx.doi.org/#2}{\nolinkurl{#2}}}
+\newcommand{\bibdoiurl}[1]{\doiurl[doi:]{#1}}
+
+%\usepackage[draft]{fixme}
+
+%change 'sl' to 'bf' for bold, or 'normalfont' for no special
+%formatting
+\captionsetup{labelfont={sl,sf}}
+
+\lstdefinelanguage{algebra}
+{morekeywords={import,sort,constructors,observers,transformers,axioms,if,
+else,end},
+sensitive=false,
+morecomment=[l]{//s},
+}
+
+
+\title{Node-Level Performance Modeling \\of Sparse Factorization Solver} %compulsory
+%\subtitle{Subtitle: Reinventing the World} %optional 
+\advisor{Prof. Olaf Schenk} %compulsory
+\committee{%
+  %\committeeMember{Alonzo Church}{University of California, Los Angeles, USA}
+  %\committeeMember{Alan M. Turing}{Princeton University, USA}
+  \committeeMember{Prof. Illia Horenko}{Universit\`a della Svizzera italiana, Switzerland}
+  \committeeMember{Prof. Igor Pivkin}{Universit\`a della Svizzera italiana, Switzerland}
+  \committeeMember{Prof. Harald K\"ostler}{Department of Computer Science, Friedrich–Alexander University Erlangen-Nurnberg, Germany}
+  \committeeMember{Prof. Tom\'a\v{s} Kozubek}{Czech National Supercomputing Center, Technical University of Ostrava, Czech Republic}
+  %there can as many members as you like
+} %the committee is compulsory
+\author{Radim Janal\'ik} %compulsory
+%\coadvisor{Co-Advisor} %optional
+\Day{\todol{Yesterday}} %compulsory
+\Month{September} %compulsory
+\Year{2021} %compulsory, put only the year
+\place{Lugano} %compulsory
+%\programDirector{Prof. Olaf Schenk \emph{pro tempore}} %compulsory
+\programDirector{Prof. Olaf Schenk} %compulsory
+
+%\dedication{To my beloved} %optional
+%\openepigraph{Someone said \dots}{Someone} %optional
+
+\makeindex %optional, also comment out \theindex at the end
+
+\begin{document}
+
+\maketitle %generates the titlepage, this is FIXED
+
+\frontmatter %generates the frontmatter, this is FIXED
+
+\begin{abstract}
+Solving large sparse linear systems is at the heart of many application problems arising from scientific and engineering problems. These systems are often solved by direct factorization solvers, especially when the system needs to be solved for multiple right-hand sides or when a high numerical precision is required.
+Direct solvers are based on matrix factorization, which is then followed by forward and backward substitution to obtain a precise solution. The factorization is the most computationally intensive step, but it has to be computed only once for a given matrix. Then the system is solved with forward and backward substitution for every right-hand side.
+Performance modeling of algorithms involved in solving these linear systems reveals the computational bottlenecks, which can guide node-level performance optimizations and shows the best performance that can be achieved.
+The Berkeley roofline model is widely used to predict the upper bound of a code based on processor peak performance and memory bandwidth. Modification of the Roofline model allows us to model performance of forward and backward substitution codes, which are a combination of sequential and parallel execution. The model predictions are compared with various measurements for a representative set of sparse matrices on different x86\_64 processors.
+\end{abstract}
+
+\begin{acknowledgements}
+\todop{\lipsum} 
+\end{acknowledgements}
+
+\tableofcontents 
+%\listoffigures %optional
+%\listoftables %optional
+
+\mainmatter
+
+\include{999book}
+\include{02}
+\include{03}
+\include{04}
+\include{05}
+\include{06}
+\include{07}
+\include{08}
+
+%\chapter{Introduction}
+%\lipsum[1-4]
+%\section{Let's start!}
+%
+%\lipsum
+%
+%
+%
+%\chapter[Short title]{A chapter title which will run over two lines --- it's for
+%  testing purpose}
+%
+%\lipsum[1-2]
+%
+%\begin{figure}
+%\centering
+%\includegraphics[scale=0.5,angle=90]{bounded_loop_automaton}
+%\caption{\textsc{Automaton} for something or other. A caption can be rather
+%long and \emph{should} then consist of complete sentences ended with a `.'}
+%\end{figure}
+%
+%\section{The first \textsc{Section}}
+%
+%Here is some text with \textsc{SmallCaps} in normal font.
+%
+%\lipsum[3-4]
+%
+% \section{The second, math section}
+%\begin{center}
+%  \begin{tikzpicture}[shorten >=1pt,node distance=2cm,auto, initial text=, >=stealth] 
+%    \node[state, initial] (q0) {$q_0$};
+%    \node[state] (q1) [right of=q0] {$q_1$};
+%    \node[state] (q2) [right of=q1] {$q_2$};
+%    \node[state, accepting] (q3) [right of=q2] {$q_3$};
+%    \path[->]
+%    (q0) 
+%    edge [loop above] node {0,1} ()
+%    edge  node {0} (q1)
+%    (q1)
+%    edge  node {1} (q2)
+%    (q2)
+%    edge node {0} (q3)
+%    (q3)
+%    edge [loop above] node {0,1} ()
+%;
+%  \end{tikzpicture}
+%\end{center}
+%
+%\textbf{Theorem 1 (Residue Theorem).}
+%Let $f$ be analytic in the region $G$ except for the isolated singularities $a_1,a_2,\ldots,a_m$. If $\gamma$ is a closed rectifiable curve in $G$ which does not pass through any of the points $a_k$ and if $\gamma\approx 0$ in $G$ then
+%\[
+%\frac{1}{2\pi i}\int_\gamma f = \sum_{k=1}^m n(\gamma;a_k) \text{Res}(f;a_k).
+%\]
+%\textbf{Theorem 2 (Maximum Modulus).}
+%\emph{Let $G$ be a bounded open set in $\mathbb{C}$ and suppose that $f$ is a continuous function on $G^-$ which is analytic in $G$. Then}
+%\[
+%\max\{|f(z)|:z\in G^-\}=\max \{|f(z)|:z\in \partial G \}.
+%\]
+%
+%\section[third]{A very very long section, titled ``The third section'', with
+%  a rather  short text alternative (third)}
+%\lipsum \texttt{Some Test}
+%\lstset{language=algebra,linewidth=0.95\linewidth,breaklines=true,numbers=left,
+%basicstyle=\ttfamily,numberstyle=\tiny,escapeinside={//*}{\^^M},
+%mathescape=true}
+%\begin{lstlisting}
+%import IntSpec, ItemSpec;
+%
+%sort cart; //*\label{sort}
+%
+%constructors //*\label{begin-sig}
+%create() $\longrightarrow$ cart;
+%insert(cart, item) $\longrightarrow$ cart;
+%observers
+%amount(cart) $\longrightarrow$ int;
+%transformers
+%delete(cart, item) $\longrightarrow$ cart; //*\label{end-sig}
+%
+%axioms //*\label{begin-axioms}
+%forall c: cart, i, j: item 
+%
+%amount(create()) $=$ 0; //*\label{begin-amount}
+%amount(insert(c,i)) $=$ amount(c) $+$ price(i); //*\label{end-amount}
+%delete(create(),i) $=$ create(); //*\label{begin-delete}
+%delete(insert(c,i),j) $=$
+%if (i =$\:$= j) c
+%else insert(delete(c,j),i); //*\label{end-axioms}
+%end
+%\end{lstlisting}
+%
+%As you can easily see from the above listing \citet{bbggs:iet07}
+%define something weird based on the BPEL specification
+%\citep{bpelspec}.
+%\nocite{*}
+
+\appendix %optional, use only if you have an appendix
+
+%\chapter{Some retarded material}
+%\section{It's over\dots}
+%\lipsum 
+
+\backmatter
+
+%\chapter{Glossary} %optional
+
+%\bibliographystyle{alpha}
+\bibliographystyle{dcu}
+%\bibliographystyle{plainnat}
+%\bibliography{biblio}
+%\bibliography{biblio,solve,merged_all}
+\bibliography{biblio,solve,merged_all,direct}
+
+\cleardoublepage
+\theindex %optional, use only if you have an index, must use
+	  %\makeindex in the preamble
+\lipsum
+
+\end{document}

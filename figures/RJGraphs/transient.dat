@@ -1,0 +1,6 @@
+ID THREADS	MKL_PARDISO	PARDISO_6_0	KLU
+1  1\ thread	1.00	1.74	2 
+2  2\ threads	0.98	2.96	2 
+3  4\ threads	1.31	4.34	2 
+4  8\ threads	0.86	6.75	2 
+5  16\ threads	0.66	7.18	2 
