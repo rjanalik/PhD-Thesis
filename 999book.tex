@@ -34,7 +34,7 @@ tools in combinatorial optimization to dramatically improve the diagonal dominan
 of the underlying system.
 Next, Section \ref{sec:reordering} will review multilevel nested dissection
 as a combinatorial method to reorder a system symmetrically
-such that fill-in and parallelization can are improved simultaneously, once
+such that fill-in and parallelization are improved simultaneously, once
 pivoting can be more or less ignored.
 After that, we will review established graph-theoretical approaches
 in Section \ref{sec:lu}, in particular the elimination tree, from which
@@ -45,7 +45,7 @@ columns of the factors $L$ and $U^T$ are collected in a single dense block.
 This is the basis for the use of dense matrix kernels using optimized
 level-3 BLAS as well to exploit fast computation using the cache hierarchy which 
 is discussed in Section~\ref{sec:parallel}.
-Finally, we show in Section~\ref{sec:appl} how the ongoing developments in parallel sparse direct solution methods have advanced integrated circuit simulations.
+%Finally, we show in Section~\ref{sec:appl} how the ongoing developments in parallel sparse direct solution methods have advanced integrated circuit simulations.
 We assume that the reader
  is familiar with some elementary knowledge from
 graph theory, see; e.g., \cite{DufER86,GeoL81} and some simple
@@ -434,7 +434,7 @@ and consider its graph $G(A)=(V,E)$.
 A \emph{$k$-way graph partitioning} consists of 
 partitioning $V$ into $k$ disjoint subsets
 $V_1, V_2, \ldots, V_k$ such that $V_i \cap V_j = \emptyset$ for $i
-\ne j$  $\cup_i V_i=V$.
+\ne j$, $\cup_i V_i=V$.
 The subset $E_s = E\cap \bigcup_{i\not=j} (V_i\times V_j)$ is called 
 \emph{edge separator}.
 \end{definition}
