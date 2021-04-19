@@ -23,7 +23,7 @@ dense subblocks that show up during the factorization can be grouped
 together into dense submatrices which are handled
 by multithreaded and cache-optimized 
 dense matrix kernels using level-3 BLAS and LAPACK
-\cite{AndBBDDDGHMOS95}.
+(\cite{AndBBDDDGHMOS95}).
 
 This chapter will review some of the basic technologies together
 with the latest developments for sparse direct solution methods that have led to
@@ -60,7 +60,7 @@ as much as possible in advance, pivoting during Gaussian elimination can often
 be bypassed and we may work with static data structures and
 the numerical method will be significantly accelerated. 
 A popular method to achieve this goal is the
-maximum weight matching method~\cite{DufK99S,olschowka:1996} 
+maximum weight matching method~(\cite{DufK99S,olschowka:1996})
 which permutes (e.g.) the rows of a given
 nonsingular matrix $A\in\R^{n,n}$ by a permutation matrix $\Pi\in\R^{n,n}$ 
 such that $\Pi^TA$
@@ -246,7 +246,7 @@ difference, $A \oplus B$ of two edge sets $A$, $B$ is defined to be $(A
 \setminus B) \cup (B \setminus A)$.
 
 Using these definitions and notations,
-the following theorem \cite{Berge} gives a
+the following theorem (\cite{Berge}) gives a
 constructive algorithm for finding perfect matchings in bipartite
 graphs.
 
@@ -294,7 +294,7 @@ sparse matrices with $\tau$ entries. For matrices, whose associated
 graph fulfill special requirements, this bound can be reduced further
 to $\mathcal{O}(n^\alpha (\tau + n \log n))$ with $\alpha < 1$.  All graphs
 arising from finite-difference or finite element discretizations meet
-the conditions~\cite{gupta:99}. As before, we finally get a perfect
+the conditions~(\cite{gupta:99}). As before, we finally get a perfect
 matching which in turn defines a nonsymmetric permutation.
 
 When solving the assignment problem, two dual vectors $u = (u_i)$ and
@@ -319,19 +319,18 @@ it immediately follows that $\tilde A = \Pi^T D_r A D_c$ satisfies
 The permuted and scaled system $\tilde A$ has been observed to
 have significantly better numerical properties when being used
 for direct methods or for preconditioned iterative methods, cf. e.g. 
-\cite{benzi:2000:phi,DufK99S}. Olschowka and
-Neumaier~\cite{olschowka:1996} introduced these scalings and
+\cite{benzi:2000:phi,DufK99S}. \cite{olschowka:1996} introduced these scalings and
 permutation for reducing pivoting in Gaussian elimination of full
 matrices. The first implementation for sparse matrix problems was
-introduced by Duff and Koster~\cite{DufK99S}.  For symmetric
+introduced by \cite{DufK99S}. For symmetric
 matrices $|A|$, these nonsymmetric matchings can be converted
 to a symmetric permutation $P$ and a symmetric scaling $D_s=(D_rD_c)^{1/2}$
 such that $P^TD_sAD_sP$ consists mostly of diagonal blocks of size $1\times 1$
 and $2\times 2$ satisfying a similar condition as (\ref{eq:13}) and (\ref{eq:14}),
 where in practice it rarely happens that  $1\times 1$ blocks are identical 
-to $0$~\cite{dupr:04a}.
+to $0$~(\cite{dupr:04a}).
 Recently, successful parallel approaches to compute maximum weighted matchings have
-been proposed~\cite{LanPM11,LanAM14}.
+been proposed~(\cite{LanPM11,LanAM14}).
 
 \begin{example}{Maximum Weight Matching}\label{exm:west0479-match}
 To conclude this section we demonstrate the effectiveness of maximum weight matchings using a simple sample matrix ``west0479'' from the SuiteSparse Matrix Collection.
@@ -422,7 +421,7 @@ orientation of the edge is ignored in $G(A)$.
 
 The research on graph-partitioning
 methods in the mid-nineties has resulted in high-quality software
-packages, e.g. \metis {} \cite{karypis:98}.
+packages, e.g. \metis {} (\cite{karypis:98}).
 These methods often compute orderings that on the one hand lead to small fill-in 
 for (incomplete) factorization methods while on the other hand they
 provide a high level of concurrency.
@@ -550,18 +549,18 @@ unmatched vertices of $G_i$ become the new vertices $V_{i+1}$ of $G_{i+1}$.
 The new edges $E_{i+1}$ are the remaining edges from $E_i$ 
 connected with the collapsed vertices. 
 There are various differences in the construction of maximal matchings
-\cite{karypis:98,CheP08}. 
+(\cite{karypis:98,CheP08}).
 One of the most popular and efficient methods is heavy edge
-matching \cite{karypis:98}.
+matching (\cite{karypis:98}).
 
 \subsubsection*{Partitioning Phase}
 At the coarsest level $m$,
 a $2$-way partitioning $V_{m,1}\dot{\cup}V_{m,2}=V_m$ of $G_m=(V_m,E_m)$ is computed,
 each of them containing about half of the vertices of $G_m$.
 This specific partitioning of $G_m$ can be obtained by using various
-algorithms such as spectral bisection \cite{fiedler:75} or
+algorithms such as spectral bisection (\cite{fiedler:75}) or
 combinatorial methods based on Kernighan-Lin variants
-\cite{KerL70,FidM97}. It is demonstrated in \cite{karypis:98} that 
+(\cite{KerL70,FidM97}). It is demonstrated in \cite{karypis:98} that
 for the coarsest graph, combinatorial
 methods typically compute smaller edge-cut separators compared with
 spectral bisection methods. However, since
@@ -578,8 +577,8 @@ collapsing matched vertices. This leads to an initial edge separator
 $E_{m-1,s}$ for $G_{m-1}$. But since $G_{m-1}$ is finer, $E_{m-1,s}$ is 
 sub-optimal and one usually decreases the edge-cut of the partitioning
 by local refinement heuristics such as the
-Kernighan-Lin partitioning algorithm \cite{KerL70} 
-or the Fiduccia-Mattheyses method \cite{FidM97}.
+Kernighan-Lin partitioning algorithm (\cite{KerL70})
+or the Fiduccia-Mattheyses method (\cite{FidM97}).
 Repeating this refinement procedure level-by-level we obtain a sequence
 of edge separators $E_{m,s},E_{m-1,s},\dots,E_{0,s}$ and eventually and
 edge separator $E_{s}=E_{0,s}$ of the initial graph $G(A)$ is obtained.
@@ -587,9 +586,9 @@ If one is seeking for a vertex separator $V_s$ of $G(A)$, then one usually
 computes $V_s$ from $E_s$ at the end.
 
 There have been a number of methods that are used for graph partitioning,
-e.g. \metis{} \cite{karypis:98}, a parallel MPI version \parmetis{} \cite{KarSK99},
-or a recent multithreaded approach \mtmetis \cite{LasK13}.
-Another example for a parallel partitioning algorithm is \scotch \cite{CheP08}. 
+e.g. \metis{}~(\cite{karypis:98}), a parallel MPI version \parmetis{}~(\cite{KarSK99}),
+or a recent multithreaded approach \mtmetis~(\cite{LasK13}).
+Another example for a parallel partitioning algorithm is \scotch~(\cite{CheP08}).
 
 \begin{example}{Multilevel Nested Dissection}\label{exm:west0479-metis}
 We will continue Example \ref{exm:west0479-match} using the matrix
@@ -663,7 +662,7 @@ nested dissection after the matrix is already rescaled and permuted using maximu
 \label{sec:lu}
 In this section we will assume that the given matrix $A\in\R^{n,n}$ is nonsingular and that it can be factorized as $A=LU$, where $L$ is a lower triangular matrix with unit diagonal and
 $U$ is an upper triangular matrix. 
-It is well-known \cite{GeoL81}, if $A=LU$, where $L$ and $U^\top$ are lower
+It is well-known (\cite{GeoL81}), if $A=LU$, where $L$ and $U^\top$ are lower
 triangular matrices, then in the generic case we will have
 $G_d(L+U)\supset G_d(A)$, i.e., we will only get additional edges unless some
 entries cancel by ``accident'' during the elimination. In the sequel
@@ -1034,7 +1033,7 @@ and to speed up the numerical factorization significantly
 is to detect dense submatrices in the factorization.
 Block structures  allow to collect parts
 of the matrix in dense blocks and to treat them commonly using 
-dense matrix kernels such as level-3 BLAS and LAPACK \cite{DodL85,DonDHH88}.
+dense matrix kernels such as level-3 BLAS and LAPACK (\cite{DodL85,DonDHH88}).
 
 Dense blocks can be read off from the elimination tree employing
 Algorithm \ref{alg:compute_pattern}.
@@ -1110,7 +1109,7 @@ Beside the storage scheme as dense matrices, the nonzero row indices
 for these blocks need only be stored once.
 Next the use of dense submatrices allows the usage of dense matrix kernels
 using level-3 BLAS
-\cite{DodL85,DonDHH88}. 
+(\cite{DodL85,DonDHH88}).
 \begin{example}{Supernodes}\label{exm:supernodes}
 We use the matrix ``west0479'' from Example \ref{exm:west0479-metis},
 after maximum weight matching and multilevel nested dissection have
@@ -1147,7 +1146,7 @@ supernodes applied to $L$ and $U$.}
 While the construction of supernodes is fairly easy in the symmetric case,
 its generalization for the nonsymmetric case is significantly harder, since one
 has to deal with pivoting in each step of Gaussian elimination.
-In this case one uses the column elimination tree \cite{GeoN85}.
+In this case one uses the column elimination tree (\cite{GeoN85}).
 
 \section{Supernodal Data Structures}
 %%%\label{sec:BLAS3}
@@ -1164,7 +1163,7 @@ challenging to implement well in parallel. It is not too strong a
 statement to say that these software libraries are essential to the
 broad success of scalable high-performance computing in computational
 sciences.  In this section we demonstrate the benefit of supernodal data structures within the 
-sparse solver package PARDISO~\cite{schenk-2004}. We illustrate it by using 
+sparse solver package PARDISO~(\cite{schenk-2004}). We illustrate it by using
 the triangular solution process. The forward and backward substitution is performed
 column wise with respect to the columns of $L$, starting with the
 first column, as depicted in Figure~\ref{algo:triangular}.
@@ -1304,7 +1303,7 @@ The columns of a panel are stored consecutively in memory excluding the zero
 entries. 
 Note that columns of panels are padded in the front with zeros so they get the 
 same length as the first column inside their panel. The padding is of utmost performance
-for the PARDISO solver to use Level-3 BLAS and LAPACK functionalities~\cite{20.500.11850/144477}.
+for the PARDISO solver to use Level-3 BLAS and LAPACK functionalities~(\cite{20.500.11850/144477}).
  Furthermore panels are stored consecutively in the \vlnz{} array. 
 Row and column information is now stored in accompanying arrays.
 The \texttt{xsuper} array stores for each panel the index of its first column. 
