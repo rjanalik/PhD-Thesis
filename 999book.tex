@@ -853,23 +853,23 @@ and it will be denoted by $G_f(A)$.
 %\caption{Filled graph (left) and elimination tree (right).}\label{fig:matrixpattern}
 %\end{figure}
 %
-%
-%\begin{remark}\label{rem:cross-edges}
-%It follows immediately from the construction of $T(A)$ and Theorem 
-%\ref{thr:gilbert} 
-%that additional edges of $G_f(A)$ which are not covered by the elimination
-%tree can only show up between a vertex and some of its ancestors (referred to as ``back-edges''). In contrast to that, ``cross-edges'' between unrelated vertices
-%do not exist. 
-%\end{remark}
-%
-%\begin{remark}\label{rem:dependence}
-%One immediate consequence of Remark \ref{rem:cross-edges} is 
-%that triangular factors can be computed independently starting from the
-%leaves until the vertices meet a common parent, i.e., 
-%column $j$ of $L$ and $U^T$ only depend on those columns $s$
-%of $L$ and $U^T$ such that $s$ is a descendant
-%of $j$ in the elimination tree $T(A)$.
-%\end{remark}
+
+\begin{remark}\label{rem:cross-edges}
+It follows immediately from the construction of elimination tree $T(A)$ and Theorem
+\ref{thr:gilbert}
+that additional edges of $G_f(A)$ which are not covered by the elimination
+tree can only show up between a vertex and some of its ancestors (referred to as ``back-edges''). In contrast to that, ``cross-edges'' between unrelated vertices
+do not exist.
+\end{remark}
+
+\begin{remark}\label{rem:dependence}
+One immediate consequence of Remark \ref{rem:cross-edges} is
+that triangular factors can be computed independently starting from the
+leaves until the vertices meet a common parent, i.e.,
+column $j$ of $L$ and $U^T$ only depend on those columns $s$
+of $L$ and $U^T$ such that $s$ is a descendant
+of $j$ in the elimination tree $T(A)$.
+\end{remark}
 
 \begin{example}{Elimination tree}\label{exm:etree}
 We use the matrix ``west0479'' from Example \ref{exm:west0479-metis},
@@ -895,21 +895,21 @@ at each leaf node towards the root until a common parent vertex is reached.
 
 
 
-%Further conclusions can be easily derived
-%from the elimination tree, in particular
-%Remark   \ref{rem:dependence} in conjunction with Theorem \ref{thr:gilbert}. 
-%\begin{remark}\label{rem:path-compression}
-%Consider some $k\in\{1,\dots,n\}$. Then there exists a (fill) edge $(j,k)$ 
-%with $j<k$ if and only if there exists a common
-%descendant $i$ of $k,j$ in $T(A)$ such that $a_{ik}\not=0$.
-%This follows from the fact that once $a_{ik}\not=0$, by Theorem \ref{thr:gilbert}
-%this induces (fill) edges $(j,k)$ in the filled graph $G_f(A)$ for all nodes
-%$j$ between $i$ and $k$ in the elimination tree $T(A)$, i.e., for all ancestors
-%of $i$ that are also descendants of $k$. This way, $i$ propagates fill-edges
-%along the branch from $i$ to $k$ in $T(A)$ and the information $a_{ik}\not=0$ can be
-%used as path compression to advance from $i$ towards $k$ along the elimination
-%tree.
-%\end{remark}
+Further conclusions can be easily derived
+from the elimination tree, in particular
+Remark   \ref{rem:dependence} in conjunction with Theorem \ref{thr:gilbert}.
+\begin{remark}\label{rem:path-compression}
+Consider some $k\in\{1,\dots,n\}$. Then there exists a (fill) edge $(j,k)$
+with $j<k$ if and only if there exists a common
+descendant $i$ of $k,j$ in $T(A)$ such that $a_{ik}\not=0$.
+This follows from the fact that once $a_{ik}\not=0$, by Theorem \ref{thr:gilbert}
+this induces (fill) edges $(j,k)$ in the filled graph $G_f(A)$ for all nodes
+$j$ between $i$ and $k$ in the elimination tree $T(A)$, i.e., for all ancestors
+of $i$ that are also descendants of $k$. This way, $i$ propagates fill-edges
+along the branch from $i$ to $k$ in $T(A)$ and the information $a_{ik}\not=0$ can be
+used as path compression to advance from $i$ towards $k$ along the elimination
+tree.
+\end{remark}
 %\begin{example}{Path compression}\label{exm:pc}
 %Consider the graph and the elimination tree from 
 %Figure \ref{fig:matrixpattern}. Since there exists the edge $(3,5)$ in $G(A)$,
@@ -1320,9 +1320,9 @@ However, during parallel forward/backward substitution concurrent updates to
 the same entry of \vr{} must be avoided.
 The \textit{parts} structure contains the start (and end) indices of the panels which can
 be updated independently as they do not touch the same entries of $r$.
-Two parts, colored blue and orange, are shown in Figure~\ref{fig:algo:ds}.
+Two parts, colored blue and green, are shown in Figure~\ref{fig:algo:ds}.
 The last part in the bottom right corner of $L$ is special and is called the 
-\textit{separator} and is colored green.
+\textit{separator} and is colored gray.
 %
 Parts which would touch entries of \vr{} in the range of the separator perform 
 their updates into separate temporary arrays \vtemp{}.
