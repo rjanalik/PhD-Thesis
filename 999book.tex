@@ -1084,23 +1084,39 @@ Supernodes are the columns $1$, $2$, $3$ as scalar columns as well as columns
 $4$-$6$ as one single supernode.
 \end{example}
 \begin{figure}
-%\sidecaption
-\begin{minipage}{.45\textwidth}
-    $\left(
-        \begin{array}{cccccc}
-         \\[-1.5ex]\cline{1-1}
+   \centering
+   \subfloat[Undirected graph $G(A)$ represented as a matrix.]{
+      $\left(
+      \begin{array}{cc|cc|cc}
+         \bullet & \nl     &  \nl    &   \nl   &  \nl    & \bullet \\
+         \nl     & \bullet &  \nl    &   \nl   & \bullet & \nl     \\ \hline
+         \nl     & \nl     & \bullet & \bullet & \bullet & \nl     \\
+         \nl     & \nl     & \bullet & \bullet & \times  & \bullet \\ \hline
+         \nl     & \bullet & \bullet & \times  & \bullet & \bullet \\
+         \bullet & \nl     &  \nl    & \bullet & \bullet & \bullet
+      \end{array}
+      \right)$
+      %\caption{Entries of $G(A)$ are denoted by $\bullet$, fill-in is denoted by $\times$.}
+      \label{fig:symfill}
+   } \, \hspace{0.5cm}
+   \subfloat[Supernodes in the triangular factor.]{
+      $\left(
+      \begin{array}{cccccc}
+         \\[-1.8ex]\cline{1-1}
          \multicolumn{1}{|c|}{\bullet}&       &       &       &       &         \\ \cline{1-2}
          \nl    &\multicolumn{1}{|c|}{\bullet}&       &       &       &         \\ \cline{2-3}
          \nl    &\nl    &\multicolumn{1}{|c|}{\bullet}&       &       &         \\ \cline{4-4}
          \nl    &\nl    & \multicolumn{1}{|c|}{\bullet}   &\multicolumn{1}{|c|}{\bullet}&       &         \\ \cline{2-2}\cline{5-5}
          \nl    &\multicolumn{1}{|c|}{\bullet}& \multicolumn{1}{|c|}{\bullet}   &\multicolumn{1}{|c}{\times}&\multicolumn{1}{c|}{\bullet}&         \\ \cline{1-3}\cline{6-6}
          \multicolumn{1}{|c|}{\bullet}&\nl& \nl   &\multicolumn{1}{|c}{\bullet}&\bullet& \multicolumn{1}{c|}{\bullet}\\
-\cline{1-1}\cline{4-6}
- \end{array}
-    \right)$
-\end{minipage}
-    \caption{Supernodes in the triangular factor.}
-    \label{fig:supernode}
+         \cline{1-1}\cline{4-6}
+      \end{array}
+      \right)$
+      %\caption{Supernodes in the triangular factor.}
+      \label{fig:supernode}
+   }
+   \caption{Matrix representation of an undirected graph $G(A)$ and supernodes in its triangular factor. Entries of $G(A)$ are denoted by $\bullet$, fill-in is denoted by~$\times$.}
+   %\label{fig:supernode}
 \end{figure}
 
 Supernodes form the basis of several improvements, e.g.,
