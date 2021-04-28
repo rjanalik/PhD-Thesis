@@ -454,14 +454,23 @@ Furthermore \verb's' is a scalar double-precision floating point variable.
 %
 The code is vectorized via AVX and FMA3 instructions by the compiler and
 additionally $4$-way unrolled to reach full performance.
-\todol{unrolled code here?}
+The unrolled code becomes
+\begin{lstlisting}
+for (int i = 0; i < N; i += 4)
+{
+  r[i  ] +=  s * l[i  ];
+  r[i+1] +=  s * l[i+1];
+  r[i+2] +=  s * l[i+2];
+  r[i+3] +=  s * l[i+3];
+}
+\end{lstlisting}
 %Effectively one iteration of the compiler
 %generated loop performs $16$ iterations of the original kernel.
 %
 For easier modeling, we take as many iterations into account as are needed to
 process a whole cache line.
 Hence, for the daxpy kernel with double-precision floating point numbers the
-work package we model is eight iterations.
+work package we model is eight iterations (or two iterations of the unrolled loop).
 %
 To process these eight iterations with AVX and FMA3, four $32$\,B AVX loads (\verb|r[:]| and
 \verb|l[:]|), two
@@ -511,7 +520,7 @@ scheduling of the instructions onto the ports to determine the duration of the
 execution inside the core.
 This is not feasible for complex kernels and often requires internal knowledge
 of the core, which is publicly not available.
-Instead we use Intel's Architecture Code Analyzer~\cite{intel-iaca} (IACA)
+Instead we use Intel's Architecture Code Analyzer (IACA) (\cite{intel-iaca})
 for this task. 
 We use the tool's throughput mode, where it is assumed that iterations of the
 loop are independent and can overlap due to the out-of-order engine.
@@ -654,14 +663,15 @@ Furthermore \verb's' is a scalar double precision floating point variable.
 The code is 4-way unrolled and by the compiler, when
 optimizations are turned on and target ISA is AVX2 and FMA3. One iteration
 over this newly formed loop now performs 4 scalar iterations. The code snipped
-from above effectively becomes:
+from above effectively becomes
 %
 \begin{lstlisting}
-for (int i = 0; i < N; i += 4) {
-  r[idx[i    ]] += s * l[i    ];
-  r[idx[i + 1]] += s * l[i + 1];
-  r[idx[i + 2]] += s * l[i + 2];
-  r[idx[i + 3]] += s * l[i + 3];
+for (int i = 0; i < N; i += 4)
+{
+  r[idx[i  ]] += s * l[i  ];
+  r[idx[i+1]] += s * l[i+1];
+  r[idx[i+2]] += s * l[i+2];
+  r[idx[i+3]] += s * l[i+3];
 }
 \end{lstlisting}
 %
@@ -687,8 +697,6 @@ sixteen $8$\,B loads (\verb|r[:]| and
 \verb|l[:]|), eight $4$\,B loads (\verb'idx[:]'), eight
 $8$\,B stores (\verb'r[:]'), and $32$ address generations.
 Furthermore eight scalar fused-multiply-adds are used. 
-\todo{Instructions regarding loop and index counter increments as well as address
-computations are for this case negligible.}
 We define the work performed by eight iterations of the loop (or two iterations of compiler unrolled loop) to be $W =
 224$\,B.
 
@@ -702,20 +710,21 @@ The instruction scheduler takes care that no data dependencies are violated.
 Instructions inside ports are pipelined, but only one instruction per port can
 be issued per cycle.
 Haswell can perform two loads (port $2D$ and $3D$) and one store (port $5$) of
-sizes up to $32$\,B at the same time~\cite{agner-2016-11-3}, each.
+sizes up to $32$\,B at the same time~(\cite{agner-2016-11-3}), each.
 This constellation requires the store address to be simple addressing as only in
 this case the address generation unit (AGU) on port~$7$ can be used.
-\todo{What means simple addressing?, cite Hofmann}. 
+\todo{What means simple addressing? Describe it in section in-core execution, cite, cite hofmann-2016-hsw and intel, here reference to that description}.
+\todol{AGU: base plus index plus offset, simple AGU: base plus offset}
 % Effectively this boils down to either two loads or one load and store.
 %
 For floating point operations relevant, it hosts two FMA units (port 0 and
 1) two MUL units (port 0 and 1), and one ADD unit (port 1).
-\todo{describe lea}
 
 Under this considerations two iterations of the compiled loop would require $4$\,cy
 for the FMA (port $0$ and $1$), $12$\,cy for the twenty four loads (port $3$ and $4$),
 and $8$\,cy for the eight stores (port $5$).
 $32$ addresses need to be generated. We assume the simple AGU on port $7$ is not used, as we observed for DAXPY (section \ref{sec:epm}). Generating all $32$ addresses on AGUs on ports $3$ and $4$ requires $16$\,cy.
+Instructions regarding index counter increments are for this case negligible, hence we ignore them.
 %From the $32$ address generation four are simple an can run on the simple AGU on
 %port $7$ requiring $4$\,cy, whereas the remaining $28$ addresses are handled in
 %$14$\,cy due to two AGUs on port $3$ and $4$.
@@ -797,13 +806,13 @@ This is caused by the organization of the memory subsystem, where e.\,g.\ bankin
 conflicts and DRAM page misses incur performance.
 With detailed knowledge about the internals of the (closed IP) memory controller
 (scheduling strategies, thresholds for strategy switching, ...) and DRAM modules
-this could also be modeled, which is far from being trivial~\cite{jacob-2007}.
+this could also be modeled, which is far from being trivial (\cite{jacob-2007}).
 As this is beyond the scope of the ECM model typically a micro benchmark
 resembling the used access pattern by the code under investigation is used
 to measure the attainable bandwidth and use it as input for the model.
 %
 For this model we use \textsc{McCalpin's} STREAM copy
-benchmark~\cite{mccalpin-1995} which achieves (without nontemporal stores and
+benchmark~(\cite{mccalpin-1995}) which achieves (without nontemporal stores and
 including the write allocate) a bandwidth of $\approx 26.9$\,GB/s when all seven cores
 of a cluster are utilized.
 With the core's clock frequency of $2.3$\,GHz it takes $5.5$\,cy to transfer one
