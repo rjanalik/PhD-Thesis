@@ -501,10 +501,10 @@ seem to be executed on ports~$2$ and~$3$.}
 \begin{figure}[tp]
   \centering
   \includegraphics[width=0.49\textwidth,clip=true]{images/daxpy-bw-hasep1-f-2_3-w-cy}
-  \caption{Bandwidth and duration of 16 iterations, i.\,e.,\ one iteration of the
+  \caption{Bandwidth and duration of 8 iterations, i.\,e.,\ two iterations of the
 compiler generated loop, for the daxpy kernel on HSW-S. Note that the total
 working set required for vectors
-\protect\texttt{r} and \texttt{l} is twice the vector length.}
+\protect\texttt{r} and \texttt{l} is twice the AVX vector length.}
   \label{fig:daxpy:perf}
 \end{figure}
 
@@ -689,10 +689,8 @@ hierarchy levels for eight iterations of the indirect daxpy kernel on HSW-S (Has
 \begin{figure}[tp]
   \centering
   \includegraphics[width=0.49\textwidth,clip=true]{images/daxpy-indirect-bw-hasep1-f-2_3-w-cy}
-   \caption{Bandwidth and duration of 16 iterations, i.\,e.,\ one iteration of the
-compiler generated loop, for the indirect daxpy kernel on HSW-S. Note that the total
-working set required for vectors
-\protect\texttt{r} and \texttt{l} is twice the vector length.}
+   \caption{Bandwidth and duration of 8 iterations, i.\,e.,\ two iteration of the
+compiler generated loop, for the indirect daxpy kernel on HSW-S.}
   \label{fig:daxpy-indirect:perf}
 \end{figure}
 
