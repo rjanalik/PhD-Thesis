@@ -689,10 +689,10 @@ hierarchy levels for eight iterations of the indirect daxpy kernel on HSW-S (Has
 \begin{figure}[tp]
   \centering
   \includegraphics[width=0.49\textwidth,clip=true]{images/daxpy-indirect-bw-hasep1-f-2_3-w-cy}
-   \caption{\todol{Bandwidth and duration of 16 iterations, i.\,e.,\ one iteration of the
+   \caption{Bandwidth and duration of 16 iterations, i.\,e.,\ one iteration of the
 compiler generated loop, for the indirect daxpy kernel on HSW-S. Note that the total
 working set required for vectors
-\protect\texttt{r} and \texttt{l} is twice the vector length.}}
+\protect\texttt{r} and \texttt{l} is twice the vector length.}
   \label{fig:daxpy-indirect:perf}
 \end{figure}
 
@@ -759,11 +759,11 @@ The performance $P_\text{L1}$, when all data is fetched from L1, is then compute
 %
 where $W$ denotes the loop specific work performed and $f$ clock frequency of the core.
 For this loop with $W=224$\,B and $f=2.3$\,GHz we have $P_\text{L1} =
-32.2$\,GB/s.
+32.2$\,GB/s,
 %On HSW1 only $\approx 31$\,GB/s, i.\,e.\ 80\,\% of the predicted
 %performance are achieved for this loop, shown in
-\todol{which is in line with the measurement in figure}
-Fig.~\ref{fig:daxpy-indirect:perf}.
+which is in line with the measurements in
+Figure~\ref{fig:daxpy-indirect:perf}.
 
 Modeling the performance when data resides in different cache levels from L1
 requires to analyse the data transfers between these levels.
@@ -774,7 +774,7 @@ $224$\,B $= 3.5$\,cl (cache lines) for each iteration: load $64$\,B of
 \verb'l', load $64$\,B of \verb'r', load $32$\,B of \verb'idx' and store $64$\,B
 of \verb'r'.
 
-Transferring a cache line between L1/L2 and L2/L3 takes $1$\,cy. Hence it takes \todol{check 1 cy and the results below}
+Transferring a cache line between L1/L2 and L2/L3 takes $1$\,cy (\cite{intel-orm-2016}). Hence it takes
 %
 \be
   t_\text{L2} = 3.5\,\cyw\ \text{and}\ t_\text{L3} = 3.5\,\cyw
