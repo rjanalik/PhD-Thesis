@@ -241,3 +241,73 @@ on the panel size.
 With larger panel sizes in total, fewer
 row indices \vindx{} are needed for the
 whole matrix.
+
+\section{ECM -- Forward and Backward Substitution}
+\label{sec:ecm-fwbw}
+
+\todop{ \\
+Algorithm similar to indexed daxpy (Section \ref{sec:ecm-indirect-daxpy}). \\
+Detailed description of the algorithm in Chapter \ref{sec:algo}. \\
+Analysis of the code including unrolling in Chapter \ref{sec:sds}. \\
+\\
+Computations here\\
+Elements form L are used only once, hence they are always fetched from the memory. We can ignore the tL1..tL3. \\
+\\}
+
+Both forward and backward substitution (described in Chapter \ref{sec:algo}) are similar to the indexed daxpy kernel analyzed in Section \ref{sec:ecm-indirect-daxpy}.
+The overlapping part of in-core execution is exactly the same as in the indirect daxpy.
+Again we take 8 iterations (or 8 rows) as an unit of work, because it fills one cache line. Note that the supernodes in L are stored column-wise, ignoring the sparsity, as described in Chapter \ref{sec:algo}.
+We will take into account 1 column for 1-way unroling, 2 columns for 2-way unrolling and 8 columns for 8-way unrolling.
+This gives
+\begin{eqnarray}
+   t^1_\text{ol} & = & \ \ 6\,\cyw \\
+   t^2_\text{ol} & = & 12\,\cyw \\
+   t^8_\text{ol} & = & 48\,\cyw
+\end{eqnarray}
+
+In PARDISO always the most efficient code is used. When a supernode has eight or more columns, the 8-way unrolling is used. 2-way unrolling is used for the remining columns and 1-way unrolling is used only for one column, in case the number of columns is odd.
+id is loaded only once per supernode. It could happen in any of the code variants 1-, 2- or 8-way unrolled, depending on the size of the supernode, as shown in Figure \ref{fig:ecm:data}.
+We assume id is always loaded from memory in the 1-way unrolled code and for the 2- or 8-way unrolled code it is already present in cache. This allows us to keep the model simple and independent of the nonzero structure of the matrix and its factor L.
+
+In the indexed daxpy r was loaded and stored from/to memory. The right hand side is often assembled just before calling the forward and backward substitution, so it is reasonable to assume that r is already in the cache. We also assume r is small enough to fit the L3 (LLC) cache and as it is used again and again, so it is not evicted.
+In case that r was not already present in the cache, it has to be loaded from memory. For reasonably big matrices we can ignore this load from memory, as it happens only once, and assume it is always present in the cache.
+
+There is one difference between the forward and backward substitution in the access pattern to r.
+The forward substituion updates different entries in r, the backward substitution always updates the same entry. The updated values in the forward substitution need to be stored in cache after every update (red text and arrows in Figure \ref{fig:ecm:data}), while the only value updated in the backward substituion is kept in register.
+
+Unlike in the daxpy case, the amount of data transfered between adjacent cache levels or L1 and registers is different from what is transfered between L3 and memory. We define the work to be for the forward substitution
+\begin{eqnarray}
+   W^{\text{fw}-1}_\text{cache} & = & 0\,\Bw \\
+   W^{\text{fw}-1}_\text{mem}   & = & 0\,\Bw \\
+   W^{\text{fw}-2}_\text{cache} & = & 0\,\Bw \\
+   W^{\text{fw}-2}_\text{mem}   & = & 0\,\Bw \\
+   W^{\text{fw}-8}_\text{cache} & = & 0\,\Bw \\
+   W^{\text{fw}-8}_\text{mem}   & = & 0\,\Bw \\
+\end{eqnarray}
+and for the backward substitution
+\begin{eqnarray}
+   W^{\text{bw}-1}_\text{cache} & = & 0\,\Bw \\
+   W^{\text{bw}-1}_\text{mem}   & = & 0\,\Bw \\
+   W^{\text{bw}-2}_\text{cache} & = & 0\,\Bw \\
+   W^{\text{bw}-2}_\text{mem}   & = & 0\,\Bw \\
+   W^{\text{bw}-8}_\text{cache} & = & 0\,\Bw \\
+   W^{\text{bw}-8}_\text{mem}   & = & 0\,\Bw
+\end{eqnarray}
+For details please refer to Figure \ref{fig:ecm:data}.
+
+The inputs for the ECM model are summarized in Table \ref{tab:ecm:data}. The values are normalized for 1 column.
+
+\begin{table}[!t]
+  \centering
+  \begin{tabular}{|l|c|c|c|c|c|c|}
+     \hline
+      & forward & backward \\
+     \hline
+      & 1-way & 2-way & 8-way & 1-way & 2-way & 8-way \\
+     \hline
+     W & 0 & 0 & 0 & 0 & 0 & 0 \\
+     \hline
+  \end{tabular}
+  \caption{\todol{...}}
+  \label{tab:ecm:data}
+\end{table}
