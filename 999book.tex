@@ -1678,3 +1678,54 @@ The complete forward substitution and backward substitution  is listed in Algori
 %SPICE simulation methods.  Availability of sparse matrix packages such
 %as PARDISO that completely satisfy the needs of various circuit
 %simulation methods is necessary for continued performance gains.
+
+\section[Sparse Linear Factorization Solvers]{High-Performance Computing Mathematical Libraries -- Sparse Linear Factorization Solvers}
+High-performance  computing mathematical libraries have been a very important part of scientific and engineering computing for years, and their importance continues to grow as microprocessor architectures become more complex and software libraries become better designed to integrate easily within applications. Despite the fact that there are various science and engineering applications, the underlying algorithms typically have remarkable similarities, especially those algorithms that are most challenging to implement well in parallel. It is not too strong a statement to say that these software libraries are essential to the broad success of scalable high-performance computing in computational sciences (\cite{kothe-2007,pitac-2005,bader-2007}).
+
+The recent trends in hardware development have added additional questions to this scenario, because today's codes are not guaranteed to exploit the performance of next-generation hardware to a satisfying degree. The so-called memory wall, i.e., the increasing performance gap between memory access and processor speed, will force scientific computing software to deal with the efficient use of complex multiple memory hierarchies. In addition, many-core architectures with hundreds of cores using a decreased processor clock rate will add additional algorithmic and software challenges to scientific computing. Autotuning tools, libraries, and software tools based on dwarfs \todol{[15]} will be designed that will help researcher and application developer to improve the performance of a given application.
+
+The innermost computational kernels of many large-scale scientific applications and industrial numerical simulations are often either a large sparse matrix problem or a nonlinear optimization method which again can be reduced to a large sparse matrix problem. Sparse direct linear solvers are a core part of many problems in computational science and typically consume a significant portion of the overall computational time required by the simulations. While on one hand modern computer architectures provide larger memory resources and faster multicore processors, on the other hand the need for solving large scale application problems often compensates for these developments. The request for fast and memory efficient -- and robust -- solvers has been important for many years and remains an open field for further developments.
+
+As mentioned before the use of graph pivoting techniques as an alternative approach to traditional pivoting methods emerged two decades ago (\cite{schenk-2004}). These graph-based methods
+typically build a bipartite graph of a symmetric indefinite matrix A and, by traversing vertices and edges in the graph, these approaches compute a maximum weighted matching that
+in turn defines a permutation of the rows and/or columns in A. The important advantage of
+all these methods is that they allow -- in a parallel environment -- the precomputation of the
+underlying elimination process, thus making the Gaussian elimination process much more
+scalable. Almost all modern parallel sparse direct solver tools (see Table \ref{tab:solvers})
+are now using these kinds of graph-pivoting techniques, since they are the key for high sequential and parallel efficiency.
+
+For sparse direct algorithms there exist a wide range of possible methods, such as multifrontal, left- or right-looking supernodal methods, or a combination of these methods (\cite{davis:2006:dms}). As a result, different high-level implementations are available, such as SuperLU (\cite{superlu_dist}), Mumps \todol{[4]}, PARDISO (\cite{schenk-2004,schenk-2006}) and WSMP (\cite{gup02}). The communication patterns of all these different packages and methods are -- more or less -- very similar. All of them are using supernodal blocking strategies and this data structure will be used for performance modeling in the next chapters.
+
+The Table \ref{tab:solvers} lists a few available software packages for the direct solution of sparse linear algebra problems. The interest is in software for high-performance computers for solving problems in numerical linear algebra, especially sparse direct systems.
+
+\begin{table}[]
+   \centering
+   \begin{adjustbox}{angle=90}
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|l|l|l|}
+\hline
+SPARSE DIRECT SOLVERS & License  & \multicolumn{2}{l|}{Type} & Language  & \multicolumn{3}{l|}{Mode} & \multicolumn{3}{l|}{Sparse Direct} & Last release date \\ \hline
+                      &          & Real       & Complex      &           & Shared  & Accel.  & Dist  & SPD         & SI       & Gen       &                   \\ \hline
+DSCPACK               & PD       & X          &              & C         & X       &         & M     & X           &          &           & 2015-05-23        \\ \hline
+KKTDirect             & PD       & X          &              & C/C++     & X       &         &       & LDLT        &          &           & 2010-04-21        \\ \hline
+MUMPS                 & CeCILL-C & X          & X            & F77/F95   & X       &         & M     & X           & X        & X         & 2021-04-16        \\ \hline
+Myramath              & GPL      & X          & X            & C++       & X       &         &       & X           & X        &           & 2020-05-20        \\ \hline
+PaStiX                & LGPL     & X          & X            & F95/C/C++ & X       & C       & M     & X           & X        & X         & 2021-04-08        \\ \hline
+PSPASES               & Own      & X          &              & F77/F95/C &         &         & M     & X           &          &           & 1999-05-09        \\ \hline
+qr\_mumps             & LGPL     & X          & X            & F77/F95/C & X       & C       &       & X           &          & X         & 2021-04-2021      \\ \hline
+Quern                 & PD       & X          &              & C/C++     & X       &         &       &             &          & X         & 2009-02-04        \\ \hline
+SPARSE                & Own      & X          & X            & C         & X       &         &       & X           &          & X         & 1988-04-01        \\ \hline
+SPOOLES               & PD       & X          & X            & C         & X       &         & M     &             &          & X         & 1999-04-08        \\ \hline
+SPRAL                 & New BSD  & X          & X            & F77/F95/C & X       & C       &       & X           & X        &           & 2016-09-23        \\ \hline
+SuiteSparse           & LGPL/GPL & X          & X            & C         & X       & C       &       & X           &          & X         & 2018-07-05        \\ \hline
+SuperLU               & BSD      & X          & X            & F77/F95/C & X       & C       & M     &             &          & X         & 2020-10-17        \\ \hline
+TAUCS                 & Own      & X          & X            & C         & X       &         &       & X           &          & X         & 2003-09-04        \\ \hline
+Trilinos/Amesos       & LGPL     & X          &              & C/C++     & X       &         & M     & X           &          & X         & 2017-09-07        \\ \hline
+Trilinos/Amesos2      & BSD      & X          & X            & C++       & X       &         & M     & X           &          & X         & 2017-09-07        \\ \hline
+Y12M                  & ?        & X          &              & F77/F95   & X       &         &       & X           &          & X         & ?                 \\ \hline
+\end{tabular}
+   \end{adjustbox}
+   \caption{List of some sparse direct solvers from \url{https://docs.google.com/spreadsheets/d/11ESR3uucNvVKEoIcalP9gR7ApaOElLwmE5sAS-VRMOM/edit\#gid=90156307}}
+   \label{tab:solvers}
+\end{table}
+
+%https://docs.google.com/spreadsheets/d/11ESR3uucNvVKEoIcalP9gR7ApaOElLwmE5sAS-VRMOM/edit#gid=90156307
