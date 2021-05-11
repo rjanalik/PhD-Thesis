@@ -73,18 +73,18 @@ maximum weight matching method~(\cite{DufK99S,olschowka:1996})
 which permutes (e.g.) the rows of a given
 nonsingular matrix $A\in\R^{n,n}$ by a permutation matrix $\Pi\in\R^{n,n}$ 
 such that $\Pi^TA$
-has a \emph{non-zero diagonal}. Moreover, it maximizes 
+has a non-zero diagonal. Moreover, it maximizes
 the product of the absolute diagonal values  and yields diagonal
 scaling matrices $D_r, D_c\in\R^{n,n}$ such that $\tilde A=\Pi^TD_rAD_c$ satisfies
 $|\tilde a_{ij}|\leqslant 1$ and $|\tilde a_{ii}|=1$ for all $i,j=1,\dots,n$.
 The original idea on which these nonsymmetric permutations and scalings are
-based is to find a \emph{maximum weighted matching} of a
-\emph{bipartite graphs}. Finding a maximum weighted matching is a well
+based is to find a maximum weighted matching of a
+bipartite graphs. Finding a maximum weighted matching is a well
 known assignment problem in operation research and combinatorial
 analysis.
 \begin{definition}\label{def:bipartite}
 A graph $G=(V,E)$ with vertices $V$ and edges $E\subset V^2$ 
-is called \emph{bipartite} 
+is called bipartite
 if $V$ can be partitioned into two sets  $V_r$ and  $V_c$, such that no edge
 $e=(v_1,v_2) \in E$ has both ends $v_1,v_2$ in $V_r$ or both ends $v_1,v_2$ 
 in $V_c$. In this case we denote $G$ by $G_b=(V_r,V_c,E)$.
@@ -108,7 +108,7 @@ is connected by an edge $(r_i,c_j) \in E$ to the column $c_j \in V_c$,
 but neither rows are connected with each other nor do the columns have
 inter connections.
 \begin{definition}\label{def:matching}
-A \emph{matching} $\cM$ 
+A matching $\cM$
 of a given graph $G= (V,E)$ is a subset of edges
 $e\in E$ such that no two of which share the same vertex. 
 \end{definition}
@@ -119,9 +119,9 @@ $\hat e=(r_k,c_l) \in \cM$
 that has the same vertices, neither $r_k=r_i$ nor $c_l=c_j$. 
 \begin{definition}\label{def:maxmatching}
 A matching $\cM$ of $G=(V,E)$ is called
-\emph{maximal}, if no other edge from $E$ can be added to $\cM$.
+maximal, if no other edge from $E$ can be added to $\cM$.
 \end{definition}
-If, for an $n \times n$ matrix $A$ a \emph{matching} $\cM$ of $G_b(A)$ with
+If, for an $n \times n$ matrix $A$ a matching $\cM$ of $G_b(A)$ with
 maximum cardinality $n$ is found, then by definition the edges 
 must be $(i_1,1),\dots,(i_n,n)$ with $i_1,\dots,i_n$ being the 
 numbers $1,\dots,n$ in a suitable order and therefore we obtain
@@ -132,7 +132,7 @@ matrix $A$ is at least structurally nonsingular and we can use a
 row permutation matrix $\Pi^T$ associated with row ordering $i_1,\dots,i_n$ 
 to place a nonzero entry on each diagonal location of $\Pi^TA$.
 \begin{definition}\label{def:perfect-matching}
-A \emph{perfect matching} is a maximal matching with cardinality $n$.
+A perfect matching is a maximal matching with cardinality $n$.
 \end{definition}
 It can be shown that for a structurally nonsingular matrix $A$ there always
 exists a perfect matching $\cM$.
@@ -212,7 +212,7 @@ Reordered Matrix $\Pi^TA$
 \end{figure}
 
 The most efficient combinatorial methods for finding maximum matchings
-in bipartite graphs make use of an \emph{augmenting path}. We will
+in bipartite graphs make use of an augmenting path. We will
 introduce some graph terminology for the
  construction of perfect
 matchings. 
@@ -227,12 +227,12 @@ any path is alternating between the vertices of $V_r$ and $V_c$, e.g.,
 paths in $G_b$ could be such as $r_1c_2,c_2r_3,r_3c_4,\dots$.
 \begin{definition}\label{def:various-paths}
 Given a graph $G=(V,E)$, a 
-vertex is called \emph{free} if it is not
+vertex is called free if it is not
 incident to any other edge in a matching $\cM$ of $G$. 
-An \emph{alternating path} relative to a matching $\cM$ is a path 
+An alternating path relative to a matching $\cM$ is a path
 $P = u_1u_2,u_2u_3, \ldots,u_{s-1}u_s$ where its edges are alternating 
 between $E \setminus \cM$ and $\cM$. An
-\emph{augmenting path} relative to a matching $\cM$ is an alternating
+augmenting path relative to a matching $\cM$ is an alternating
 path of odd length and both of it vertex endpoints are free. 
 \end{definition}
 \begin{example}{Augmenting Path}\label{exm:augmenting_path}
@@ -275,7 +275,7 @@ For their use as static pivoting methods prior to the $LU$ decomposition
 one requires in addition to
 maximize the absolute value of the product of the diagonal entries. 
 This is referred to as
-\emph{maximum weighted matching}. In this case a permutation
+maximum weighted matching. In this case a permutation
 $\pi$ has to be found, which maximizes
 \begin{equation}
   \prod_{i=1}^n |a_{\pi(i)i}|. \label{eq:1}
@@ -439,12 +439,12 @@ terms of graph-partitioning.
 \begin{definition}\label{def:partitioning-and-separator}
 Let $A\in\R^{n,n}$
 and consider its graph $G(A)=(V,E)$. 
-A \emph{$k$-way graph partitioning} consists of 
+A $k$-way graph partitioning consists of
 partitioning $V$ into $k$ disjoint subsets
 $V_1, V_2, \ldots, V_k$ such that $V_i \cap V_j = \emptyset$ for $i
 \ne j$, $\cup_i V_i=V$.
 The subset $E_s = E\cap \bigcup_{i\not=j} (V_i\times V_j)$ is called 
-\emph{edge separator}.
+edge separator.
 \end{definition}
 Typically we want a $k$-way partitioning to be balanced, i.e., 
 each $V_i$ should satisfy $|V_i|\approx n/k$. The edge separator $E_s$
@@ -455,7 +455,7 @@ $E_s$ is usually referred to as edge-cut.
 
 \begin{definition}\label{def:vertex-separator}
 Given $A\in\R^{n,n}$,
-    a \emph{vertex separator} $V_s$ of $G(A)= (V,E)$ is a
+    a vertex separator $V_s$ of $G(A)= (V,E)$ is a
     set of vertices such that there exists a $k$-way partitioning 
     $V_1, V_2, \ldots, V_k$ of $V \setminus V_s$ having no edge
     $e\in V_i\times V_j$ for $i\ne j$. 
@@ -473,7 +473,7 @@ until the desired number $k$
 of partitionings are obtained. If $k$ is a power of $2$, then a natural
 way of obtaining a vertex separator
 is to first obtain a $2$-way partitioning of the graph, a so called
-\emph{graph bisection} with its associated edge separator $E_s$.
+graph bisection with its associated edge separator $E_s$.
 After that a vertex separator $V_s$ is computed from $E_s$, which
 gives a $2$-way partitioning $V_1,V_2$ of $V\setminus V_s$.
 This process is then repeated separately
@@ -532,14 +532,14 @@ with $V_s$ to the end.}\label{fig:matrixvertex}
 
 Since a naive approach to compute a recursive graph bisection is 
 typically computationally expensive,
-combinatorial \emph{multilevel graph bisection} has been used to
+combinatorial multilevel graph bisection has been used to
 accelerate the process. The basic structure is simple. The multilevel approach
-consists of three phases: at first there is a \emph{coarsening phase}
+consists of three phases: at first there is a coarsening phase
 which compresses the given graph successively
 level by level by about half of its size. When the coarsest graph with about
 a few hundred vertices is reached, the second phase,  namely the so-called
-\emph{bisection} is applied. This is a high quality partitioning algorithm.
-After that, during the \emph{uncoarsening phase}, the given
+bisection is applied. This is a high quality partitioning algorithm.
+After that, during the uncoarsening phase, the given
 bisection is successively refined as it is prolongated towards the original
 graph. 
 
@@ -763,7 +763,7 @@ the undirected graph $G(A)$ and $G(L+U)$, respectively.
 
 \begin{definition}\label{def:filled-graph}
 The undirected graph $G(L+U)$ that is derived from the undirected graph 
-$G(A)$ by applying Theorem \ref{thr:gilbert} is called the \emph{filled graph} 
+$G(A)$ by applying Theorem \ref{thr:gilbert} is called the filled graph
 and it will be denoted by $G_f(A)$.
 \end{definition}
 
@@ -1049,7 +1049,7 @@ Algorithm \ref{alg:compute_pattern}.
 \begin{definition}\label{def:supernode}
 Denote by $\mathcal{P}_j$ the nonzero indices of column $j$ of $P$
 as computed by Algorithm \ref{alg:compute_pattern}.
-A sequence $k,k+1,\dots,k+s-1$ is called \emph{supernode} of size $s$
+A sequence $k,k+1,\dots,k+s-1$ is called supernode of size $s$
 if the columns of $\mathcal{P}_{j}=\mathcal{P}_{j+1}\cup \{j+1\}$
 for all $j=k,\dots,k+s-2$.
 \end{definition}
