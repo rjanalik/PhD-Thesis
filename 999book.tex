@@ -34,18 +34,18 @@ by multithreaded and cache-optimized
 dense matrix kernels using level-3 BLAS and LAPACK
 (\cite{AndBBDDDGHMOS99}).
 
-This chapter will review some of the basic technologies together
+This chapter reviews some of the basic technologies together
 with the latest developments for sparse direct solution methods that have led to
 state-of-the-art $LU$ decomposition methods.
-The paper is organized as follows. In Section \ref{sec:mwm}
-we will start with maximum weighted matchings which is one of the key
+The chapter is organized as follows. In Section \ref{sec:mwm}
+is introduced maximum weighted matching which is one of the key
 tools in combinatorial optimization to dramatically improve the diagonal dominance
 of the underlying system.
-Next, Section \ref{sec:reordering} will review multilevel nested dissection
+Next, Section \ref{sec:reordering} reviews multilevel nested dissection
 as a combinatorial method to reorder a system symmetrically
 such that fill-in and parallelization are improved simultaneously, once
 pivoting can be more or less ignored.
-After that, we will review established graph-theoretical approaches
+After that, established graph-theoretical approaches are reviewed
 in Section \ref{sec:lu}, in particular the elimination tree, from which
 most of the properties of the $LU$ factorization can be concluded. Among
 these properties is the prediction of dense submatrices in the
@@ -59,6 +59,7 @@ We assume that the reader
  is familiar with some elementary knowledge from
 graph theory, see; e.g., \cite{DufER86,GeoL81} and some simple
 computational algorithms based on graphs \cite{AhoHU83}.
+Finally Section \ref{sec:sparse-solvers} shows how are the building blocks described in previous sections used to implement efficient sparse direct solver on modern hardware. Solving a sparse linear system is a computational kernel of many applications in science and engineering, thus an efficient solver is a key component of such applications.
 
 \section{Maximum weight matching to enable static data structures}
 \label{sec:mwm}
@@ -155,6 +156,7 @@ In Figure \ref{fig:unsym_perm}, the set of edges $\cM= \{(1,2), (2,4),
 of the bipartite graph $G_b(A)$.
 \end{example}
 \begin{figure}
+ \centering
 % \sidecaption
 \begin{minipage}{.33\textwidth}
  \begin{center}
@@ -356,6 +358,7 @@ of the given matrix and thus paving the way to a static pivoting approach
 in incomplete or complete $LU$ decomposition methods.
 \end{example}
 \begin{figure}
+ \centering
 % \sidecaption
 \begin{minipage}{.45\textwidth}
  \begin{center}
@@ -378,6 +381,7 @@ in incomplete or complete $LU$ decomposition methods.
     \label{fig:mwm}
 \end{figure}
 \begin{figure}
+ \centering
 % \sidecaption
 \begin{minipage}{.48\textwidth}
  \begin{center}
@@ -398,7 +402,7 @@ in incomplete or complete $LU$ decomposition methods.
     \label{fig:mwm-dd}
 \end{figure}
 
-\section[Symbolic reordering techniques based on nested dissection]{Symbolic reordering techniques based on Multilevel nested dissection} 
+\section[Symbolic reordering techniques based on nested dissection]{Symbolic reordering techniques based on multilevel nested dissection}
 \label{sec:reordering}
 When dealing with large sparse matrices a crucial factor that determines
 the computation time is the amount of fill that is produced during the
@@ -495,22 +499,18 @@ refers to taking the rows and the columns of $\Pi^T A$ in the order
 $3,5,2,6,1,4$.
 \end{example}
 \begin{figure}%[t]
+ \centering
 %\sidecaption
-%\fbox
-{
-\begin{minipage}{7.0cm}
-%\fbox
-{
-\begin{minipage}{.6\textwidth}
-\includegraphics[width=\textwidth]{figures/matrixvertex}
+\begin{minipage}{.33\textwidth}
+ \begin{center}
+\includegraphics[width=4.2cm]{figures/matrixvertex}
+ \end{center}
 % \caption{This is the second picture.}
 % \label{fig:4}
 \end{minipage}
-}
-\hfil
 %\fbox
-{
-\begin{minipage}{.3\textwidth}
+\begin{minipage}{.33\textwidth}
+ \begin{center}
     $\left(
         \begin{array}{cc|cc|cc}
         3   & \nl & \nl & \nl & \nl   &  1  \\
@@ -521,10 +521,8 @@ $3,5,2,6,1,4$.
         \nl   & \nl & \nl & 1   & 3 & 4   
         \end{array}
     \right)$
+ \end{center}
 \end{minipage}
-}
-\end{minipage}
-}
 \caption{A $2$-way partition with vertex separator $V_s=\{1,4\}$
 and the associated reordered matrix placing the two rows and columns associated 
 with $V_s$ to the end.}\label{fig:matrixvertex}
@@ -608,6 +606,7 @@ where $P$ refers to the permutation matrix associated with the partitioning
 of $G(\tilde A)$.
 \end{example}
 \begin{figure}
+ \centering
 %\sidecaption
 \begin{minipage}{.55\textwidth}
   \begin{center}
@@ -729,8 +728,10 @@ We will use the matrix $\Pi^TA$ from Example \ref{exm:vsep}  and sketch
 the fill-in obtained during Gaussian elimination   in Figure \ref{fig:fill}.
 \end{example}
 \begin{figure}
+ \centering
 %\sidecaption
 \begin{minipage}{.45\textwidth}
+  \begin{center}
     $\left(
         \begin{array}{cc|cc|cc}
         3   & \nl & \nl & \nl & \nl   &  1  \\
@@ -741,6 +742,7 @@ the fill-in obtained during Gaussian elimination   in Figure \ref{fig:fill}.
         \nl   & \nl & \nl & 1   & 3 & 4   
         \end{array}
     \right)$
+  \end{center}
 \end{minipage}
     \caption{Fill-in with respect to $L+U$ is denoted by $\times$.}
     \label{fig:fill}
@@ -882,13 +884,14 @@ of $j$ in the elimination tree $T(A)$.
 \begin{example}{Elimination tree}\label{exm:etree}
 We use the matrix ``west0479'' from Example \ref{exm:west0479-metis},
 after maximum weight matching and multilevel nested dissection have
-been applied. We use \ml's \texttt{etreeplot} to display its elimination
+been applied. We use \ml's \linebreak \texttt{etreeplot} to display its elimination
 tree (see Figure \ref{fig:etreeplot}). The elimination tree displays the high
 level of concurrency that is induced by nested dissection, since 
 by Remark \ref{rem:dependence} the computations can be executed independently
 at each leaf node towards the root until a common parent vertex is reached.
 \end{example}
 \begin{figure}
+ \centering
 %\sidecaption
 %\fbox
 {
@@ -1042,7 +1045,7 @@ and to speed up the numerical factorization significantly
 is to detect dense submatrices in the factorization.
 Block structures  allow to collect parts
 of the matrix in dense blocks and to treat them commonly using 
-dense matrix kernels such as level-3 BLAS and LAPACK (\cite{DodL85,DonDHH88}).
+dense matrix kernels such as level-3 BLAS and LAPACK (\cite{AndBBDDDGHMOS99}).
 
 Dense blocks can be read off from the elimination tree employing
 Algorithm \ref{alg:compute_pattern}.
@@ -1134,7 +1137,7 @@ Beside the storage scheme as dense matrices, the nonzero row indices
 for these blocks need only be stored once.
 Next the use of dense submatrices allows the usage of dense matrix kernels
 using level-3 BLAS
-(\cite{DodL85,DonDHH88}).
+(\cite{AndBBDDDGHMOS99}).
 \begin{example}{Supernodes}\label{exm:supernodes}
 We use the matrix ``west0479'' from Example \ref{exm:west0479-metis},
 after maximum weight matching and multilevel nested dissection have
@@ -1149,6 +1152,7 @@ the supernodal structure for the factors $L$ and $U$ computed from the
 nonsymmetric matrix without pivoting (see right part of Figure \ref{fig:supernodal_structure}).
 \end{example}
 \begin{figure}
+ \centering
 % \sidecaption
 \begin{minipage}{.48\textwidth}
  \begin{center}
@@ -1188,7 +1192,7 @@ challenging to implement well in parallel. It is not too strong a
 statement to say that these software libraries are essential to the
 broad success of scalable high-performance computing in computational
 sciences.  In this section we demonstrate the benefit of supernodal data structures within the 
-sparse solver package PARDISO~(\cite{schenk-2004}). We illustrate it by using
+sparse solver package PARDISO~(\cite{schenk-2004,Bollhofer2020}). We illustrate it by using
 the triangular solution process. The forward and backward substitution is performed
 column wise with respect to the columns of $L$, starting with the
 first column, as depicted in Figure~\ref{algo:triangular}.
@@ -1281,45 +1285,45 @@ parts. The last part in the lower triangular matrix $L$ is called separator.}
 \end{figure}
 
 
-%\begin{algorithm}[t]
-%  \begin{algorithmic}[1]
-%    \Procedure{Forward}{}
-%      \For{part $o$ in parts} \Comment{parallel execution}
-%        \For{panel p in part $p$}
-%          \For{\textcolor{blue}{column $j$ in panel}} \Comment{unroll} \label{alg:fw:1}
-%            \State i = \nxindx{}[p] + offset
-%
-%            \For{k = \nxlnz[j] + offset; k < sep; ++k}\label{algo:fw:rloop}
-%                \State row = \nindx[i++]
-%                \State \nr[row] - =  \nr[j] \nlnz[k] \Comment{indexed DAXPY}
-%            \EndFor\label{algo:fw:rloop:end}
-%            \For{k = sep + 1; k < \nxlnz[j+1]; ++k}\label{algo:fw:seploop}
-%                \State row = \nindx[i++]
-%                \State \ntemp[row,p] -=  \nr[j] \nlnz[k] \Comment{indexed DAXPY}
-%            \EndFor\label{algo:fw:seploop:end}
-%          \EndFor
-%        \EndFor
-%      \EndFor
-%      \State r[i] = r[i] - sum(\ntemp[i,:])  \Comment{gather temporary arrays}
-%      \For{panel p in separator} \Comment{serial execution}
-%        \For{\textcolor{blue}{column $j$ in panel}} \Comment{unroll}\label{alg:fw:2}
-%            \State i = \nxindx[p] + offset
-%
-%            \For{k = \nxlnz[j] + offset; k < \nxlnz[j+1]; ++k}
-%                \State row = \nindx[i++]
-%                \State \nr[row] -=  \nr[j] \nlnz[k] \Comment{indexed DAXPY}
-%            \EndFor
-%        \EndFor
-%      \EndFor
-%    \EndProcedure
-%  \end{algorithmic}
-%  \caption{Forward substitution in PARDISO. Note that in case of serial
-%execution separated updates to temporary arrays in line
-%\ref{algo:fw:seploop}-\ref{algo:fw:seploop:end} are not necessary
-%and can be handled via the loop in lines
-%\ref{algo:fw:rloop}-\ref{algo:fw:rloop:end}.}
-%  \label{alg:algo:fw}
-%\end{algorithm}
+\begin{algorithm}[t]
+  \begin{algorithmic}[1]
+    \Procedure{Forward}{}
+      \For{part $o$ in parts} \Comment{parallel execution}
+        \For{panel p in part $p$}
+          \For{\textcolor{blue}{column $j$ in panel}} \Comment{unroll} \label{alg:fw:1}
+            \State i = \nxindx{}[p] + offset
+
+            \For{k = \nxlnz[j] + offset; k < sep; ++k}\label{algo:fw:rloop}
+                \State row = \nindx[i++]
+                \State \nr[row] - =  \nr[j] \nlnz[k] \Comment{indexed DAXPY}
+            \EndFor\label{algo:fw:rloop:end}
+            \For{k = sep + 1; k < \nxlnz[j+1]; ++k}\label{algo:fw:seploop}
+                \State row = \nindx[i++]
+                \State \ntemp[row,p] -=  \nr[j] \nlnz[k] \Comment{indexed DAXPY}
+            \EndFor\label{algo:fw:seploop:end}
+          \EndFor
+        \EndFor
+      \EndFor
+      \State r[i] = r[i] - sum(\ntemp[i,:])  \Comment{gather temporary arrays}
+      \For{panel p in separator} \Comment{serial execution}
+        \For{\textcolor{blue}{column $j$ in panel}} \Comment{unroll}\label{alg:fw:2}
+            \State i = \nxindx[p] + offset
+
+            \For{k = \nxlnz[j] + offset; k < \nxlnz[j+1]; ++k}
+                \State row = \nindx[i++]
+                \State \nr[row] -=  \nr[j] \nlnz[k] \Comment{indexed DAXPY}
+            \EndFor
+        \EndFor
+      \EndFor
+    \EndProcedure
+  \end{algorithmic}
+  \caption{Forward substitution in PARDISO. Note that in case of serial
+execution separated updates to temporary arrays in line
+\ref{algo:fw:seploop}-\ref{algo:fw:seploop:end} are not necessary
+and can be handled via the loop in lines
+\ref{algo:fw:rloop}-\ref{algo:fw:rloop:end}.}
+  \label{alg:algo:fw}
+\end{algorithm}
 
 Adjacent columns exhibiting the same row sparsity structure form a \textit{panel}, also known
 as \textit{supernode}.
@@ -1358,42 +1362,42 @@ The complete forward substitution and backward substitution  is listed in Algori
 %
 
 
-% \begin{algorithm}[tp]
-%   \begin{algorithmic}[1]
-%     \Procedure{Backward}{}
-%       \For{panel $p$ in sep. rev.} \Comment{serial execution}
-%         \For{\textcolor{blue}{col. $j$ in panel $p$ rev.}} \Comment{unroll}\label{alg:bw:1}
-%            \State i = \nxindx[p] + offset
-%            \For{k = \nxlnz[j] + offset; k < \nxlnz[j+1]; ++k}
-%                \State row = \nindx[i++]
-%                \State \nr[j] -= \nr[row] \nlnz[k] \Comment{indexed DDOT}
-%            \EndFor
-%
-%            \State offset = offset - 1
-%          \EndFor
-%        \EndFor
-%        \For{part in parts} \Comment{parallel execution}
-%          \For{panel $p$ in part rev.}
-%            \For{\textcolor{blue}{col. $j$ in panel $p$ rev.}} \Comment{unroll}\label{alg:bw:2}
-%
-%              \State i = \nxindx[p] + offset
-%
-%              \For{k = \nxlnz[j] + offset; k < \nxlnz[j+1]; ++k}
-%                \State row = \nindx[i++]
-%                \State \nr[j] -=  \nr[row] \nlnz[k] \Comment{indexed DDOT}
-%              \EndFor
-%
-%              \State offset = offset - 1
-%
-%            \EndFor
-%          \EndFor
-%        \EndFor
-%        \EndProcedure
-%   \end{algorithmic}
-%   \caption{Backward substitution in PARDISO. Separator (sep.), parts, and
-%panels are iterated over in reversed (rev.) order.}
-%   \label{alg:algo:bw}
-%\end{algorithm}
+ \begin{algorithm}[tp]
+   \begin{algorithmic}[1]
+     \Procedure{Backward}{}
+       \For{panel $p$ in sep. rev.} \Comment{serial execution}
+         \For{\textcolor{blue}{col. $j$ in panel $p$ rev.}} \Comment{unroll}\label{alg:bw:1}
+            \State i = \nxindx[p] + offset
+            \For{k = \nxlnz[j] + offset; k < \nxlnz[j+1]; ++k}
+                \State row = \nindx[i++]
+                \State \nr[j] -= \nr[row] \nlnz[k] \Comment{indexed DDOT}
+            \EndFor
+
+            \State offset = offset - 1
+          \EndFor
+        \EndFor
+        \For{part in parts} \Comment{parallel execution}
+          \For{panel $p$ in part rev.}
+            \For{\textcolor{blue}{col. $j$ in panel $p$ rev.}} \Comment{unroll}\label{alg:bw:2}
+
+              \State i = \nxindx[p] + offset
+
+              \For{k = \nxlnz[j] + offset; k < \nxlnz[j+1]; ++k}
+                \State row = \nindx[i++]
+                \State \nr[j] -=  \nr[row] \nlnz[k] \Comment{indexed DDOT}
+              \EndFor
+
+              \State offset = offset - 1
+
+            \EndFor
+          \EndFor
+        \EndFor
+        \EndProcedure
+   \end{algorithmic}
+   \caption{Backward substitution in PARDISO. Separator (sep.), parts, and
+panels are iterated over in reversed (rev.) order.}
+   \label{alg:algo:bw}
+\end{algorithm}
 
 %\section{Application --- Circuit Simulation}
 %~\label{sec:appl} 
@@ -1680,6 +1684,7 @@ The complete forward substitution and backward substitution  is listed in Algori
 %simulation methods is necessary for continued performance gains.
 
 \section[Sparse Linear Factorization Solvers]{High-Performance Computing Mathematical Libraries -- Sparse Linear Factorization Solvers}
+\label{sec:sparse-solvers}
 High-performance  computing mathematical libraries have been a very important part of scientific and engineering computing for years, and their importance continues to grow as microprocessor architectures become more complex and software libraries become better designed to integrate easily within applications. Despite the fact that there are various science and engineering applications, the underlying algorithms typically have remarkable similarities, especially those algorithms that are most challenging to implement well in parallel. It is not too strong a statement to say that these software libraries are essential to the broad success of scalable high-performance computing in computational sciences (\cite{kothe-2007,pitac-2005,bader-2007}).
 
 The recent trends in hardware development have added additional questions to this scenario, because today's codes are not guaranteed to exploit the performance of next-generation hardware to a satisfying degree. The so-called memory wall, i.e., the increasing performance gap between memory access and processor speed, will force scientific computing software to deal with the efficient use of complex multiple memory hierarchies. In addition, many-core architectures with hundreds of cores using a decreased processor clock rate will add additional algorithmic and software challenges to scientific computing. Autotuning tools, libraries, and software tools based on dwarfs (\cite{10.1145/1562764.1562783}) will be designed that will help researcher and application developer to improve the performance of a given application.
@@ -1694,7 +1699,7 @@ underlying elimination process, thus making the Gaussian elimination process muc
 scalable. Almost all modern parallel sparse direct solver tools (see Table \ref{tab:solvers})
 are now using these kinds of graph-pivoting techniques, since they are the key for high sequential and parallel efficiency.
 
-For sparse direct algorithms there exist a wide range of possible methods, such as multifrontal, left- or right-looking supernodal methods, or a combination of these methods (\cite{davis:2006:dms}). As a result, different high-level implementations are available, such as SuperLU (\cite{superlu_dist}), Mumps (\cite{amestoy:2000:mpd}), PARDISO (\cite{schenk-2004,schenk-2006}) and WSMP (\cite{gup02}). The communication patterns of all these different packages and methods are -- more or less -- very similar. All of them are using supernodal blocking strategies and this data structure will be used for performance modeling in the next chapters.
+For sparse direct algorithms there exist a wide range of possible methods, such as multifrontal, left- or right-looking supernodal methods, or a combination of these methods (\cite{davis:2006:dms}). As a result, different high-level implementations are available, such as SuperLU (\cite{superlu_dist}), Mumps (\cite{amestoy:2000:mpd}), PARDISO (\cite{schenk-2004,schenk-2006,Bollhofer2020}) and WSMP (\cite{gup02}). The communication patterns of all these different packages and methods are -- more or less -- very similar. All of them are using supernodal blocking strategies and this data structure will be used for performance modeling in the next chapters.
 
 The Table \ref{tab:solvers} lists a few available software packages for the direct solution of sparse linear algebra problems. The interest is in software for high-performance computers for solving problems in numerical linear algebra, especially sparse direct systems.
 
@@ -1722,7 +1727,6 @@ SPRAL                 & New BSD  & X          & X            & F77/F95/C & X    
 TAUCS                 & Own      & X          & X            & C         & X       &         &       & X           &          & X         & 2003-09-04        \\ \hline
 Trilinos/Amesos       & LGPL     & X          &              & C/C++     & X       &         & M     & X           &          & X         & 2017-09-07        \\ \hline
 Trilinos/Amesos2      & BSD      & X          & X            & C++       & X       &         & M     & X           &          & X         & 2017-09-07        \\ \hline
-Y12M                  & ?        & X          &              & F77/F95   & X       &         &       & X           &          & X         & ?                 \\ \hline
 \end{tabular}
    \end{adjustbox}
    \caption{List of sparse direct solvers colledted by \cite{list-of-solvers}.}
