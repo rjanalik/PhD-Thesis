@@ -1705,23 +1705,11 @@ The Table \ref{tab:solvers} lists a few available software packages for the dire
 \hline
    \multicolumn{1}{|c|}{SPARSE DIRECT SOLVERS} & \multicolumn{1}{c|}{License}  & \multicolumn{2}{c|}{Type} & Language  & \multicolumn{3}{c|}{Mode} & \multicolumn{3}{c|}{Sparse Direct} & Last release date \\ \hline
                       &          & Real       & Complex      &           & Shared  & Accel.  & Dist  & SPD         & SI       & Gen       &                   \\ \hline
-DSCPACK               & PD       & X          &              & C         & X       &         & M     & X           &          &           & 2015-05-23        \\ \hline
-KKTDirect             & PD       & X          &              & C/C++     & X       &         &       & LDLT        &          &           & 2010-04-21        \\ \hline
+PARDISO               & USI      & X          & X            & F77/C/C++ & X       &         & M     & X           & X        & X         & 2020-12-01        \\ \hline
 MUMPS                 & CeCILL-C & X          & X            & F77/F95   & X       &         & M     & X           & X        & X         & 2021-04-16        \\ \hline
-Myramath              & GPL      & X          & X            & C++       & X       &         &       & X           & X        &           & 2020-05-20        \\ \hline
-PaStiX                & LGPL     & X          & X            & F95/C/C++ & X       & C       & M     & X           & X        & X         & 2021-04-08        \\ \hline
-PSPASES               & Own      & X          &              & F77/F95/C &         &         & M     & X           &          &           & 1999-05-09        \\ \hline
 qr\_mumps             & LGPL     & X          & X            & F77/F95/C & X       & C       &       & X           &          & X         & 2021-04-2021      \\ \hline
-Quern                 & PD       & X          &              & C/C++     & X       &         &       &             &          & X         & 2009-02-04        \\ \hline
-SPARSE                & Own      & X          & X            & C         & X       &         &       & X           &          & X         & 1988-04-01        \\ \hline
-SPOOLES               & PD       & X          & X            & C         & X       &         & M     &             &          & X         & 1999-04-08        \\ \hline
-SPRAL                 & New BSD  & X          & X            & F77/F95/C & X       & C       &       & X           & X        &           & 2016-09-23        \\ \hline
 SuiteSparse           & LGPL/GPL & X          & X            & C         & X       & C       &       & X           &          & X         & 2018-07-05        \\ \hline
 SuperLU               & BSD      & X          & X            & F77/F95/C & X       & C       & M     &             &          & X         & 2020-10-17        \\ \hline
-TAUCS                 & Own      & X          & X            & C         & X       &         &       & X           &          & X         & 2003-09-04        \\ \hline
-Trilinos/Amesos       & LGPL     & X          &              & C/C++     & X       &         & M     & X           &          & X         & 2017-09-07        \\ \hline
-Trilinos/Amesos2      & BSD      & X          & X            & C++       & X       &         & M     & X           &          & X         & 2017-09-07        \\ \hline
-Y12M                  & ?        & X          &              & F77/F95   & X       &         &       & X           &          & X         & ?                 \\ \hline
 \end{tabular}
    \end{adjustbox}
    \caption{List of some sparse direct solvers from \url{https://docs.google.com/spreadsheets/d/11ESR3uucNvVKEoIcalP9gR7ApaOElLwmE5sAS-VRMOM/edit\#gid=90156307}}
