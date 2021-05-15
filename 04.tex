@@ -275,37 +275,62 @@ In case that r was not already present in the cache, it has to be loaded from me
 There is one difference between the forward and backward substitution in the access pattern to r.
 The forward substituion updates different entries in r, the backward substitution always updates the same entry. The updated values in the forward substitution need to be stored in cache after every update (red text and arrows in Figure \ref{fig:ecm:data}), while the only value updated in the backward substituion is kept in register.
 
+Eight iterations of both forward and backward substitution (1-way unrolled) require sixteen $8$\,B loads (\verb|r[:]| and \verb|l[:]|) and eight $4$\,B loads (\verb'idx[:]').
+On top of that the forward substitution also requires eight $8$\,B stores (\verb'r[:]').
+These loads and stores need $32$ addresses (forward substitution) or $24$ addresses (backward substitution) to be generated, which takes $16$ or $12$ cycles, respectively. We assume all the addresses are generated on ports 2 and 3. The simple AGU on port 7 is not used as we showed in Sections \ref{sec:epm} and \ref{sec:ecm-indirect-daxpy}.
+\todol{use 1 row as an unit of work?}
+
+\todop{
+ops, cycles, normalized \\
+32 24 16 12 16 12 \\
+40 32 20 16 10 8 \\
+88 80 44 40 5.5 5
+}
+
+The floating ponit arithmetics for eight iterations in one column (1-way unrolled) consists of 8 multiplications and 8 additions. This can be done in 8 cycles using the units on ports 0 and 1. The 2- and 8-way unrolled code processes 2 or 8 columns, which require 16 or 64 additions and multiplications respectively. Hence the overlapping part of in-core execution takes 16 cycles for 2-way unrolled code and 64 cycles for 8-way unrolled code.
+
 Unlike in the daxpy case, the amount of data transfered between adjacent cache levels or L1 and registers is different from what is transfered between L3 and memory. We define the work to be for the forward substitution
 \begin{eqnarray}
-   W^{\text{fw}-1}_\text{cache} & = & 0\,\Bw \\
-   W^{\text{fw}-1}_\text{mem}   & = & 0\,\Bw \\
-   W^{\text{fw}-2}_\text{cache} & = & 0\,\Bw \\
-   W^{\text{fw}-2}_\text{mem}   & = & 0\,\Bw \\
-   W^{\text{fw}-8}_\text{cache} & = & 0\,\Bw \\
-   W^{\text{fw}-8}_\text{mem}   & = & 0\,\Bw \\
+   W^{\text{fw}-1}_\text{cache} & = & 224\,\Bw \\
+   W^{\text{fw}-1}_\text{mem}   & = & 96\,\Bw \\
+   W^{\text{fw}-2}_\text{cache} & = & 288\,\Bw \\
+   W^{\text{fw}-2}_\text{mem}   & = & 128\,\Bw \\
+   W^{\text{fw}-8}_\text{cache} & = & 672\,\Bw \\
+   W^{\text{fw}-8}_\text{mem}   & = & 512\,\Bw
 \end{eqnarray}
 and for the backward substitution
 \begin{eqnarray}
-   W^{\text{bw}-1}_\text{cache} & = & 0\,\Bw \\
-   W^{\text{bw}-1}_\text{mem}   & = & 0\,\Bw \\
-   W^{\text{bw}-2}_\text{cache} & = & 0\,\Bw \\
-   W^{\text{bw}-2}_\text{mem}   & = & 0\,\Bw \\
-   W^{\text{bw}-8}_\text{cache} & = & 0\,\Bw \\
-   W^{\text{bw}-8}_\text{mem}   & = & 0\,\Bw
+   W^{\text{bw}-1}_\text{cache} & = & 160\,\Bw \\
+   W^{\text{bw}-1}_\text{mem}   & = & 96\,\Bw \\
+   W^{\text{bw}-2}_\text{cache} & = & 224\,\Bw \\
+   W^{\text{bw}-2}_\text{mem}   & = & 128\,\Bw \\
+   W^{\text{bw}-8}_\text{cache} & = & 608\,\Bw \\
+   W^{\text{bw}-8}_\text{mem}   & = & 512\,\Bw
 \end{eqnarray}
 For details please refer to Figure \ref{fig:ecm:data}.
 
-The inputs for the ECM model are summarized in Table \ref{tab:ecm:data}. The values are normalized for 1 column.
+The inputs for the ECM model are summarized in Table \ref{tab:ecm:data}. The values are for clarity normalized for 1 column.
 
 \begin{table}[!t]
   \centering
-  \begin{tabular}{|l|c|c|c|c|c|c|}
+  \begin{tabular}{|l|c|c|c|c|c|c|c|}
      \hline
-      & forward & backward \\
+     \multicolumn{2}{|c|}{} & \multicolumn{3}{c|}{forward} & \multicolumn{3}{c|}{backward} \\
+     \cline{3-8}
+     \multicolumn{2}{|c|}{} & 1-way & 2-way & 8-way & 1-way & 2-way & 8-way \\
      \hline
-      & 1-way & 2-way & 8-way & 1-way & 2-way & 8-way \\
+     $W_\text{cache}$ & [B] & 224 & 144 & 84 & 160 & 112 & 76 \\
+     $W_\text{mem}$ & [B] & 96 & 64 & 64 & 96 & 64 & 64 \\
      \hline
-     W & 0 & 0 & 0 & 0 & 0 & 0 \\
+     tol & [cy] & 8 & 8 & 8 & 8 & 8 & 8 \\
+     \hline
+     tL1 & [cy] & 16 & 10 & 5.5 & 12 & 8 & 5 \\
+     tL2 & [cy] & 3.5 & 2.25 & 1.3125 & 2.5 & 1.75 & 1.1875 \\
+     tL3 & [cy] & 3.5 & 2.25 & 1.3125 & 2.5 & 1.75 & 1.1875 \\
+     tmem & [cy] & 8.25 & 5.5 & 5.5 & 8.25 & 5.5 & 5.5 \\
+     \hline
+     Pmem & [GB/s] & 16.5 & 16.6 & 14.2 & 14.6 & 15.2 & 13.6 \\
+     Pmem & [GF/s] & 1.18 & 1.84 & 2.7 & 1.46 & 2.16 & 2.86 \\
      \hline
   \end{tabular}
   \caption{\todol{...}}
