@@ -6,10 +6,10 @@ Performance engineering plays an important role in development of scientific sof
 %It is also useful to have realistic expectations about performance given code can achieve.
 While simple code can be often analyzed using intuition and guessing, this is not possible for nontrivial codes. Performance models are helping us to analyze a code by guiding our attention on important features and neglecting unnecessary details.
 
-In this work we analyze forward and backward substitution code used in direct methods for solving sparse linear systems. Due to the fact that part of the algorithm is executed sequentially and part in parallel, the performance predictions are challenging. With our extension to the roofline model we are able to model such code. The predictions are then compared to measurements for a representative set of sparse matrices.
+In this chapter we analyze forward and backward substitution code used in direct methods for solving sparse linear systems. Due to the fact that part of the algorithm is executed sequentially and part in parallel, the performance predictions are challenging. With our extension to the roofline model we are able to model such code. The predictions are then compared to measurements for a representative set of sparse matrices.
 
-Last, the Execution-Cache-Memory (ECM) model is studied as a preparation for future use for modeling of forward and backward substitution.
-Unlike the roofline model, ECM takes into account in-core execution and cache hierarchy, which might allow it more accurate predictions.
+Last, the Execution-Cache-Memory (ECM) model is studied as a theoretical base for use for modeling of forward and backward substitution \todol{in the next chapter}.
+Unlike the roofline model, ECM takes into account deep knowledge of the computer architecture, in particular in-core execution and cache hierarchy, which might allow it more accurate predictions.
 
 %\section{Code parameters}
 %
