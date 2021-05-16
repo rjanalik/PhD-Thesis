@@ -123,16 +123,86 @@ In some cases data are often reused in the computation, thus they can stay in th
 
 In order to improve performance and the ability of the system to be expanded, e.g., in the case of servers often having more than one processor, every processor has its own memory and memory controller. This memory layout is called NUMA (Non-Uniform Memory Access). The benefit of such an architecture is that it increases memory bandwidth, the rate at which data can be read and stored into memory, which prevents a~bottleneck introduced by all the cores accessing the memory and saturating the available bandwidth, resulting in idle cores waiting for data instead of doing useful computation. On the other hand, introducing multiple memory domains creates problems when one processor needs to access data in memory belonging to another processor. This situation is possible but not very efficient, as it increases the load at a single memory controller and, additionally, the data have to be transferred through a link between processors, which can become a bottleneck. The programmer works with a virtual memory spanning all memory domains, so he does not see this underlying complexity, but he should keep this in mind in order to write efficient code. For example, an operating system places memory pages to the physical memory of the processor that writes to the page for the first time, so called first touch. If a single thread initializes all the data that are then accessed in parallel, it might allocate the data in a suboptimal way. If the initialization is performed in parallel, significantly better memory utilization can be achieved.
 
+\begin{table*}[t]
+%\parbox{.7\linewidth}{
+  \footnotesize
+ \centering
+%\resizebox{\textwidth}{!}{%
+ \begin{tabular}{p{1.9cm}llrrrrrrrrr}
+    \hline
+    name      & &  & IVB         & HSW-D      & HSW-S           & BDW           & SKX         & KNL           & ZEN-D        &  ZEN-S         \\
+    \hline
+    \multirow{3}{\linewidth}{processor name} & &  & Intel& Intel & Intel & Intel & Intel & Intel & AMD &  AMD \\
+      & &  & Xeon  & Xeon & Xeon      & Xeon    & Xeon  & Xeon    &
+~~Ryzen 7   &  ~~EPYC      \\
+              & &  &\scriptsize  E5-2660 v2 &\scriptsize  E3-1240 v3
+&\scriptsize  E5-2695 v3      &\scriptsize  E5-2630 v4    &\scriptsize  Gold
+6148   &\scriptsize  Phi 7210      &\scriptsize  1700X      &\scriptsize
+745           \\
+%     processor & &  & Intel Xeon  & Intel Xeon & Intel Xeon      & Intel Xeon    & Intel Xeon  & Intel Xeon    & AMD Ryzen    &  AMD EPYC      \\
+%     name      & &  &  E5-2660 v2 & E3-1240 v3 & E5-2695 v3      & E5-2630 v4    & Gold 6148   & Phi 7210      & 7 1700X      &  745           \\
+    \hline
+    micro     & &  & Ivy Bridge  & Haswell    & Haswell         & Broadwell
+& Skylake     & ~Knigths       & Zen          &  Zen           \\
+    arch.     & &  &             &            &                 &               &             & Landing       & \\
+    \hline
+    freq    & [GHz] & & 2.2      & 3.4        & 2.3             & 2.2           & 2.4         & $\approx$ 1.3 & 3.4          &  2.3           \\
+    cores   &       & & 10       & 4          & 2 $\times$ 7    & 10            & 20          & 64            &   8          &  24            \\
+    ISA     &       & & AVX      & AVX2       & AVX2            & AVX2          & AVX-512     & AVX-512       & AVX2         &  AVX2          \\
+%    sockets &       & 2        & 1          & 2               & 2             & 2           & 1             & 1            &  & 1 \\
+%    \mltwo{NUMA LDs}& 2        & 1          & 2 $\times$ 2    & 2 $\times$ 2  & 2           & 1             & 1            &  & 1 \\
+    \mltwo{NUMA LDs} & & 1       & 1          & 2               & 1             & 1           & 1             & 1            & 4              \\
+    \hline
+    L1 & [KiB]     &  &  32      & 32         & 32              & 32            & 32          & 32            & 32           &  32            \\
+    L2 & [KiB]     &  &  256     & 256        & 256             & 256           & 1024        & 1024          & 512          &  512           \\
+    L3 & [MiB]     &  &  25      & 8          & 2 $\times$ 17.5 & 25            & 28          & -             & 2 $\times$ 8 &  8 $\times$ 8 \\
+    \hline
+%    copy bw. & [GB/s] & 41.2   & 26.6            & 22.6       & 31.3 & ?? &  75.9 & 30.2 & 212 \\ % complete socket/cod
+%    read bw. & [GB/s] & 44.3   & 30.9            & 23.6       & 33.7 & ?? &  74.2 & 32.5 & 231 \\ % complete socket/cod
+    \mlfour{scalar read bw.}   &     &          &  \\
+    ~1 core  & [GB/s]  &&  9.5 & 16.6 & 12.1 & 11.5 &  14.5 &  8.5 & 19.3 & 19.3  \\
+    ~NUMA LD & [GB/s]  && 44.4 & 22.7 & 31.2 & 56.3 & 108.0 & 75.2 & 33.7 & 37.6  \\
+    \hline
+    \mlfour{scalar ADD+MUL/FMA} &&& \\
+    ~1 core  & [F/cy] &&  2 &  4 &  4 &  4 &  4 &   4 &  4 &  4 \\
+    ~NUMA LD & [F/cy] && 20 & 16 & 28 & 40 & 80 & 256 & 32 & 24 \\
+    \hline
+    \mlfour{scalar machine balance $B_m$} &  &         & \\
+    ~1 core  & [B/F] && 2.2 & 1.2 & 1.3 & 1.3 & 1.5 & 1.6 & 1.4 & 2.1 \\
+    ~NUMA LD & [B/F] && 1.0 & 0.4 & 0.5 & 0.6 & 0.6 & 0.2 & 0.3 & 0.7 \\
+    \hline
+\\[0.01em]
+  \end{tabular}
+  \caption{Details of Evaluated Hardware Systems.
+% ISA Lists the Latest Extension Supported by the Processor.
+% Read Memory Bandwidth, Floating Point Instructions per Cycle (ADD+MULL and
+% FMA Instructions), and Machine Balance is Reported for Scalar Execution.
+KNL's Bandwidth Numbers are for DDR Memory.}
+% ECM: 2 cy L1/L2 bei HSW/BDW entgegen der Doku
+% STREAM:
+% read = summation
+% KNL: no-nt, prefetch not explicitly disabled
+% ZEN: no-nt, AVX2, only even cores
+% HSW2: no-nt, avx2
+% HSW: no-nt, avx2
+% IVB: no-nt,
+  \label{tab:hw}
+%} % from https://tex.stackexchange.com/a/27105
+%}
+\end{table*}
+
 Modern server processors contain a lot of cores (usually 14 or more) and with so many cores accessing the memory it is very easy to saturate the memory bandwidth. Intel solves this problem by splitting the memory and L3 cache between two NUMA domains and use second memory controller. This reduces the number of cores using the same memory controller and doubles the memory bandwidth. Intel calls this architecture Cluster-on-Die (CoD).
 %Cluster-on-Die (CoD) solves a problem with saturation of memory bandwidth on server CPUs from Intel. These CPUs have many cores (14 or more), but only few can are able to saturate the memory bandwidth. When CoD is enabled, the cores, memory and L3 cache are split to two NUMA domains and second memory controller is used. This reduces the number of cores using the same memory controller and doubles the memory bandwidth.
 
 Peak performance of a CPU is a theoretical maximum the processor can\linebreak achieve. It requires utilization of all cores running at the base frequency and every core achieving the highest possible floating point throughput.
 Evaluation of the peak performance of modern CPUs is a very intricate process, requiring one to consider a multitude of factors. It depends on an instruction set and the number and type of units in a core. A detailed analysis of different Intel architectures can be found in \cite{dolbeau-2018}.
-As an example we can analyze Intel Xeon E5-2695 v3. This is a 14 core CPU with Haswell architecture and base frequency 2.3\,GHz (detailed description is in Table \ref{tab:m:list}). The Haswell architecture supports AVX2 instructions (8 FLOPs per instruction) and can execute two instructions per cycle (ports 1 and 5), resulting in a total of 16 FLOPs per cycle per core.
+As an example we can analyze Intel Xeon E5-2695 v3. This is a 14 core CPU with Haswell architecture and base frequency 2.3\,GHz (detailed description is in Table \ref{tab:hw}). The Haswell architecture supports AVX2 instructions (8 FLOPs per instruction) and can execute two instructions per cycle (ports 1 and 5), resulting in a total of 16 FLOPs per cycle per core.
 Consequently, the peak performance is $P_{peak} = 2.3 * 14 * 8 * 2 = 515.2\,\textrm{GFLOPs/s}$.
 
 The theoretical memory bandwidth can be found in a datasheet, but the attainable bandwidth of a specific application depends on the access patters, number of threads used, whether NUMA is used, and other factors. Using the theoretical bandwidth is thus not precise for purposes of performance analysis.
-A more realistic bandwidth can be obtained using microbenchmarks, ideally with similar memory access patterns as the application. \texttt{likwid-bench} from the LIKWID toolbox is a popular application for benchmarking different kernels.
+A more realistic bandwidth can be obtained using microbenchmarks, ideally with similar memory access patterns as the application.
+%\texttt{likwid-bench} from the LIKWID toolbox is a popular application for benchmarking different kernels.
+In the following section we will review a performance tool called LIKWID which supports software developers, benchmarkers and application users to model and get the best performance on a given system. We will use this tool later for performance modeling for a sparse factorization solver.
 
 \section{Performance modelling using the LIKWID Tools}
 \label{sec:likwid}

@@ -23,12 +23,6 @@
 % \end{table}
 \begin{table}[!b]
   \centering
-  \caption{Code balance $B_c$ of forward/backward substitution for
-unrolling factors $u$ when
-the factor $L$ must be fetched from memory.
-% the factor $L$ exceeds the LLC and must be fetched from memory.
-Values depend on actual panel size $s$ and possible cache reuse.}
-  \label{tab:mrm:bc}
   \begin{tabular}{ll|rrrc|rrr}
   \hline
   substitution && \multicolumn{3}{c}{forward}  && \multicolumn{3}{c}{backward} \\
@@ -38,6 +32,12 @@ Values depend on actual panel size $s$ and possible cache reuse.}
   $B_c$  &[B/F]& 4 - 6    & 4 - 5 & 4 - 4.25 & & 4  - 6  & 4 - 5 & 4 - 4.25 \\
   \hline
   \end{tabular}
+  \caption{Code balance $B_c$ of forward/backward substitution for
+unrolling factors $u$ when
+the factor $L$ must be fetched from memory.
+% the factor $L$ exceeds the LLC and must be fetched from memory.
+Values depend on actual panel size $s$ and possible cache reuse.}
+  \label{tab:mrm:bc}
 \end{table}
 
 %xx \begin{table*}[!t]
@@ -105,79 +105,9 @@ Values depend on actual panel size $s$ and possible cache reuse.}
 %xx   \end{tabular}
 %xx %} % from https://tex.stackexchange.com/a/27105
 %xx \end{table*}
-\begin{table*}[!t]
-%\parbox{.7\linewidth}{
-  \caption{Details of Evaluated Hardware Systems.
-% ISA Lists the Latest Extension Supported by the Processor. 
-% Read Memory Bandwidth, Floating Point Instructions per Cycle (ADD+MULL and
-% FMA Instructions), and Machine Balance is Reported for Scalar Execution.
-KNL's Bandwidth Numbers are for DDR Memory.}
-% ECM: 2 cy L1/L2 bei HSW/BDW entgegen der Doku 
-% STREAM:
-% read = summation
-% KNL: no-nt, prefetch not explicitly disabled
-% ZEN: no-nt, AVX2, only even cores
-% HSW2: no-nt, avx2
-% HSW: no-nt, avx2
-% IVB: no-nt, 
-  \label{tab:hw}
-  \footnotesize
- \centering
-%\resizebox{\textwidth}{!}{%
- \begin{tabular}{p{1.9cm}llrrrrrrrrr}
-    \hline
-    name      & &  & IVB         & HSW-D      & HSW-S           & BDW           & SKX         & KNL           & ZEN-D        &  ZEN-S         \\
-    \hline                                                      
-    \multirow{3}{\linewidth}{processor name} & &  & Intel& Intel & Intel & Intel & Intel & Intel & AMD &  AMD \\
-      & &  & Xeon  & Xeon & Xeon      & Xeon    & Xeon  & Xeon    &
-~~Ryzen 7   &  ~~EPYC      \\
-              & &  &\scriptsize  E5-2660 v2 &\scriptsize  E3-1240 v3
-&\scriptsize  E5-2695 v3      &\scriptsize  E5-2630 v4    &\scriptsize  Gold
-6148   &\scriptsize  Phi 7210      &\scriptsize  1700X      &\scriptsize
-745           \\
-%     processor & &  & Intel Xeon  & Intel Xeon & Intel Xeon      & Intel Xeon    & Intel Xeon  & Intel Xeon    & AMD Ryzen    &  AMD EPYC      \\
-%     name      & &  &  E5-2660 v2 & E3-1240 v3 & E5-2695 v3      & E5-2630 v4    & Gold 6148   & Phi 7210      & 7 1700X      &  745           \\
-    \hline                                                      
-    micro     & &  & Ivy Bridge  & Haswell    & Haswell         & Broadwell
-& Skylake     & ~Knigths       & Zen          &  Zen           \\
-    arch.     & &  &             &            &                 &               &             & Landing       & \\
-    \hline                                                    
-    freq    & [GHz] & & 2.2      & 3.4        & 2.3             & 2.2           & 2.4         & $\approx$ 1.3 & 3.4          &  2.3           \\
-    cores   &       & & 10       & 4          & 2 $\times$ 7    & 10            & 20          & 64            &   8          &  24            \\
-    ISA     &       & & AVX      & AVX2       & AVX2            & AVX2          & AVX-512     & AVX-512       & AVX2         &  AVX2          \\
-%    sockets &       & 2        & 1          & 2               & 2             & 2           & 1             & 1            &  & 1 \\
-%    \mltwo{NUMA LDs}& 2        & 1          & 2 $\times$ 2    & 2 $\times$ 2  & 2           & 1             & 1            &  & 1 \\
-    \mltwo{NUMA LDs} & & 1       & 1          & 2               & 1             & 1           & 1             & 1            & 4              \\
-    \hline                                                    
-    L1 & [KiB]     &  &  32      & 32         & 32              & 32            & 32          & 32            & 32           &  32            \\
-    L2 & [KiB]     &  &  256     & 256        & 256             & 256           & 1024        & 1024          & 512          &  512           \\
-    L3 & [MiB]     &  &  25      & 8          & 2 $\times$ 17.5 & 25            & 28          & -             & 2 $\times$ 8 &  8 $\times$ 8 \\ 
-    \hline
-%    copy bw. & [GB/s] & 41.2   & 26.6            & 22.6       & 31.3 & ?? &  75.9 & 30.2 & 212 \\ % complete socket/cod
-%    read bw. & [GB/s] & 44.3   & 30.9            & 23.6       & 33.7 & ?? &  74.2 & 32.5 & 231 \\ % complete socket/cod
-    \mlfour{scalar read bw.}   &     &          &  \\
-    ~1 core  & [GB/s]  &&  9.5 & 16.6 & 12.1 & 11.5 &  14.5 &  8.5 & 19.3 & 19.3  \\
-    ~NUMA LD & [GB/s]  && 44.4 & 22.7 & 31.2 & 56.3 & 108.0 & 75.2 & 33.7 & 37.6  \\
-    \hline
-    \mlfour{scalar ADD+MUL/FMA} &&& \\
-    ~1 core  & [F/cy] &&  2 &  4 &  4 &  4 &  4 &   4 &  4 &  4 \\
-    ~NUMA LD & [F/cy] && 20 & 16 & 28 & 40 & 80 & 256 & 32 & 24 \\
-    \hline
-    \mlfour{scalar machine balance $B_m$} &  &         & \\
-    ~1 core  & [B/F] && 2.2 & 1.2 & 1.3 & 1.3 & 1.5 & 1.6 & 1.4 & 2.1 \\
-    ~NUMA LD & [B/F] && 1.0 & 0.4 & 0.5 & 0.6 & 0.6 & 0.2 & 0.3 & 0.7 \\
-    \hline
-\\[0.01em]
-  \end{tabular}
-%} % from https://tex.stackexchange.com/a/27105
-%}
-\end{table*}
 %\parbox{.25\linewidth}{ 
 %\begin{SCtable}[][t]
 \begin{table*}[tp]
-  \caption{Dimension ($n$) and number of nonzeros ($\text{nnz}$) for $A$ and 
-$L$ for all benchmark matrices.}
-  \label{tab:m:list}
   \centering
   \small
   \begin{tabular}{ll|rrrrrr}
@@ -199,6 +129,9 @@ $L$ for all benchmark matrices.}
   bddc   && $   750 \times 10^3$ && $ 31 \times 10^6$ && $1\,590 \times 10^6$  \\ % mat\_Kii\_sd22\_size750141\_load2\_newton1
   \hline
   \end{tabular}
+  \caption{Dimension ($n$) and number of nonzeros ($\text{nnz}$) for $A$ and
+$L$ for all benchmark matrices.}
+  \label{tab:m:list}
 %}\vfill{}
 %\end{table}
 %\end{SCtable}
