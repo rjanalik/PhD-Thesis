@@ -138,18 +138,18 @@ $L$ for all benchmark matrices.}
 \end{table*}
 
 For our performance predictions, we apply the roofline model~(\cite{williams-2009}).
-The model takes into account the attainable memory bandwidth as well as 
+As mentioned before, the model takes into account the attainable memory bandwidth as well as
 the
 peak floating
 point performance of the processor and 
-\uwave{%\sout{correlates} 
+%\uwave{%\sout{correlates}
 relates these hardware capabilities %\sout{with}
 to
-the requirements of the code.}
+the requirements of the code.
+%}
 %mw2018-06-07: \mycomment{OR: was heisst dieses? MW: besser? OR: Etwas. Aber inwiefern wird
 %mw2018-06-07: eine Beziehung zu den Anforderungen hergestellt? MW: Die Code-Balance $B_c$ ist
 %mw2018-06-07: die Anforderung des Codes und $B$ bzw.\ $P_\text{max}$ stammt von der Hardware.}
-
 It can be written as
 %
 \be
@@ -163,7 +163,7 @@ depends already on the floating point characteristics of the code and the
 processor and does not represent the peak floating point performance as it can
 be obtained from a processor's data sheet. 
 If a processor supports vectorized FMA instructions, but
-only vectorized add and multiply instructions are used, then $P_\text{max}$ is
+only vectorized add or multiply instructions are used, then $P_\text{max}$ is
 halved.
 Using scalar instructions instead of the AVX vectorized counterparts reduces
 $P_\text{max}$ further by a factor of four.
