@@ -1,15 +1,19 @@
-\chapter{Performance Modeling}
+\chapter{Performance Modeling of Sparse Factorization Solvers}
 
 %{\color{blue} juraj: introduction to performance modelling: know the max performance limit before doing further optimizations, what is the hw utilization of the code?}
 
 Performance engineering plays an important role in development of scientific software. In order to achieve optimal performance, one needs to analyze the code and computer architecture to identify bottlenecks and possibilities for optimization. This helps us spend our effort only where there is a potential for improvement.
 %It is also useful to have realistic expectations about performance given code can achieve.
 While simple code can be often analyzed using intuition and guessing, this is not possible for nontrivial codes. Performance models are helping us to analyze a code by guiding our attention on important features and neglecting unnecessary details.
+%
+%In this chapter we analyze forward and backward substitution code used in direct methods for solving sparse linear systems. Due to the fact that part of the algorithm is executed sequentially and part in parallel, the performance predictions are challenging. With our extension to the roofline model we are able to model such code. The predictions are then compared to measurements for a representative set of sparse matrices.
+%
+%Last, the Execution-Cache-Memory (ECM) model is studied as a theoretical base for use for modeling of forward and backward substitution \todol{in the next chapter}.
+%Unlike the roofline model, ECM takes into account deep knowledge of the computer architecture, in particular in-core execution and cache hierarchy, which might allow it more accurate predictions.
+%
+This chapter reviews two performance models we will later use for modeling forward and backward substitution code used in sparse factorization solvers.
 
-In this chapter we analyze forward and backward substitution code used in direct methods for solving sparse linear systems. Due to the fact that part of the algorithm is executed sequentially and part in parallel, the performance predictions are challenging. With our extension to the roofline model we are able to model such code. The predictions are then compared to measurements for a representative set of sparse matrices.
-
-Last, the Execution-Cache-Memory (ECM) model is studied as a theoretical base for use for modeling of forward and backward substitution \todol{in the next chapter}.
-Unlike the roofline model, ECM takes into account deep knowledge of the computer architecture, in particular in-core execution and cache hierarchy, which might allow it more accurate predictions.
+The chapter is organized as follows. In Section \ref{sec:arch} computer architecture is briefly introduced. Next, Section \ref{sec:likwid} reviews command line tools called LIKWID. These tools are useful for various performance engineering tasks, e.g. determining the hardware and its specification, micro-benchmarking and profiling. After that, two established performance models are reviewed: Berkeley Roofline model in Section \ref{sec:roofline} and Erlangen Execution-cache-memory model in Section \ref{sec:ecm}. Finally in Section \ref{sec:ecm-application} Execution-cache-memory model is used to analyze performance of two simple computational kernels. Models of these two kernels will be later used as a base for modeling sparse triangular solve.
 
 %\section{Code parameters}
 %
@@ -66,6 +70,19 @@ Unlike the roofline model, ECM takes into account deep knowledge of the computer
 %If $B_c < B_m$ then the code’s performance is limited by the max performance, it is compute bound. Optimizing memory access of such code does not improve performance. One should focus on optimizing computations, for example using vector instructions as much as possible.
 %If $B_c > B_m$ then the code’s performance is limited by the memory bandwidth, hence it is memory bound. Here performance can be improved by optimizing memory access pattern, for example by reusing data loaded to cache us much as possible, so they don't have to be loaded from memory.
 
+\section[Introduction --- Memory Hierarchies, Autotuning, and Solvers]{Introduction --- Exploiting the Memory Hierarchies, Autotuning Research, and Sparse Factorization Solvers}
+\label{sec:modeling-intro}
+
+Modern microprocessors are highly sensitive to the spatial and temporal locality of data. Regardless of the programming model, performance of future parallel applications will crucially depend on the quality of the generated code which is traditionally the responsibility of the compiler. The compiler selects which optimization to perform in terms of, e.g., loop-unrolling, out-of-order instruction capabilities, or register scheduling. Choosing parameters for these optimizations, and selecting among alternative implementations, is the key to efficient use of the underlying hardware. The resulting space of optimization alternative is large.
+
+Autotuner projects such as, e.g. ATLAS~\footnote{Automatically Tuned Linear Algebra Software} (\cite{atlas-hp,whaley04,WN147}), FLAME~\footnote{Formal Linear Algebra Methods Environment} (\cite{Flame:2005}), and OSKI~\footnote{Optimized Sparse Kernel Interface} (\cite{Demmel2005:selftune:linalg,Vuduc2003:thesis,Lee2004:spmv:symm}),
+gained popularity as a very effective approach for producing high-quality portable scientific code. In these projects, the set of library kernels is automatically optimized by generating many variants of a given kernel and by running that kernel in a target platform. The search process may take hours to complete on the platform. However, it needs to be performed only once when the library is installed on the platform. The resulting codes might be
+several times faster than naive implementations.
+
+As an example, reordering the vertices and elements in a mesh can have a significant impact on performance. Graph and hypergraph techniques have been used in this area to automatically generate highly efficient, platform-adapted implementations of {\sl sparse matrix kernels}. These kernels are frequently computational bottlenecks in diverse applications in computational science and engineering applications. However, the task of extracting near-peak performance on modern cache-based superscalar machines has proven to be extremely difficult. Many sparse matrices from applications have a natural block structure that can be exploited by storing columns as a collection of blocks and thus accelerating the performance of sparse matrix kernels significantly. It is shown in recent projects such as \cite{BEBOP2006,Vuduc2003:thesis} \todol{BEBOP2006 missing} that it is possible to build an automatic tuning system to generate implementations whose performances exceed that of the best hand-tuned code. The algorithmic methods behind these research projects are based on reordering methods on the discrete graph structure in order to maximize the block structure and, thus, obtaining high performance by maximizing spatial and temporal locality.
+
+\todop{update references to newer}
+
 \section{Computer architecture}
 \label{sec:arch}
 
@@ -91,7 +108,7 @@ Another possibility for parallel computations is implementing instructions that 
 Another CPU optimization focuses on computational pattern, where there is multiplication followed by addition. An example of such an operation can be found in many compute kernels in various scientific applications. In order to make these computations more efficient, many modern CPU architectures compute operations similar to $a=a+b*c$ in one instruction. This type of instruction is called fused multiply-add (FMA).
 The new version of an AVX extension, called AVX2, adds support for vectorized FMA operations, effectively performing 8 operations in a single instruction using double precision (16 operations in single precision).
 
-\begin{figure}[ht]
+\begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{images/haswell_microarchitecture.png}
   \caption{CPU core pipeline of Haswell microarchitecture. From \cite{intel-orm-2016}.}
@@ -117,7 +134,8 @@ Consequently, the peak performance is $P_{peak} = 2.3 * 14 * 8 * 2 = 515.2\,\tex
 The theoretical memory bandwidth can be found in a datasheet, but the attainable bandwidth of a specific application depends on the access patters, number of threads used, whether NUMA is used, and other factors. Using the theoretical bandwidth is thus not precise for purposes of performance analysis.
 A more realistic bandwidth can be obtained using microbenchmarks, ideally with similar memory access patterns as the application. \texttt{likwid-bench} from the LIKWID toolbox is a popular application for benchmarking different kernels.
 
-\section{Performance Modelling using the LIKWID tools}
+\section{Performance modelling using the LIKWID Tools}
+\label{sec:likwid}
 
 LIKWID ("Like I Knew What I'm Doing") (\cite{likwid-2010-arxiv}) is set of command line tools to support optimization and performance engineering.
 It consists of tools that display thread and cache topology, discover CPU and memory performance using benchmarks, alter CPU frequency and other settings, and allow performance evaluation of user applications.
@@ -135,7 +153,6 @@ Thread affinity is crucial for performance of scientific applications. Knowing t
 Pinning threads make performance measurements more consistent between runs and usually also improve performance bacause the threads are not assigned to cores randomly. This is very important when multiple NUMA domains are used to minimize the data traffic between NUMA domains.
 %
 \texttt{likwid-pin} can be used with all applications based on POSIX threads, which include most of OpenMP implementations. The pinning is achieved by overloading the \texttt{pthread\_create} call and pinning every thread upon creation.
-
 Some OpenMP implementations create shepherd threads. These threads do not execute any user code and therefore should not be pinned. This is achieved by providing a mask or using one of the predefined masks for known implementations.
 
 \subsection*{likwid-perfctr}
@@ -163,6 +180,7 @@ To be sure the benchmark measures the proper thing, the code most likely has to 
 It contains a set of various kernels, for example, dot product, daxpy, load, store, copy, and many others. It allows the user to define his own kernels. The kernels are defined as text files that are compiled during compilation of the suite. And the suite takes care of everything else: running the kernel on a problem of a given size, on a given number of threads, and presenting results to the user.
 
 \section[Berkeley Roofline model]{Berkeley Roofline model - A Performance Model for Multicore Architectures}
+\label{sec:roofline}
 
 Programmers often do not need an understanding of every detail of CPU design. They should focus on general concepts rather than details of every available architecture. A tool that can provide a simplified model of the CPU hiding most of the architecture specific complexity is very valuable. Probably the most popular tool was popularized by \cite{williams-2009}. This tool is called the Roofline model.
 It became very popular because it hides most of the CPU complexity and presents an intuitive and easy to use model that can guide performance engineering.
@@ -176,7 +194,7 @@ It became very popular because it hides most of the CPU complexity and presents 
 
 The model analyzes bottlenecks during execution on a given hardware.
 A compute kernel reads data from memory, does some computations, and writes the results back to memory. Let's denote $W$ as the size of data read or written to memory in Bytes and $F$ the number of operations the kernel computes. Usually we are interested in floating point operations (FLOPs), additions and multiplications, but we could generalize this to any kind of operations.
-Let's assume the machine has peak performance $P_{peak}$\,FLOPs/s and peak memory bandwidth $b_s$\,B/s.
+Let's assume the machine has peak performance $P_{peak}$ measured in [FLOPs/s] and peak memory bandwidth $b_s$ measured in [B/s].
 It is reasonable to expect the processor needs $F/P_{peak}$\,s to finish all computations and it needs $W/b_s$\,s for the memory transfer (reading and writing data). If we assume the computation and memory transfer can perfectly overlap, the total runtime is equal to the one that take longer:
 \begin{equation}
     T = \max(F/P_{peak}, W/b_s).
@@ -188,12 +206,12 @@ Let's also define arithmetic intensity as the number of operations per one byte 
    P = min(P_{peak}, I \cdot b_s). \label{eq:roofline}
 \end{equation}
 
-Sometimes it is easier working with code balance instead of arithmetic intensity. Let's define code balance as the number of transferred bytes per one operation,\\ $B_c=W/F=I^{-1}$. Then we can write (\ref{eq:roofline}) as
+Sometimes it is easier working with code balance instead of arithmetic intensity. Let's define code balance as the number of transferred bytes per one operation, $B_c=W/F=I^{-1}$. Then we can write (\ref{eq:roofline}) as
 \begin{equation}
    P = min(P_{peak}, b_s/B_c). \label{eq:roofline_balance}
 \end{equation}
 
-\begin{figure}[ht]
+\begin{figure}[t]
    \centering
    \includegraphics[width=0.7\textwidth,clip=true]{images/roofline/roofline_emmy_Xeon2660v2_naive.pdf}
    \caption{Roofline model of Intel Xeon E5-2660 v2 (blue) and three generic kernels (red, orange, and brown).}
@@ -217,12 +235,12 @@ And the orange kernel (arithmetic intensity $4 \approx B_m^{-1}$) is between the
 %Performance of any kernel on the right side of this point ($B_c < B_m$ or $I > B_m^{-1}$) is limited by $P_{max}$. We call such kernel compute bound.
 %Performance of any kernel on the left side of this point ($B_c > B_m$ or $I < B_m^{-1}$) is limited by $b_s$. We call such kernel memory bound.
 
-\subsection{Ceilings}
+\subsection{Roofline Ceilings}
 
-Measured performance of a kernel is often far below the roofline. The CPU and memory architecture utilize several paradigms that improve the performance, as described in section \ref{sec:arch}. To get close to the maximum performance the kernel needs to exploit these. Failing to do so results in a huge performance penalty.
+For realistic applications the measured performance of a kernel is often far below the roofline. The CPU and memory architecture utilize several paradigms that improve the performance, as described in section \ref{sec:arch}. To get close to the maximum performance the kernel needs to exploit these. Failing to do so results in a huge performance penalty.
 For both bounds the roofline model takes into account, in-core execution and memory bandwidth, we can show ceilings showing impact on performance when certain optimizations are not implemented.
 
-\subsubsection*{In-core ceilings}
+\subsubsection*{In-core Roofline Ceilings}
 
 %\todop{
 %vectorization
@@ -230,7 +248,7 @@ For both bounds the roofline model takes into account, in-core execution and mem
 %FMA
 %}
 
-As discussed in section \ref{sec:arch} processors achieves peak performance when all cores are utilized and all of them are using only the instructions that perform the most operations. These are usually the vector instructions AVX on Haswell architecture and newer AVX2 (FMA operation applied on a vector).
+As discussed in section \ref{sec:arch} processors achieve peak performance when all cores are utilized and all of them are using only the instructions that perform the most operations. These are usually the vector instructions AVX on Haswell architecture and newer AVX2 (FMA operation applied on a vector).
 If the compiler is unable to use these instructions, it comes with a huge penalty in performance. If scalar instructions are used, only 1/4 of peak performance can be achieved. If FMA is not used, performance drops to 1/2. And if neither AVX nor FMA is used, then we can expect only 1/8 of peak performance.
 
 %In kernels like dot product, there is often multiplication followed by addition. To make these computations more efficient, many modern CPU architectures compute operations similar to $a=a+b*c$ in one instruction. This type of instructions is called fused multiply-add (FMA).
@@ -270,14 +288,14 @@ Note that both algorithms use only additions and no multiplications, so FMA is n
 Visualization of some in-core ceilings is given in Figure \ref{fig:roofline_emmy_core-ceilings}.
 %\todol{Not all ceilings are shown in this graph, for example the ceiling with AVX and without FMA (like in the first code snippet) is missing.}
 
-\begin{figure}[ht]
+\begin{figure}[t]
    \centering
    \includegraphics[width=0.7\textwidth,clip=true]{images/roofline/roofline_emmy_Xeon2660v2_core-ceilings.pdf}
-   \caption{Roofline model of Intel Xeon E5-2660 v2 with various in-core ceilings for 1 and 10 cores.}
+   \caption{Berkeley Roofline model of Intel Xeon E5-2660 v2 with various in-core ceilings for 1 and 10 cores.}
   \label{fig:roofline_emmy_core-ceilings}
 \end{figure}
 
-\subsubsection*{Bandwidth ceilings}
+\subsubsection*{Bandwidth Roofline Ceilings}
 
 %\todop{
 %prefetching?
@@ -291,7 +309,7 @@ When NUMA is used, there is a memory controller at every NUMA domain. If all dat
 
 In Figure \ref{fig:roofline_emmy_memory-ceilings} we can see the effect of lower bandwidth when single core is used on the roofline model. As the bandwidth is lower, the corresponding line moves down. Note also the intersection of the horizontal and skewed line. It moved from arithmetic intensity 4\,F/B to about 16\,F/B, so a kernel that is compute bound on 10 cores could become memory bound on 1 core.
 
-\begin{figure}[ht]
+\begin{figure}[t]
    \centering
    \includegraphics[width=0.7\textwidth,clip=true]{images/roofline/roofline_emmy_Xeon2660v2_memory-ceilings.pdf}
    \caption{Roofline model of Intel Xeon E5-2660 v2 with bandwidth ceilings for 1 and 10 cores.}
@@ -300,7 +318,7 @@ In Figure \ref{fig:roofline_emmy_memory-ceilings} we can see the effect of lower
 
 As it is not possible reading data from memory using one thread and using all available threads for computations or vice versa, we can combine Figures \ref{fig:roofline_emmy_core-ceilings} and \ref{fig:roofline_emmy_memory-ceilings}. The roofline model with both in-core and bandwidth ceilings is shown in Figure \ref{fig:roofline_emmy_all-ceilings}.
 
-\begin{figure}[ht]
+\begin{figure}[t]
    \centering
    \includegraphics[width=0.7\textwidth,clip=true]{images/roofline/roofline_emmy_Xeon2660v2_all-ceilings.pdf}
    \caption{Roofline model of Intel Xeon E5-2660 v2 with both in-core and bandwidth ceilings.}
@@ -356,14 +374,16 @@ As it is not possible reading data from memory using one thread and using all av
 %%\end{itemize}
 %%}
 
-\section{The Erlangen Execution-cache-memory model}
+\section{Erlangen Execution-cache-memory model}
+\label{sec:ecm}
 
 The Roofline model is a simple model
 for performance prediction in the saturated case.
 Hereby it is assumed code is limited by floating point performance or by the
 memory bandwidth.
 The ECM performance model (\cite{treibig-2010-ecm,hager-2012-ecm}) is a refinement
-of the Roofline model. 
+of the Roofline model.\footnote{For further details regarding the ECM model refer
+to~\cite{stengel-2015}.}
 In contrast it allows a performance prediction on the single core level as well
 as a scaling prediction over the socket.
 The model takes into account the duration of the code execution inside the core
@@ -431,20 +451,17 @@ As this is beyond the scope of the ECM model, typically, a microbenchmark
 resembling the used access pattern by the code under investigation is used
 to measure the attainable bandwidth and use it as input for the model.
 
-\section{...}
+\section{ECM Model Application}
+\label{sec:ecm-application}
 
-\todop{why daxpy}
-\todop{merge daxpy and indexed daxpy}
-
-\subsection{ECM application -- DAXPY}
+\subsection{DAXPY vector addition}
 \label{sec:epm}
 
 %{\color{blue} juraj: what are the limitations of the roofline? e.g. cannot model bottlenecks beyond peak perf. or memory bandwidth (useful paper https://dl.acm.org/doi/pdf/10.1145/2751205.2751240); short discussion about where Roofline/ECM models were applied and how accurate they predicted the performance compared to experimental measurements; before introducing ECM you probably need to write something about cache hierarchy and instruction pipelines, load/store instructions and their latency/throughput}
 
-In the following text we give a brief introduction to the model by analyzing a
+In the following text we give a brief introduction to the ECM model by analyzing a
 simple daxpy-like kernel on the HSW-S system, whose processor is based on the Intel Haswell
-microarchitecture. For further details regarding the ECM model refer
-to~\cite{stengel-2015}.  The daxpy kernel to be analyzed is
+microarchitecture. The daxpy kernel to be analyzed is
 %
 \begin{lstlisting}
 for (int i = 0; i < N; ++i) 
@@ -472,7 +489,7 @@ for (int i = 0; i < N; i += 4)
 %generated loop performs $16$ iterations of the original kernel.
 %
 For easier modeling, we take as many iterations into account as are needed to
-process a whole cache line.
+process a whole cache line\footnote{On Intel architectures, the length of the cache line is 64\,B.}.
 Hence, for the daxpy kernel with double-precision floating point numbers the
 work package we model is eight iterations (or two iterations of the unrolled loop).
 %
@@ -493,7 +510,7 @@ the core we assume all operands reside in the L1 cache.
 %  \label{fig:ports}
 %\end{figure}
 
-\begin{figure}[tp]
+\begin{figure}[t]
   \centering
   \includegraphics[width=0.42\textwidth,clip=true]{images/ecm-hsw-daxpy}
   \caption{Run time contributions of different execution ports and cache/memory
@@ -502,9 +519,9 @@ seem to be executed on ports~$2$ and~$3$.}
   \label{fig:daxpy:ecm}
 \end{figure}
 
-\begin{figure}[tp]
+\begin{figure}[t]
   \centering
-  \includegraphics[width=0.49\textwidth,clip=true]{images/daxpy-bw-hasep1-f-2_3-w-cy}
+  \includegraphics[width=0.60\textwidth,clip=true]{images/daxpy-bw-hasep1-f-2_3-w-cy}
   \caption{Bandwidth and duration of 8 iterations, i.\,e.,\ two iterations of the
 compiler generated loop, for the daxpy kernel on HSW-S. Note that the total
 working set required for vectors
@@ -577,7 +594,7 @@ This results in a corrected
    t_\text{ol} = 3\,\cyw
 \ee
 %
-with $P_\text{L1} = 147.2$\,GB/s, which is in line with the measurements.
+with $P_\text{L1} = 147.2$\,GB/s, which is in line with the measurements as shown in Figure~\ref{fig:daxpy:perf}.
 
 
 Modeling the performance when data reside in different cache levels from L1
@@ -648,10 +665,10 @@ t_\text{L3} + t_\text{mem})} f.
 %
 This leads to $P_\text{mem} = 14.5$\,GB/s. 
 
-\subsection{ECM -- Indirect DAXPY}
+\subsection{Indirect DAXPY}
 \label{sec:ecm-indirect-daxpy}
 
-Indirect DAXPY is similar to the code analyzed in section \ref{sec:epm}, with the difference of indirect access to the vector \verb|r|.
+Indirect DAXPY is similar to the code analyzed in section \ref{sec:epm}, with the difference of indirect access \verb|idx| to the vector \verb|r|.
 
 %
 \begin{lstlisting}
@@ -683,7 +700,7 @@ for (int i = 0; i < N; i += 4)
 For the ECM model we determine the duration of the execution of the code inside
 the core under the assumption all operands reside in L1 cache.
 
-\begin{figure}[tp]
+\begin{figure}[t]
   \centering
   \includegraphics[width=0.56\textwidth,clip=true]{images/ecm-hsw-daxpy-indirect}
   \caption{Run time contributions of different execution ports and cache/memory
@@ -691,9 +708,9 @@ hierarchy levels for eight iterations of the indirect daxpy kernel on HSW-S (Has
   \label{fig:daxpy-indirect:ecm}
 \end{figure}
 
-\begin{figure}[tp]
+\begin{figure}[t]
   \centering
-  \includegraphics[width=0.49\textwidth,clip=true]{images/daxpy-indirect-bw-hasep1-f-2_3-w-cy}
+  \includegraphics[width=0.60\textwidth,clip=true]{images/daxpy-indirect-bw-hasep1-f-2_3-w-cy}
    \caption{Bandwidth and duration of 8 iterations, i.\,e.,\ two iteration of the
 compiler generated loop, for the indirect daxpy kernel on HSW-S.}
   \label{fig:daxpy-indirect:perf}
@@ -809,7 +826,7 @@ However, this bandwidth is practically never reached and depends strongly on the
 access pattern used.
 This is caused by the organization of the memory subsystem, where e.\,g.\ banking
 conflicts and DRAM page misses incur performance.
-With detailed knowledge about the internals of the (closed IP) memory controller
+With detailed knowledge about the internals of the memory controller
 (scheduling strategies, thresholds for strategy switching, ...) and DRAM modules
 this could also be modeled, which is far from being trivial (\cite{jacob-2007}).
 As this is beyond the scope of the ECM model typically a micro benchmark
