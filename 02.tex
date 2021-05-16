@@ -109,7 +109,7 @@ In order to improve performance and the ability of the system to be expanded, e.
 Modern server processors contain a lot of cores (usually 14 or more) and with so many cores accessing the memory it is very easy to saturate the memory bandwidth. Intel solves this problem by splitting the memory and L3 cache between two NUMA domains and use second memory controller. This reduces the number of cores using the same memory controller and doubles the memory bandwidth. Intel calls this architecture Cluster-on-Die (CoD).
 %Cluster-on-Die (CoD) solves a problem with saturation of memory bandwidth on server CPUs from Intel. These CPUs have many cores (14 or more), but only few can are able to saturate the memory bandwidth. When CoD is enabled, the cores, memory and L3 cache are split to two NUMA domains and second memory controller is used. This reduces the number of cores using the same memory controller and doubles the memory bandwidth.
 
-Peak performance of a CPU is a theoretical maximum the processor can achieve. It requires utilization of all cores running at the base frequency and every core achieving the highest possible floating point throughput.
+Peak performance of a CPU is a theoretical maximum the processor can\linebreak achieve. It requires utilization of all cores running at the base frequency and every core achieving the highest possible floating point throughput.
 Evaluation of the peak performance of modern CPUs is a very intricate process, requiring one to consider a multitude of factors. It depends on an instruction set and the number and type of units in a core. A detailed analysis of different Intel architectures can be found in \cite{dolbeau-2018}.
 As an example we can analyze Intel Xeon E5-2695 v3. This is a 14 core CPU with Haswell architecture and base frequency 2.3\,GHz (detailed description is in Table \ref{tab:m:list}). The Haswell architecture supports AVX2 instructions (8 FLOPs per instruction) and can execute two instructions per cycle (ports 1 and 5), resulting in a total of 16 FLOPs per cycle per core.
 Consequently, the peak performance is $P_{peak} = 2.3 * 14 * 8 * 2 = 515.2\,\textrm{GFLOPs/s}$.
@@ -117,7 +117,7 @@ Consequently, the peak performance is $P_{peak} = 2.3 * 14 * 8 * 2 = 515.2\,\tex
 The theoretical memory bandwidth can be found in a datasheet, but the attainable bandwidth of a specific application depends on the access patters, number of threads used, whether NUMA is used, and other factors. Using the theoretical bandwidth is thus not precise for purposes of performance analysis.
 A more realistic bandwidth can be obtained using microbenchmarks, ideally with similar memory access patterns as the application. \texttt{likwid-bench} from the LIKWID toolbox is a popular application for benchmarking different kernels.
 
-\section{LIKWID tools}
+\section{Performance Modelling using the LIKWID tools}
 
 LIKWID ("Like I Knew What I'm Doing") (\cite{likwid-2010-arxiv}) is set of command line tools to support optimization and performance engineering.
 It consists of tools that display thread and cache topology, discover CPU and memory performance using benchmarks, alter CPU frequency and other settings, and allow performance evaluation of user applications.
@@ -162,7 +162,7 @@ To be sure the benchmark measures the proper thing, the code most likely has to 
 \texttt{likwid-bench} is a benchmark suite for prototyping low-level assembly kernels. 
 It contains a set of various kernels, for example, dot product, daxpy, load, store, copy, and many others. It allows the user to define his own kernels. The kernels are defined as text files that are compiled during compilation of the suite. And the suite takes care of everything else: running the kernel on a problem of a given size, on a given number of threads, and presenting results to the user.
 
-\section{Roofline model}
+\section[Berkeley Roofline model]{Berkeley Roofline model - A Performance Model for Multicore Architectures}
 
 Programmers often do not need an understanding of every detail of CPU design. They should focus on general concepts rather than details of every available architecture. A tool that can provide a simplified model of the CPU hiding most of the architecture specific complexity is very valuable. Probably the most popular tool was popularized by \cite{williams-2009}. This tool is called the Roofline model.
 It became very popular because it hides most of the CPU complexity and presents an intuitive and easy to use model that can guide performance engineering.
@@ -356,7 +356,7 @@ As it is not possible reading data from memory using one thread and using all av
 %%\end{itemize}
 %%}
 
-\section{Execution-cache-memory model}
+\section{The Erlangen Execution-cache-memory model}
 
 The Roofline model is a simple model
 for performance prediction in the saturated case.
@@ -374,14 +374,13 @@ as the achievable memory bandwidth.
 Finally both parts build the single core model, which is used to determine the
 scaling behavior over the cores until a bottleneck is reached. 
 %
-For memory bound codes this is typically the achievable memory bandwidth as all
+For memory bound codes this is typically the achievable memory bandwidth, \todol{which represents the bottleneck ..}  as all
 other infrastructures like Intel's L3 cache on Ivy Bridge, Haswell, and Broadwell
 scale perfectly. 
 
 The ECM model has some restrictions on the code to be analyzed.
 It is important that streaming accesses are performed. This means prefetching
 works perfectly and can hide latency effects.
-
 The ECM model predicts the number of CPU cycles required to execute a certain number of iterations of a given loop on a single core. Since the smallest amount of data transferred between cache levels is one cache line (CL), it is a reasonable unit of work for the predictions. The size of cache line on Intel processors is 64\,B, which is for streaming kernels 8 iterations with floating point numbers in double precision.
 
 To construct the model, we consider two parts separately: the in-core execution, assuming all data were already fetched to the L1 cache and there are no cache misses, and the time to fetch the data from its location to the L1 cache.
@@ -404,8 +403,8 @@ For floating point operations, the cores host two
 FMA units (port~$0$ and~$1$), two multiplication (MUL) units (port~$0$
 and~$1$), and one add (ADD) unit (port~$1$).
 
-Example of distribution of the instructions over the ports is found in
-Figure~\ref{fig:daxpy:ecm}.
+\todol{Example of distribution of the instructions over the ports is found in
+Figure~\ref{fig:daxpy:ecm}. ... probably drop}
 For the ECM model the duration of the execution inside the core is split into
 two categories.
 The first one comprises only data movement between registers and the L1 cache,
@@ -418,21 +417,26 @@ The execution in-core time $T_{core}$ is set to the time of the port with the lo
 
 Data that are not present in the L1 cache must be fetched from lower levels and modified data evicted to make room for new cache lines.
 On Intel architectures, transfer of one cache line between adjacent cache levels takes 2 cycles.
-Transfer time of one 64\,B cache line can be computed knowing the memory bandwidth $b_s$ and clock frequency $f$ as\\ $64*f/b_s$ cycles.
+Transfer time of one 64\,B cache line can be computed knowing the memory bandwidth $b_s$ and clock frequency $f$ as $64*f/b_s$ cycles.
 
 As $b_s$, one could take the nominal memory bandwidth.
 However, this bandwidth is practically never reached and depends strongly on the
 access pattern used.
 This is caused by the organization of the memory subsystem, where e.\,g.,\ banking
 conflicts and DRAM page misses impair performance.
-With detailed knowledge about the internals of the (closed IP) memory controller
+With detailed knowledge about the internals of the memory controller
 (scheduling strategies, thresholds for strategy switching, ...) and DRAM modules
 this could also be modeled, which is far from being trivial (\cite{jacob-2007}).
 As this is beyond the scope of the ECM model, typically, a microbenchmark
 resembling the used access pattern by the code under investigation is used
 to measure the attainable bandwidth and use it as input for the model.
 
-\section{ECM application -- DAXPY}
+\section{...}
+
+\todop{why daxpy}
+\todop{merge daxpy and indexed daxpy}
+
+\subsection{ECM application -- DAXPY}
 \label{sec:epm}
 
 %{\color{blue} juraj: what are the limitations of the roofline? e.g. cannot model bottlenecks beyond peak perf. or memory bandwidth (useful paper https://dl.acm.org/doi/pdf/10.1145/2751205.2751240); short discussion about where Roofline/ECM models were applied and how accurate they predicted the performance compared to experimental measurements; before introducing ECM you probably need to write something about cache hierarchy and instruction pipelines, load/store instructions and their latency/throughput}
@@ -644,7 +648,7 @@ t_\text{L3} + t_\text{mem})} f.
 %
 This leads to $P_\text{mem} = 14.5$\,GB/s. 
 
-\section{ECM -- Indirect DAXPY}
+\subsection{ECM -- Indirect DAXPY}
 \label{sec:ecm-indirect-daxpy}
 
 Indirect DAXPY is similar to the code analyzed in section \ref{sec:epm}, with the difference of indirect access to the vector \verb|r|.
