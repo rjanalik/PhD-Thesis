@@ -1309,7 +1309,7 @@ parts. The last part in the lower triangular matrix $L$ is called separator.}
         \For{\textcolor{blue}{column $j$ in panel}} \Comment{unroll}\label{alg:fw:2}
             \State i = \nxindx[p] + offset
 
-            \For{k = \nxlnz[j] + offset; k < \nxlnz[j+1]; ++k}
+            \For{k = \nxlnz[j] + offset; k < \nxlnz[j+1]; ++k}\label{alg:fw:3}
                 \State row = \nindx[i++]
                 \State \nr[row] -=  \nr[j] \nlnz[k] \Comment{indexed DAXPY}
             \EndFor
@@ -1368,7 +1368,7 @@ The complete forward substitution and backward substitution  is listed in Algori
        \For{panel $p$ in sep. rev.} \Comment{serial execution}
          \For{\textcolor{blue}{col. $j$ in panel $p$ rev.}} \Comment{unroll}\label{alg:bw:1}
             \State i = \nxindx[p] + offset
-            \For{k = \nxlnz[j] + offset; k < \nxlnz[j+1]; ++k}
+            \For{k = \nxlnz[j] + offset; k < \nxlnz[j+1]; ++k}\label{alg:bw:3}
                 \State row = \nindx[i++]
                 \State \nr[j] -= \nr[row] \nlnz[k] \Comment{indexed DDOT}
             \EndFor

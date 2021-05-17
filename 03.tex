@@ -1,4 +1,12 @@
-\chapter{Algorithm and Data Structures of Sparse Triangular Solve}
+\chapter{Node-Level Performance Modeling of Sparse Triangular Solve}
+
+Even in scientific computing, simulation code development often lacks a basic understanding of performance bottlenecks and relevant optimization opportunities. In this chapter we will use a structured model-based performance engineering approach on the compute node level for a fundamental kernel operation in sparse factorization solvers. We aim at a deep understanding of how code performance comes about and which hardware bottlenecks might apply. The pivotal ingredient of this process is a performance model which links software requirements with hardware capabilities. Such models are often simplified such as the well-known Berkeley Roofline model or the Erlangen ECM model, but it leads to deeper insights and strikingly more accurate runtime predictions.
+
+In this chapter, we analyze the data transfer between the different cache levels and the FLOPs performed during the sparse triangular solve phase. The results are used as input for our performance model to be established in the next section. Therefore, we inspect the different instantiations of the loops resulting from Algorithm~\ref{alg:algo:fw} and \ref{alg:algo:bw}.  \todol{Our assumption is}
+Here, we only consider the innermost loops and do not
+distinguish between updates of~\vr{} or temporary arrays~\vtemp{}.
+
+\section{Algorithm and Data Structures of Sparse Triangular Solve}
 % \section{Algorithm and Data Structures of the Forward/Backward Substitution}
 
 \label{sec:algo}
@@ -35,35 +43,6 @@ first column.
 %mw first column, as depicted in Fig.~\ref{algo:triangular}~(a).
 The data dependencies here allow us to store vectors $y$, $z$, $b$, and $x$ in
 only one vector $r$. 
-When column $j$ is reached, $r_j$ contains the solution for $y_j$. 
-All other elements of $L$ in this column, i.e.,\ $L_{ij}$ with $i = j + 1,
-\ldots, N$, are used to update the remaining entries in $r$ by 
-%
-\be
-  r_i = r_i - r_j L_{ij}.
-  \label{eq:algo:fw:pardiso}
-\ee
-%
-The backward substitution with~$L^T$ would take place rowwise, but PARDISO
-uses $L$ and performs the substitution columnwise.
-In contrast to the forward substitution , the
-%mw uses $L$ and performs the substitution columnwise, as shown in 
-%mw Fig.~\ref{algo:triangular}~(b).  In contrast to the forward substitution, the
-iteration over the columns starts at the last column $N$ and proceeds to
-the first one.  
-If column $j$ is reached, then $r_j$, which contains the $j$-component of the
-solution vector $x_j$, is computed by subtracting the dot product of the
-remaining elements in the column $L_{ij}$ and the corresponding elements of
-$r_i$ with $i = j + 1, \ldots, N$ from it:
-%
-\be
-  r_j = r_j - r_i L_{ij} .
-  \label{eq:algo:bw:pardiso}
-\ee
-%
-After all columns have been processed $r$ contains the 
-desired
-solution of $x$.
 
 %\begin{figure}[t]
 %  \centering
@@ -85,7 +64,7 @@ entries.
 Note that columns of panels are padded in the front with zeros so they get the 
 same length as the first column inside their panel. 
 The padding is of utmost performance for the PARDISO solver to use Level-2/3
-BLAS and LAPACK functionalities. Please see~\cite{20.500.11850/144477} for more
+BLAS and LAPACK functionalities. Please see~\cite{Bollhofer2020} for more
 details.
 Furthermore, panels are stored consecutively in the \vlnz{} array. 
 Row and column information is now stored in accompanying arrays.
@@ -116,7 +95,7 @@ their updates into separate temporary arrays \vtemp{}.
 Before the separator is then serially updated, the results of the temporary
 arrays are gathered back into \vr{}. 
 The backward substitution works the same, just reversed, and
-only updates to different temporary arrays are not required.
+updates to different temporary arrays are not required.
 
 %\begin{algorithm}[t]
 %  \begin{algorithmic}[1]
@@ -237,26 +216,26 @@ However, typically the number of rows for sparse problems is too small to
 benefit from this optimization and at worst it could introduce significant
 overhead.
 
-\chapter{Analysis of Sparse Triangular Solve} 
+\section{Analysis of Sparse Triangular Solve}
 %\section{Analysis of the Forward/Backward Substitution} 
 \label{sec:sds}
 
 % \mycomment{OR: Werden die Daten analysiert oder ihr Transfer? MW: der Transfer
 % natürlich :)}
-In this section, we analyze the data transfer between the different cache levels
-and the FLOPs performed during  the
-sparse triangular solve phase.
-%\sout{\OR the forward/backward substitution.}
-% \mycomment{OR: Fehlender Bezug durch ``which''. MW: OK}
-The results are used as input for our performance model 
-to be
-established in the next section.
-%
-Therefore, we inspect the different instantiations of the loops resulting from
-Algorithm~\ref{alg:algo:fw} and~\ref{alg:algo:bw}.
-% \mycomment{``Hereby'' heisst ``hierdurch'', nicht ``hierbei''}
-Here, we only consider the innermost loops and do not 
-distinguish between updates of~\vr{} or temporary arrays~\vtemp{}.
+%In this section, we analyze the data transfer between the different cache levels
+%and the FLOPs performed during  the
+%sparse triangular solve phase.
+%%\sout{\OR the forward/backward substitution.}
+%% \mycomment{OR: Fehlender Bezug durch ``which''. MW: OK}
+%The results are used as input for our performance model
+%to be
+%established in the next section.
+%%
+%Therefore, we inspect the different instantiations of the loops resulting from
+%Algorithm~\ref{alg:algo:fw} and~\ref{alg:algo:bw}.
+%% \mycomment{``Hereby'' heisst ``hierdurch'', nicht ``hierbei''}
+%Here, we only consider the innermost loops and do not
+%distinguish between updates of~\vr{} or temporary arrays~\vtemp{}.
 
 All entries %\sout{coefficients} 
 of the $L$ matrix
@@ -268,7 +247,7 @@ indices of row indices for each panel) arrays are stored as $8$\,B integers,
 whereas for the entries of \vindx{} (row indices for each panel) $4$\,B integers
 are used.
 
-\section{Data transfers and FLOPs without unrolling}
+\subsection{Data transfers and FLOPs without unrolling}
 \label{sec:pm:dt}
 \label{sec:pm:dt:wou}
 
@@ -417,7 +396,7 @@ to the same element and is not considered for the data transfer analysis.
 Figure~\ref{fig:ecm:data} displays the data transfers occurring for one
 nonzero update if \vr{} is cached in L3 cache.
 
-\section{Data transfers and FLOPs with unrolling}
+\subsection{Data transfers and FLOPs with unrolling}
 \label{sec:pm:dt:wu}
 
 %
@@ -481,7 +460,8 @@ With larger panel sizes in total, fewer
 row indices \vindx{} are needed for the
 whole matrix.
 
-\section{ECM -- Forward and Backward Substitution}
+\begin{comment}
+\section{ECM -- Forward and Backward Substitution \todol{todo}}
 \label{sec:ecm-fwbw}
 
 \todop{ \\
@@ -575,8 +555,9 @@ The inputs for the ECM model are summarized in Table \ref{tab:ecm:data}. The val
   \caption{\todol{...}}
   \label{tab:ecm:data}
 \end{table}
+\end{comment}
 
-\chapter{Application of Modified Roofline Model on Sparse Direct Solve}
+\section{Application of Modified Roofline Model on Sparse Triangular Solve}
 \label{sec:mrm}
 
 % \begin{table}[tp]
