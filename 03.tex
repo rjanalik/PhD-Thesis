@@ -270,28 +270,6 @@ are used.
 % \end{figure}
 % 
 
-\begin{figure}[t]
-  \centering%
-%  \includegraphics[width=0.3\textwidth,clip=true]{images/ecm-datatransfers-1}
-%  \includegraphics[width=0.3\textwidth,clip=true]{images/ecm-datatransfers-2}
-%  \includegraphics[width=0.3\textwidth,clip=true]{images/ecm-datatransfers-8}
-  \includegraphics[width=0.75\linewidth,clip=true]{images/ecm-datatransfers}
-  \caption{Data transfers for one iteration of the forward
-    (including red text and arrows) and backward (without red text and arrows)
-    substitution when $1$-, $2$-, or $8$-way column unrolling is applied 
-    for a panel with panel size $s$.
-    Thereby $1$, $2$, or $8$ nonzero elements of \vlnz{} are processed,
-    respectively.
-%    Loading of \vindx{} from memory (blue boxes) is only included in the model 
-%    if the panel size $s \le 8$.
-% From which cache level \vr{} is reused (green boxes) depends on the size of the
-% active part. If the active part is large it must be reloaded from
-% L3 cache. With decreasing size it can fit into L2 or even L1 cache.
-% This holds also true for \vindx{}, but additionally depends on the panel size.
-  }
-  \label{fig:ecm:data}
-\end{figure}
-
 In the most simple case no unrolling is applied and the innermost loop of
 forward substitution from Algorithm~\ref{alg:algo:fw} looks like
 % \mycomment{OR: sollte der Alg.~\ref{alg:algo:fw} nicht
@@ -334,8 +312,29 @@ panel sizes $\panelsize \ge 2$.
 %
 Coefficients of \vlnz{} are always streamed in from memory, as they are
 used only once and the \vlnz{} array is typically too large to be kept in LLC.
-Figure~\ref{fig:ecm:data} visualizes the transfers assuming three cache levels
+Figure~\ref{fig:ecm:data-fw} visualizes the transfers assuming three cache levels
 and \vr{} is cached in LLC.
+
+\begin{figure}[t]
+  \centering%
+%  \includegraphics[width=0.3\textwidth,clip=true]{images/ecm-datatransfers-1}
+%  \includegraphics[width=0.3\textwidth,clip=true]{images/ecm-datatransfers-2}
+%  \includegraphics[width=0.3\textwidth,clip=true]{images/ecm-datatransfers-8}
+  \includegraphics[width=0.75\linewidth,clip=true]{images/ecm-datatransfers-fw}
+  \caption{Data transfers for one iteration of the forward
+    substitution when \protect\linebreak $1$-, $2$-, or $8$-way column unrolling is applied
+    for a panel with panel size $s$.
+    Thereby $1$, $2$, or $8$ nonzero elements of \vlnz{} are processed,
+    respectively.
+%    Loading of \vindx{} from memory (blue boxes) is only included in the model
+%    if the panel size $s \le 8$.
+% From which cache level \vr{} is reused (green boxes) depends on the size of the
+% active part. If the active part is large it must be reloaded from
+% L3 cache. With decreasing size it can fit into L2 or even L1 cache.
+% This holds also true for \vindx{}, but additionally depends on the panel size.
+  }
+  \label{fig:ecm:data-fw}
+\end{figure}
 
 While iterating over panels and columns, the number of column elements
 decreases as $L$ is a lower triangular matrix.
@@ -393,8 +392,29 @@ but only loads occur: \vindx{} ($4$~\,B), \vr{} ($8$~\,B), and \vlnz{} ($8$~\,B)
 Note that $j$ is unchanged in the innermost loop, hence $\nr[j]$ always refers
 to the same element and is not considered for the data transfer analysis.
 %
-Figure~\ref{fig:ecm:data} displays the data transfers occurring for one
+Figure~\ref{fig:ecm:data-bw} displays the data transfers occurring for one
 nonzero update if \vr{} is cached in L3 cache.
+
+\begin{figure}[t]
+  \centering%
+%  \includegraphics[width=0.3\textwidth,clip=true]{images/ecm-datatransfers-1}
+%  \includegraphics[width=0.3\textwidth,clip=true]{images/ecm-datatransfers-2}
+%  \includegraphics[width=0.3\textwidth,clip=true]{images/ecm-datatransfers-8}
+  \includegraphics[width=0.75\linewidth,clip=true]{images/ecm-datatransfers-bw}
+  \caption{Data transfers for one iteration of the backward
+    substitution when $1$-, $2$-, or $8$-way column unrolling is applied
+    for a panel with panel size $s$.
+    Thereby $1$, $2$, or $8$ nonzero elements of \vlnz{} are processed,
+    respectively.
+%    Loading of \vindx{} from memory (blue boxes) is only included in the model
+%    if the panel size $s \le 8$.
+% From which cache level \vr{} is reused (green boxes) depends on the size of the
+% active part. If the active part is large it must be reloaded from
+% L3 cache. With decreasing size it can fit into L2 or even L1 cache.
+% This holds also true for \vindx{}, but additionally depends on the panel size.
+  }
+  \label{fig:ecm:data-bw}
+\end{figure}
 
 \subsection{Data transfers and FLOPs with unrolling}
 \label{sec:pm:dt:wu}
@@ -802,7 +822,7 @@ completely located in memory.}
 To determine performance limits, we only consider the case when data resides in
 memory.
 Therefore the data transfers between the L3 cache and memory are relevant as shown
-in Figure~\ref{fig:ecm:data}.
+in Figure~\ref{fig:ecm:data-fw} and \ref{fig:ecm:data-bw}.
 Only nonzero entries of $L$ with the corresponding panel indices are loaded. 
 Their amount depends only on the structure of $L$ and is independent of the used
 loop unrollings.
