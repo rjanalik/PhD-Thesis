@@ -471,7 +471,7 @@ scale perfectly.
 The ECM model has some restrictions on the code to be analyzed.
 It is important that streaming accesses are performed. This means prefetching
 works perfectly and can hide latency effects.
-The ECM model predicts the number of CPU cycles required to execute a certain number of iterations of a given loop on a single core. Since the smallest amount of data transferred between cache levels is one cache line (CL), it is a reasonable unit of work for the predictions. The size of cache line on Intel processors is 64\,B, which is for streaming kernels 8 iterations with floating point numbers in double precision.
+The ECM model predicts the number of CPU cycles (cy) required to execute a certain number of iterations of a given loop on a single core. Since the smallest amount of data transferred between cache levels is one cache line (CL), it is a reasonable unit of work for the predictions. The size of cache line on Intel processors is 64\,B, which is for streaming kernels 8 iterations with floating point numbers in double precision.
 
 To construct the model, we consider two parts separately: the in-core execution, assuming all data were already fetched to the L1 cache and there are no cache misses, and the time to fetch the data from its location to the L1 cache.
  %the main memory or the cache level where it is assumed to be stored
@@ -580,12 +580,18 @@ the core we assume all operands reside in the L1 cache.
 %  \label{fig:ports}
 %\end{figure}
 
+The duration of the in-core execution depends on the core's architecture.
+For HSW-S it's the Haswell microarchitecture.
+The superscalar design has several ports with different execution units for
+different types of instructions, shown as part of Figure~\ref{fig:hsw-microarch}.
+Instructions scheduled to different ports run independently.
+The instruction scheduler takes care that no data dependencies are violated.
+
 \begin{figure}[t]
   \centering
   \includegraphics[width=0.42\textwidth,clip=true]{images/ecm-hsw-daxpy}
   \caption{Run time contributions of different execution ports and cache/memory
-hierarchy levels for eight iterations of the daxpy kernel on HSW-S (Haswell micro-architecture). In contrast to the IACA prediction, instructions on port~$7$
-seem to be executed on ports~$2$ and~$3$.}
+hierarchy levels for eight iterations of the daxpy kernel on HSW-S (Haswell micro-architecture). It seems that the simple AGU on port~$7$ is not used and all the addresses are generated on ports~$2$ and~$3$.}
   \label{fig:daxpy:ecm}
 \end{figure}
 
@@ -599,46 +605,55 @@ working set required for vectors
   \label{fig:daxpy:perf}
 \end{figure}
 
-The duration of the in-core execution depends on the core's architecture.
-For HSW-S it's the Haswell microarchitecture.
-The superscalar design has several ports with different execution units for
-different types of instructions, shown as part of Figure~\ref{fig:hsw-microarch}. 
-Instructions scheduled to different ports run independently.
-The instruction scheduler takes care that no data dependencies are violated.
-
-We could manually analyze the assembly code of the daxpy kernel and create a
-scheduling of the instructions onto the ports to determine the duration of the
-execution inside the core.
-This is not feasible for complex kernels and often requires internal knowledge
-of the core, which is publicly not available.
-Instead we use Intel's Architecture Code Analyzer (IACA) (\cite{intel-iaca})
-for this task. 
-We use the tool's throughput mode, where it is assumed that iterations of the
-loop are independent and can overlap due to the out-of-order engine.
-Further we assume no pipeline bubbles of the different ports. 
-The distribution of the instructions over the ports is found in
-Figure~\ref{fig:daxpy:ecm}.
-%{\color{orange} For the ECM model the duration of the execution inside the core is split into
-%two categories.
-%The first one comprises only data movement between registers and L1 cache,
-%i.\,e.\ loads and stores occurring on port~$2D$,~$3D$, and~$4$.
-%The second category consists of the rest, which can possibly overlap with the
-%loads and stores, like arithmetic, logic, and address generation.}
+%We could manually analyze the assembly code of the daxpy kernel and create a
+%scheduling of the instructions onto the ports to determine the duration of the
+%execution inside the core.
+%This is not feasible for complex kernels and often requires internal knowledge
+%of the core, which is publicly not available.
+%Instead we use Intel's Architecture Code Analyzer (IACA) (\cite{intel-iaca})
+%for this task.
+%We use the tool's throughput mode, where it is assumed that iterations of the
+%loop are independent and can overlap due to the out-of-order engine.
+%Further we assume no pipeline bubbles of the different ports.
+Haswell can perform two loads (port $2D$ and $3D$) and one store (port $4$) of
+sizes up to $32$\,B at the same time~(\cite{agner-2016-11-3}).
+This constellation requires the store address to be simple addressing as only in
+this case the address generation unit (AGU) on port~$7$ can be used.
+% Effectively this boils down to either two loads or one load and store.
 %
-From the IACA analysis we get 
+For floating point operations relevant, it hosts two FMA units (port 0 and
+1) two MUL units (port 0 and 1), and one ADD unit (port 1).
+
+Under this considerations two iterations of the compiled loop would require $1$\,cy
+for the FMA (port $0$ and $1$), $2$\,cy for the four AVX loads (port $2$ and $3$),
+and $2$\,cy for the four AVX stores (port $4$).
+$6$ addresses need to be generated.
+This takes $2$\,cy, if the simple AGU on port $7$ is used.
+Instructions regarding index counter increments are for this case negligible, hence we ignore them.
+The distribution of the instructions over the ports is found in Figure~\ref{fig:daxpy:ecm}.
+
+For the ECM model the duration of the execution inside the core is split into
+two categories.
+The first one comprises only data movement between registers and L1 cache,
+i.\,e.\ loads, stores occurring and address generation.
+The second category consists of the rest, which can possibly overlap with the
+loads and stores, like arithmetic, logic.
+%We classify the ports into arithmetic/logic (port $0$, $1$, $5$, and $6$) and
+%data movement (port $2$, $3$, $4$, and $7$).
+The maximum duration $t_\text{L1}$ of the first class (port $2$, $3$, $4$, and $7$) is
 \be
-  t_\text{ol} = 2\,\cyw
+  t_\text{L1} = 2\,\cyw.
+\ee
+The maximum duration of the latter class (port $0$, $1$, $5$, and $6$), $t_\text{ol}$, is
+\be
+  t_\text{ol} = 1\,\cyw
 \ee
 %
 (normalized to eight iterations) as the maximum duration on the ports overlapping with data
 movements.
-The maximum duration on the latter ports, $t_\text{L1}$, is
-\be
-  t_\text{L1} = 2\,\cyw.
-\ee
 %
-Note that the compiler uses simple addressing for store addresses, which
-according to IACA will utilize the simple AGU on port~$7$.
+%Note that the compiler uses simple addressing for store addresses, which
+%according to IACA will utilize the simple AGU on port~$7$.
 %
 %
 The performance $P_\text{L1}$, when all data are fetched from L1, is then
@@ -654,8 +669,8 @@ For this loop with $W=192$\,B and $f=2.3$\,GHz we have $P_\text{L1} =
 220.8$\,GB/s. 
 Measurements shown in Figure~\ref{fig:daxpy:perf} reveal that only around
 $145$\,GB/s are reached.
-It seems that the simple AGU on port~$7$ is not used, causing the store addresses to
-be generated by the two remaining AGUs.
+If the simple AGU on port~$7$ is not used, the store addresses are
+generated by the two remaining AGUs.
 This causes $t_\text{ol}$ to be increased by $1$\,\cyw{} and becoming the new
 bottleneck.
 This results in a corrected
@@ -716,8 +731,8 @@ In our case $P_\text{L2} = 55.2$\,GB/s and $P_\text{L3} = 31.5$\,GB/s.
 %For this model we use \textsc{McCalpin's} STREAM copy
 To determine the memory bandwidth we use \textsc{McCalpin's} STREAM copy
 benchmark (\cite{mccalpin-1995}) which achieves (without nontemporal stores and
-including the write allocate) a bandwidth of $\approx 26.9$\,GB/s when all seven cores
-of a cluster are utilized.
+including the write allocate) a bandwidth of $\approx 26.9$\,GB/s when all cores
+of a cluster are utilized\footnote{When Cluster-on-Die (COD) is enabled, the cores are split into two NUMA domains. The HSW-S processor has 14 cores, that are split in two NUMA domains, each with 7 cores.}.
 With the core's clock frequency of $2.3$\,GHz it takes $5.5$\,cy to transfer one
 cache line between L3 cache and memory.
 Transferring our three cache lines between these two levels takes then
@@ -804,7 +819,7 @@ The instruction scheduler takes care that no data dependencies are violated.
 Instructions inside ports are pipelined, but only one instruction per port can
 be issued per cycle.
 Haswell can perform two loads (port $2D$ and $3D$) and one store (port $4$) of
-sizes up to $32$\,B at the same time~(\cite{agner-2016-11-3}), each.
+sizes up to $32$\,B at the same time~(\cite{agner-2016-11-3}).
 This constellation requires the store address to be simple addressing as only in
 this case the address generation unit (AGU) on port~$7$ can be used.
 % Effectively this boils down to either two loads or one load and store.
