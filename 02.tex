@@ -75,13 +75,11 @@ The chapter is organized as follows. In Section \ref{sec:arch} computer architec
 
 Modern microprocessors are highly sensitive to the spatial and temporal locality of data. Regardless of the programming model, performance of future parallel applications will crucially depend on the quality of the generated code which is traditionally the responsibility of the compiler. The compiler selects which optimization to perform in terms of, e.g., loop-unrolling, out-of-order instruction capabilities, or register scheduling. Choosing parameters for these optimizations, and selecting among alternative implementations, is the key to efficient use of the underlying hardware. The resulting space of optimization alternative is large.
 
-Autotuner projects such as, e.g. ATLAS~\footnote{Automatically Tuned Linear Algebra Software} (\cite{atlas-hp,whaley04,WN147}), FLAME~\footnote{Formal Linear Algebra Methods Environment} (\cite{Flame:2005}), and OSKI~\footnote{Optimized Sparse Kernel Interface} (\cite{Demmel2005:selftune:linalg,Vuduc2003:thesis,Lee2004:spmv:symm}),
+Autotuner projects such as, e.g. ATLAS~\footnote{Automatically Tuned Linear Algebra Software} (\cite{whaley04,WN147}), FLAME~\footnote{Formal Linear Algebra Methods Environment} (\cite{Flame:2005}), and OSKI~\footnote{Optimized Sparse Kernel Interface} (\cite{Demmel2005:selftune:linalg,Vuduc2003:thesis,Lee2004:spmv:symm}),
 gained popularity as a very effective approach for producing high-quality portable scientific code. In these projects, the set of library kernels is automatically optimized by generating many variants of a given kernel and by running that kernel in a target platform. The search process may take hours to complete on the platform. However, it needs to be performed only once when the library is installed on the platform. The resulting codes might be
 several times faster than naive implementations.
 
 As an example, reordering the vertices and elements in a mesh can have a significant impact on performance. Graph and hypergraph techniques have been used in this area to automatically generate highly efficient, platform-adapted implementations of {\sl sparse matrix kernels}. These kernels are frequently computational bottlenecks in diverse applications in computational science and engineering applications. However, the task of extracting near-peak performance on modern cache-based superscalar machines has proven to be extremely difficult. Many sparse matrices from applications have a natural block structure that can be exploited by storing columns as a collection of blocks and thus accelerating the performance of sparse matrix kernels significantly. It is shown in recent projects such as \cite{BEBOP2016,Vuduc2003:thesis} that it is possible to build an automatic tuning system to generate implementations whose performances exceed that of the best hand-tuned code. The algorithmic methods behind these research projects are based on reordering methods on the discrete graph structure in order to maximize the block structure and, thus, obtaining high performance by maximizing spatial and temporal locality.
-
-\todop{update references to newer}
 
 \section{Computer architecture}
 \label{sec:arch}
@@ -464,7 +462,7 @@ as the achievable memory bandwidth.
 Finally both parts build the single core model, which is used to determine the
 scaling behavior over the cores until a bottleneck is reached. 
 %
-For memory bound codes this is typically the achievable memory bandwidth, \todol{which represents the bottleneck ..}  as all
+For memory bound codes this is typically the achievable memory bandwidth, as all
 other infrastructures like Intel's L3 cache on Ivy Bridge, Haswell, and Broadwell
 scale perfectly. 
 
