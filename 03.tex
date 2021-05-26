@@ -2,7 +2,7 @@
 
 Even in scientific computing, simulation code development often lacks a basic understanding of performance bottlenecks and relevant optimization opportunities. In this chapter we will use a structured model-based performance engineering approach on the compute node level for a fundamental kernel operation in sparse factorization solvers. We aim at a deep understanding of how code performance comes about and which hardware bottlenecks might apply. The pivotal ingredient of this process is a performance model which links software requirements with hardware capabilities. Such models are often simplified such as the well-known Berkeley Roofline model or the Erlangen ECM model, but it leads to deeper insights and strikingly more accurate runtime predictions.
 
-In this chapter, we analyze the data transfer between the different cache levels and the FLOPs performed during the sparse triangular solve phase. The results are used as input for our performance model to be established in the next section. Therefore, we inspect the different instantiations of the loops resulting from Algorithm~\ref{alg:algo:fw} and \ref{alg:algo:bw}.  \todol{Our assumption is}
+In this chapter, we analyze the data transfer between the different cache levels and the FLOPs performed during the sparse triangular solve phase. The results are used as input for our performance model to be established \todol{in the next section}. Therefore, we inspect the different instantiations of the loops resulting from Algorithm~\ref{alg:algo:fw} and \ref{alg:algo:bw}. \todol{Our assumption is}
 Here, we only consider the innermost loops and do not
 distinguish between updates of~\vr{} or temporary arrays~\vtemp{}.
 
@@ -66,13 +66,13 @@ same length as the first column inside their panel.
 The padding is of utmost performance for the PARDISO solver to use Level-2/3
 BLAS and LAPACK functionalities. Please see~\cite{Bollhofer2020} for more
 details.
-Furthermore, panels are stored consecutively in the \vlnz{} array. 
+Furthermore, panels are stored consecutively in the array \vlnz{}.
 Row and column information is now stored in accompanying arrays.
 %2 The \texttt{xsuper} array stores for each panel the index of its first column. 
 %Also note that here column indices are the running count of nonzero columns.
-Column indices are used as indices into the \vxlnz{} array to look up the
+Column indices are used as indices into the array \vxlnz{} to look up the
 start of
-the column in the \vlnz{} array which contains the numerical values of the factor $L$.
+the column in the array \vlnz{} which contains the numerical values of the factor $L$.
 %2Panel~$p$ starts then in \vlnz{} at \vxlnz\texttt{[xsuper[p]]}.
 To determine the row index of a column's element array \vindx{} is
 used, which holds the row indices for each panel.
@@ -278,7 +278,7 @@ forward substitution from Algorithm~\ref{alg:algo:fw} looks like
 % }
 %
 \begin{algorithmic}[1]
-  \setcounter{ALG@line}{22}
+  \setcounter{ALG@line}{20}
   \For{k = \nxlnz[j] + offset; k < \nxlnz[j+1]; ++k}
       \State row = \nindx[i++]
       \State \nr[row] -= \nr[j] \nlnz[k]
@@ -288,7 +288,7 @@ forward substitution from Algorithm~\ref{alg:algo:fw} looks like
 \noindent%
 %
 As the loops from lines $6$--$9$ and $10$--$13$ are in principle identical to
-the loops in lines $23$--$26$, we only discuss the latter.
+the loops in lines $21$--$24$, we only discuss the latter.
 %
 During each iteration one nonzero is processed, two FLOPs are performed,
 namely, a multiplication and an addition, and the following elements get
