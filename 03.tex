@@ -2,9 +2,9 @@
 
 Even in scientific computing, simulation code development often lacks a basic understanding of performance bottlenecks and relevant optimization opportunities. In this chapter we will use a structured model-based performance engineering approach on the compute node level for a fundamental kernel operation in sparse factorization solvers. We aim at a deep understanding of how code performance comes about and which hardware bottlenecks might apply. The pivotal ingredient of this process is a performance model which links software requirements with hardware capabilities. Such models are often simplified such as the well-known Berkeley Roofline model or the Erlangen ECM model, but it leads to deeper insights and strikingly more accurate runtime predictions.
 
-In this chapter, we analyze the data transfer between the different cache levels and the FLOPs performed during the sparse triangular solve phase. The results are used as input for our performance model to be established \todol{in the next section}. Therefore, we inspect the different instantiations of the loops resulting from Algorithm~\ref{alg:algo:fw} and \ref{alg:algo:bw}. \todol{Our assumption is}
-Here, we only consider the innermost loops and do not
-distinguish between updates of~\vr{} or temporary arrays~\vtemp{}.
+In this chapter, we will mainly analyze the data transfer between the different cache levels and the FLOPs performed during the sparse triangular solve phase. The results of this analyzis are used as input for our performance model. Therefore, we mostly inspect the different instantiations of the loops resulting from Algorithm~\ref{alg:algo:fw} and \ref{alg:algo:bw}. We only consider the innermost loops because all the arithmetics is performed here. Our assumption is that the instructions regarding control variables of the loops are negligible, hence we do not them into account.
+%Here, we only consider the innermost loops and do not
+%distinguish between updates of~\vr{} or temporary arrays~\vtemp{}.
 
 \section{Algorithm and Data Structures of Sparse Triangular Solve}
 % \section{Algorithm and Data Structures of the Forward/Backward Substitution}
@@ -216,7 +216,7 @@ However, typically the number of rows for sparse problems is too small to
 benefit from this optimization and at worst it could introduce significant
 overhead.
 
-\section{Analysis of Sparse Triangular Solve}
+\section{Performance Analysis of Sparse Triangular Solve}
 %\section{Analysis of the Forward/Backward Substitution} 
 \label{sec:sds}
 
@@ -238,13 +238,13 @@ overhead.
 %distinguish between updates of~\vr{} or temporary arrays~\vtemp{}.
 
 All entries %\sout{coefficients} 
-of the $L$ matrix
+of the matrix $L$
 % \mycomment{OR: Bezeichnung ``coefficients'' hier gut? MW: entries? OR: OK.}
 are stored as double-precision floating point
-numbers in \vlnz{}, consuming $8$\,B (byte) each. 
-Elements of the \vxlnz{} (column start indices in \vlnz{}) and \vxindx{} (start
-indices of row indices for each panel) arrays are stored as $8$\,B integers,
-whereas for the entries of \vindx{} (row indices for each panel) $4$\,B integers
+numbers in the vector \vlnz{}, consuming $8$\,B (byte) each.
+Elements of the vector \vxlnz{} (column start indices in the vector \vlnz{}) and vector \vxindx{} (start
+indices of row indices for each panel) are stored as $8$\,B integers,
+whereas for the entries of the vector \vindx{} (row indices for each panel) $4$\,B integers
 are used.
 
 \subsection{Data transfers and FLOPs without unrolling}
@@ -311,9 +311,16 @@ In general reuse is only possible, starting with a panel's second column for
 panel sizes $\panelsize \ge 2$.
 %
 Coefficients of \vlnz{} are always streamed in from memory, as they are
-used only once and the \vlnz{} array is typically too large to be kept in LLC.
+used only once and the array \vlnz{} is typically too large to be kept in LLC.
 Figure~\ref{fig:ecm:data-fw} visualizes the transfers assuming three cache levels
 and \vr{} is cached in LLC.
+While iterating over panels and columns, the number of column elements
+decreases as $L$ is a lower triangular matrix.
+Thereby the number of used elements from \vr{} also decreases, which we call the
+active part of \vr{}.
+At some point the active part can be completely kept in the L2 or even the L1 cache.
+This also holds true for \vindx{}, except when a new panel starts, then
+the panel's row indices must first be loaded from memory.
 
 \begin{figure}[t]
   \centering%
@@ -336,13 +343,6 @@ and \vr{} is cached in LLC.
   \label{fig:ecm:data-fw}
 \end{figure}
 
-While iterating over panels and columns, the number of column elements
-decreases as $L$ is a lower triangular matrix.
-Thereby the number of used elements from \vr{} also decreases, which we call the
-active part of \vr{}.
-At some point the active part can be completely kept in the L2 or even the L1 cache.
-This also holds true for \vindx{}, except when a new panel starts, then
-the panel's row indices must first be loaded from memory.
 %
 %1 The active part of \vr{} can be kept inside a certain cache size $c_s$, when
 %1 concurrently also one column of \vlnz{} and the active part of \vindx{} fit into
@@ -577,7 +577,7 @@ The inputs for the ECM model are summarized in Table \ref{tab:ecm:data}. The val
 \end{table}
 \end{comment}
 
-\section{Application of Modified Roofline Model on Sparse Triangular Solve}
+\section[Application of Berkeley Modified Roofline Model]{Application of Berkeley Modified Roofline Model on Sparse Triangular Solve}
 \label{sec:mrm}
 
 % \begin{table}[tp]
@@ -716,7 +716,7 @@ $L$ for all benchmark matrices.}
 %\end{SCtable}
 \end{table*}
 
-For our performance predictions, we apply the roofline model~(\cite{williams-2009}).
+For our performance predictions of the sparse triangular solve, we apply the roofline model~(\cite{williams-2009}).
 As mentioned before, the model takes into account the attainable memory bandwidth as well as
 the
 peak floating

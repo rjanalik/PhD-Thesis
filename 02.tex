@@ -70,7 +70,7 @@ The chapter is organized as follows. In Section \ref{sec:arch} computer architec
 %If $B_c < B_m$ then the code’s performance is limited by the max performance, it is compute bound. Optimizing memory access of such code does not improve performance. One should focus on optimizing computations, for example using vector instructions as much as possible.
 %If $B_c > B_m$ then the code’s performance is limited by the memory bandwidth, hence it is memory bound. Here performance can be improved by optimizing memory access pattern, for example by reusing data loaded to cache us much as possible, so they don't have to be loaded from memory.
 
-\section[Introduction --- Memory Hierarchies, Autotuning, and Solvers]{Introduction --- Exploiting the Memory Hierarchies, Autotuning Research, and Sparse Factorization Solvers}
+\section[Memory Hierarchies, Autotuning, and Solvers]{Exploiting the Memory Hierarchies, Autotuning\\ Research, and Sparse Factorization Solvers}
 \label{sec:modeling-intro}
 
 Modern microprocessors are highly sensitive to the spatial and temporal locality of data. Regardless of the programming model, performance of future parallel applications will crucially depend on the quality of the generated code which is traditionally the responsibility of the compiler. The compiler selects which optimization to perform in terms of, e.g., loop-unrolling, out-of-order instruction capabilities, or register scheduling. Choosing parameters for these optimizations, and selecting among alternative implementations, is the key to efficient use of the underlying hardware. The resulting space of optimization alternative is large.
@@ -80,6 +80,7 @@ gained popularity as a very effective approach for producing high-quality portab
 several times faster than naive implementations.
 
 As an example, reordering the vertices and elements in a mesh can have a significant impact on performance. Graph and hypergraph techniques have been used in this area to automatically generate highly efficient, platform-adapted implementations of {\sl sparse matrix kernels}. These kernels are frequently computational bottlenecks in diverse applications in computational science and engineering applications. However, the task of extracting near-peak performance on modern cache-based superscalar machines has proven to be extremely difficult. Many sparse matrices from applications have a natural block structure that can be exploited by storing columns as a collection of blocks and thus accelerating the performance of sparse matrix kernels significantly. It is shown in recent projects such as \cite{BEBOP2016,Vuduc2003:thesis} that it is possible to build an automatic tuning system to generate implementations whose performances exceed that of the best hand-tuned code. The algorithmic methods behind these research projects are based on reordering methods on the discrete graph structure in order to maximize the block structure and, thus, obtaining high performance by maximizing spatial and temporal locality.
+%\enlargethispage*{\baselineskip}
 
 \section{Computer architecture}
 \label{sec:arch}
@@ -496,7 +497,7 @@ two categories.
 The first one comprises only data movement between registers and the L1 cache,
 i.\,e.,\ loads and stores occurring on port~$2D$,~$3D$, and~$4$.
 The second category consists of the rest, which can possibly overlap with the
-loads and stores, like arithmetic, logic\todol{, and address generation}.
+loads and stores, like arithmetic and logic.
 The execution in-core time $T_{core}$ is set to the time of the port with the longest execution time.
 
 \subsection*{Data transfers through the memory hierarchy}
@@ -665,8 +666,8 @@ computed as
 where $W$ denotes the loop specific work performed and $f$ clock
 frequency of the core.
 For this loop with $W=192$\,B and $f=2.3$\,GHz we have $P_\text{L1} =
-220.8$\,GB/s. 
-{\color{blue}Figure~\ref{fig:daxpy:perf} shows ECM prediction and measured performance for DAXPY kernel of various vector lengths. The graph on the left shows performance and the graph on the right number of CPU cycles needed to perform 8 iterations of the loop. We can see that larger vectors that do not fin in L1 cache and need to be stored in L2 or L3 cache or even the main memory require more cycles, which results in worse performance.}
+220.8$\,GB/s.
+Figure~\ref{fig:daxpy:perf} shows ECM prediction and measured performance for DAXPY kernel of various vector lengths. The graph on the left shows performance and the graph on the right number of CPU cycles needed to perform 8 iterations of the loop. We can see that larger vectors that do not fin in L1 cache and need to be stored in L2 or L3 cache or even the main memory require more cycles, which results in worse performance.
 %Measurements shown in Figure~\ref{fig:daxpy:perf} reveal that only around
 The measurements for L1 cache reveal that only around
 $145$\,GB/s are reached.
@@ -923,7 +924,7 @@ to measure the attainable bandwidth and use it as input for the model.
 %
 For this model we use \textsc{McCalpin's} STREAM copy
 benchmark~(\cite{mccalpin-1995}) which achieves (without nontemporal stores and
-including the write allocate) a bandwidth of $\approx 26.9$\,GB/s when all seven cores
+including the write allocate) a bandwidth of $\approx 26.9$\,GB/s when all cores
 of a cluster are utilized.
 With the core's clock frequency of $2.3$\,GHz it takes $5.5$\,cy to transfer one
 cache line between L3 cache and memory.
