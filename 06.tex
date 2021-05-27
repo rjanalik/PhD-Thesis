@@ -1,4 +1,4 @@
-\chapter{Experimental Testbed for the Performance Evaluation}
+\section{Experimental Testbed for the Performance Evaluation}
 \label{sec:tb}
 
 The specifications of the systems used for the performance analysis are described
@@ -57,7 +57,7 @@ On all systems supporting simultaneous multithreading (SMT) only physical cores 
 %
 As compiler, Intel C/Fortran Compiler version 17.0.1 was used.
 
-\section{Read-only memory bandwidth and machine balance}
+\subsection{Read-only memory bandwidth and machine balance}
 \label{sec:tb:membw}
 
 \begin{figure}[!t]%
@@ -79,11 +79,12 @@ processor/cluster~\protect\subref{fig:mrm:bw-single-core}.}
   \label{fig:mrm:bw}
 \end{figure}
 
-The measured read-only bandwidth, required for the performance model, is
-reported in Table~\ref{tab:hw}.
+{\color{blue} For the performance model an effective memory bandwidth is required.
+For the evaluation of the effective bandwidth we measure read-only bandwidth.
+The measurements are reported in Table~\ref{tab:hw}.}
 As discussed in section~\ref{sec:mrm} only scalar loads are used.
 %
-If enough cores are used then scalar and vectorized read-only benchmarks
+If enough cores are used then both scalar and vectorized read-only benchmarks
 saturate the memory bandwidth with the only difference being that the saturation of
 the latter is already achieved with fewer cores. 
 This is exemplified on HSW-D and HSW-S systems shown in
@@ -146,7 +147,7 @@ multiplication for processing a nonzero.
 % ["-3.21"]
 
 
-\section{Matrices for Performance Modeling}
+\subsection{Matrices for Performance Modeling}
 
 % \begin{SCtable}[][t]
 % %\begin{table}[tp]

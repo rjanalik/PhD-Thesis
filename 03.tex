@@ -721,8 +721,7 @@ ideally resembling the application's memory access pattern.
 For the
 sparse triangular solve,
 %\sout{\OR the forward/backward substitution}
-we use a read-only benchmark where one
-vector located in memory is summed up.
+we use a read-only benchmark from the LIKWID tool suite (\cite{likwid-2010-arxiv}).
 %
 As the sparse triangular solve
 %\sout{\OR the forward/backward substitution}
@@ -773,13 +772,13 @@ completely located in memory.}
 
 \begin{table}[t]
   \centering
-  \begin{tabular}{ll|rrrc|rrr}
+   \begin{tabular}{ll|cm{0.8eM}cm{0.8eM}c|cm{0.8eM}cm{0.8eM}c}
   \hline
-  substitution && \multicolumn{3}{c}{forward}  && \multicolumn{3}{c}{backward} \\
-  \cline{3-5} \cline{7-9}
+  substitution && \multicolumn{5}{c|}{forward} & \multicolumn{5}{c}{backward} \\
+  %\cline{3-5} \cline{7-9}
   \hline
-  $u$    &     &  1       & 2     & 8        & & 1       & 2     & 8  \\
-  $B_c$  &[B/F]& 4 - 6    & 4 - 5 & 4 - 4.25 & & 4  - 6  & 4 - 5 & 4 - 4.25 \\
+     $u$    &     &  1   &  & 2    &  & 8        & 1     &  & 2   &  & 8  \\
+     $B_c$  & [B/F]\, & \ $4-6$ & & $4-5$ & & $4-4.25$ \ & \ $4-6$ & & $4-5$ & & $4-4.25$ \ \\
   \hline
   \end{tabular}
   \caption{Code balance $B_c$ of forward/backward substitution for
