@@ -600,24 +600,6 @@ The inputs for the ECM model are summarized in Table \ref{tab:ecm:data}. The val
 % depend on actual panel size $s$ and possible cache reuse.}
 %   \label{tab:mrm:bc}
 % \end{table}
-\begin{table}[!b]
-  \centering
-  \begin{tabular}{ll|rrrc|rrr}
-  \hline
-  substitution && \multicolumn{3}{c}{forward}  && \multicolumn{3}{c}{backward} \\
-  \cline{3-5} \cline{7-9}
-  \hline
-  $u$    &     &  1       & 2     & 8        & & 1       & 2     & 8  \\
-  $B_c$  &[B/F]& 4 - 6    & 4 - 5 & 4 - 4.25 & & 4  - 6  & 4 - 5 & 4 - 4.25 \\
-  \hline
-  \end{tabular}
-  \caption{Code balance $B_c$ of forward/backward substitution for
-unrolling factors $u$ when
-the factor $L$ must be fetched from memory.
-% the factor $L$ exceeds the LLC and must be fetched from memory.
-Values depend on actual panel size $s$ and possible cache reuse.}
-  \label{tab:mrm:bc}
-\end{table}
 
 %xx \begin{table*}[!t]
 %xx   \caption{Details of Evaluated Hardware Systems.
@@ -686,35 +668,6 @@ Values depend on actual panel size $s$ and possible cache reuse.}
 %xx \end{table*}
 %\parbox{.25\linewidth}{ 
 %\begin{SCtable}[][t]
-\begin{table*}[tp]
-  \centering
-  \small
-  \begin{tabular}{ll|rrrrrr}
-  \hline
-  matrix      &&  \multicolumn{1}{c}{${n}$} &&
-            \multicolumn{1}{c}{${\text{nnz}(A)}$}  &&
-            \multicolumn{1}{c}{${\text{nnz}(L)}$}   \\ 
-%  {\bfseries matrix}      &&  \multicolumn{1}{c}{$\bm{n}$} &&
-%            \multicolumn{1}{c}{$\bm{\text{nnz}(A)}$}  &&
-%            \multicolumn{1}{c}{$\bm{\text{nnz}(L)}$}   \\ 
-  \hline
-% values for threads = 1, p = 80
-  dense  && $    20 \times 10^3$ && $200 \times 10^6$ &&  $  200 \times 10^6$  \\ % ps-n-20000-t-1-p-80
-  lapl1  && $   256 \times 10^3$ && $  3 \times 10^6$ &&  $  219 \times 10^6$  \\ % pl-n-40-b-4-t-1-p-80  N=40, B=4
-  lapl2  && $   343 \times 10^3$ && $  1 \times 10^6$ &&  $  166 \times 10^6$  \\ % pl-n-70-b-1-t-1-p-80  N=70, B=1
-  omen1  && $1\,751 \times 10^3$ && $ 32 \times 10^6$ && $1\,076 \times 10^6$  \\ % omen-rc2.5-lc160-t-1-p-80
-  omen2  && $   760 \times 10^3$ && $ 20 \times 10^6$ && $   690 \times 10^6$  \\ % omen-rc3.5-t-1-p-80
-  omen3  && $1\,271 \times 10^3$ && $ 42 \times 10^6$ && $1\,651 \times 10^6$  \\ % omen-rc4.5-t-1-p-80
-  bddc   && $   750 \times 10^3$ && $ 31 \times 10^6$ && $1\,590 \times 10^6$  \\ % mat\_Kii\_sd22\_size750141\_load2\_newton1
-  \hline
-  \end{tabular}
-  \caption{Dimension ($n$) and number of nonzeros ($\text{nnz}$) for $A$ and
-$L$ for all benchmark matrices.}
-  \label{tab:m:list}
-%}\vfill{}
-%\end{table}
-%\end{SCtable}
-\end{table*}
 
 For our performance predictions of the sparse triangular solve, we apply the roofline model~(\cite{williams-2009}).
 As mentioned before, the model takes into account the attainable memory bandwidth as well as
@@ -792,13 +745,12 @@ denotes FLOP.
 Table~\ref{tab:mrm:bc} lists the code balance for different unrolling factors
 when the factor $L$ must be fetched from memory and uses the data transfer and
 FLOP counts from section~\ref{sec:sds}.
-
 In contrast, the \textit{machine balance} $B_m$ defines the ratio for the whole system
 and uses the ratio of the attainable memory bandwidth $B$ to the maximum floating point
 performance $P_\text{max}$.
 % \todo{This is a forward reference.}
 % \mycomment{OR: Tab. ist keine erlaubte Abkuerzung f\"ur Table. MW: stimmt}
-This is found in Table~\ref{tab:hw} for all systems.
+This bandwidth is found in Table~\ref{tab:hw} for all systems.
 %
 If $B_c > B_m$ then the roofline model indicates 
 that the code's performance is
@@ -818,6 +770,25 @@ completely located in memory.}
 %mw2018-06-07: \mycomment{\OR was meint ``unrolling factor'' hier? \MW MW: Das ist der Faktor
 %mw2018-06-07: für das ``loop unrolling''. Der Begriff wird vorher auch schon so verwendet,
 %mw2018-06-07: daher haette ich den nicht nocheinmal erlaeutert.}
+
+\begin{table}[t]
+  \centering
+  \begin{tabular}{ll|rrrc|rrr}
+  \hline
+  substitution && \multicolumn{3}{c}{forward}  && \multicolumn{3}{c}{backward} \\
+  \cline{3-5} \cline{7-9}
+  \hline
+  $u$    &     &  1       & 2     & 8        & & 1       & 2     & 8  \\
+  $B_c$  &[B/F]& 4 - 6    & 4 - 5 & 4 - 4.25 & & 4  - 6  & 4 - 5 & 4 - 4.25 \\
+  \hline
+  \end{tabular}
+  \caption{Code balance $B_c$ of forward/backward substitution for
+unrolling factors $u$ when
+the factor $L$ must be fetched from memory.
+% the factor $L$ exceeds the LLC and must be fetched from memory.
+Values depend on actual panel size $s$ and possible cache reuse.}
+  \label{tab:mrm:bc}
+\end{table}
 
 To determine performance limits, we only consider the case when data resides in
 memory.
@@ -890,7 +861,7 @@ single cores, as included in the modified model, can be inaccurate.
 If the in-core execution time (excluding floating point operations) or the in-cache
 traffic dominates the execution time, predictions become unreliable as this is not
 covered by the roofline model.
-In section~\ref{sec:performance}, we use dedicated single core measurements to
+In Chapter~\ref{sec:performance}, we use dedicated single core measurements to
 validate that, in the case of the sparse triangular solve,
 %\sout{\OR the forward/backward substitution,}
 this approach is valid. 

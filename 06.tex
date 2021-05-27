@@ -1,7 +1,7 @@
 \chapter{Experimental Testbed for the Performance Evaluation}
 \label{sec:tb}
 
-The specifications of the systems used for our performance analysis are described
+The specifications of the systems used for the performance analysis are described
 in Table~\ref{tab:hw}. 
 %
 The machines with Intel processors are based on the Ivy Bridge (IVB), Haswell
@@ -26,7 +26,7 @@ It is the successor of the Knights Corner manycore processor.
 The exact AVX-512 ISA (instruction set architecture) for Knights Lading differs from the Skylake incarnation,
 but for our purpose is not relevant. 
 Knights Lading includes a $16$\,GB large high bandwidth memory (HBM) with
-bandwidths up to $450$\,GB/s; see also the discussion in section~\ref{sec:pa}.
+bandwidths up to $450$\,GB/s; see also the discussion in Chapter~\ref{sec:pa}.
 We operate KNL in the flat memory model, where the DDR memory and HBM 
 represent a NUMA domain, each.
 %
@@ -146,7 +146,7 @@ multiplication for processing a nonzero.
 % ["-3.21"]
 
 
-\section{Matrices}
+\section{Matrices for Performance Modeling}
 
 % \begin{SCtable}[][t]
 % %\begin{table}[tp]
@@ -173,6 +173,35 @@ multiplication for processing a nonzero.
 %   \label{tab:m:list}
 % % \end{table}
 % \end{SCtable}
+\begin{table*}[t]
+  \centering
+  \small
+  \begin{tabular}{ll|rrrrrr}
+  \hline
+  matrix      &&  \multicolumn{1}{c}{${n}$} &&
+            \multicolumn{1}{c}{${\text{nnz}(A)}$}  &&
+            \multicolumn{1}{c}{${\text{nnz}(L)}$}   \\
+%  {\bfseries matrix}      &&  \multicolumn{1}{c}{$\bm{n}$} &&
+%            \multicolumn{1}{c}{$\bm{\text{nnz}(A)}$}  &&
+%            \multicolumn{1}{c}{$\bm{\text{nnz}(L)}$}   \\
+  \hline
+% values for threads = 1, p = 80
+  dense  && $    20 \times 10^3$ && $200 \times 10^6$ &&  $  200 \times 10^6$  \\ % ps-n-20000-t-1-p-80
+  lapl1  && $   256 \times 10^3$ && $  3 \times 10^6$ &&  $  219 \times 10^6$  \\ % pl-n-40-b-4-t-1-p-80  N=40, B=4
+  lapl2  && $   343 \times 10^3$ && $  1 \times 10^6$ &&  $  166 \times 10^6$  \\ % pl-n-70-b-1-t-1-p-80  N=70, B=1
+  omen1  && $1\,751 \times 10^3$ && $ 32 \times 10^6$ && $1\,076 \times 10^6$  \\ % omen-rc2.5-lc160-t-1-p-80
+  omen2  && $   760 \times 10^3$ && $ 20 \times 10^6$ && $   690 \times 10^6$  \\ % omen-rc3.5-t-1-p-80
+  omen3  && $1\,271 \times 10^3$ && $ 42 \times 10^6$ && $1\,651 \times 10^6$  \\ % omen-rc4.5-t-1-p-80
+  bddc   && $   750 \times 10^3$ && $ 31 \times 10^6$ && $1\,590 \times 10^6$  \\ % mat\_Kii\_sd22\_size750141\_load2\_newton1
+  \hline
+  \end{tabular}
+  \caption{Dimension ($n$) and number of nonzeros ($\text{nnz}$) for $A$ and
+$L$ for all benchmark matrices.}
+  \label{tab:m:list}
+%}\vfill{}
+%\end{table}
+%\end{SCtable}
+\end{table*}
 
 
 %In~Table~\ref{tab:m:list}, we present information on  
