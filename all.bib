@@ -7575,7 +7575,8 @@
   author	= {Timothy Alden Davis},
   title		= {Direct Methods for Sparse Linear Systems},
   publisher	= siampub,
-  year		= 2006
+  year		= 2006,
+  isbn      = {978-0-898716-13-9}
 }
 
 @Misc{		  dav94,
@@ -8602,7 +8603,8 @@
   optaddress	= {},
   edition	= {},
   url		= {http://epubs.siam.org/doi/abs/10.1137/1.9780898718881},
-  eprint	= {http://epubs.siam.org/doi/pdf/10.1137/1.9780898718881}
+  eprint	= {http://epubs.siam.org/doi/pdf/10.1137/1.9780898718881},
+  isbn   = {978-0-89871-613-9}
 }
 
 @Article{	  dolbeau-2018,
@@ -27214,4 +27216,24 @@ NOTE       	= "Also available as University of Tennessee LAPACK Working
    year={2016},
    month={Jan},
    pages={C624-C651}
+}
+
+@article{cholmod2008,
+author = {Chen, Yanqing and Davis, Timothy A. and Hager, William W. and Rajamanickam, Sivasankaran},
+title = {Algorithm 887: CHOLMOD, Supernodal Sparse Cholesky Factorization and Update/Downdate},
+year = {2008},
+issue_date = {October 2008},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {35},
+number = {3},
+issn = {0098-3500},
+url = {https://doi.org/10.1145/1391989.1391995},
+doi = {10.1145/1391989.1391995},
+abstract = {CHOLMOD is a set of routines for factorizing sparse symmetric positive definite matrices of the form A or AAT, updating/downdating a sparse Cholesky factorization, solving linear systems, updating/downdating the solution to the triangular system Lx = b, and many other sparse matrix functions for both symmetric and unsymmetric matrices. Its supernodal Cholesky factorization relies on LAPACK and the Level-3 BLAS, and obtains a substantial fraction of the peak performance of the BLAS. Both real and complex matrices are supported. CHOLMOD is written in ANSI/ISO C, with both C and MATLABTM interfaces. It appears in MATLAB 7.2 as x = Ab when A is sparse symmetric positive definite, as well as in several other sparse matrix functions.},
+journal = {ACM Trans. Math. Softw.},
+month = oct,
+articleno = {22},
+numpages = {14},
+keywords = {sparse matrices, Cholesky factorization, linear equations}
 }
