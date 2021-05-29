@@ -394,6 +394,7 @@ to the same element and is not considered for the data transfer analysis.
 %
 Figure~\ref{fig:ecm:data-bw} displays the data transfers occurring for one
 nonzero update if \vr{} is cached in L3 cache.
+\todol{add assumption on how many vector elements can be stored on level 2 cache and level 3 cache}
 
 \begin{figure}[t]
   \centering%
@@ -1139,8 +1140,8 @@ solid mechanics problem. Here, as a material model, a J2-elasto-plasticity model
 was chosen and three-dimensional and piecewise quadratic tetrahedral finite
 elements were used for the discretization. The matrix \mymat{bddc} represents a
 typical subdomain problem arising in the BDDC (Balancing Domain Decomposition by
-constraints) implicit finite element solver.
-
+Constraints) implicit finite element solver.
+Figure \ref{fig:m:spy} shows the structure of A for different matrix classes, whereas more interesting, is the nonzero distribution over the panel sizes of the factor L found in Figure \ref{fig:m:hist}.
 Please note that the current factorization limits the number of parts to powers
 of two.
 To avoid load imbalance during the solve step we report results only for thread
@@ -1165,3 +1166,37 @@ counts which are powers of two.
   omen~\protect\subref{fig:m:spy:omen}, and bddc~\protect\subref{fig:m:spy:feti}.}
   \label{fig:m:spy}
 \end{figure}
+
+\begin{figure*}[tp]
+  \centering
+  \subfloat[dense]{%
+	\includegraphics[width=0.3\textwidth,clip=true]{images/matrices/ps-n-20000-t-1-p-80}
+	\label{fig:m:hist:dense}
+  } \,
+  \subfloat[lapl1]{%
+	\includegraphics[width=0.3\textwidth,clip=true]{images/matrices/pl-n-00040-b-004}
+	\label{fig:m:hist:laplace:n40b4}
+  } \,
+  \subfloat[lapl2]{%
+	\includegraphics[width=0.3\textwidth,clip=true]{images/matrices/pl-n-70-b-1-t-1-p-80}
+	\label{fig:m:hist:laplace:n70b1}
+  } \,
+  \subfloat[omen1]{%
+	\includegraphics[width=0.3\textwidth,clip=true]{{{images/matrices/omen-rgf-tc2.5-lc160-t-1-p-80.hist-rhs-update-frequencies}}}
+	\label{fig:m:hist:omen1}
+  } \,
+  \subfloat[omen2]{%
+	\includegraphics[width=0.3\textwidth,clip=true]{{{images/matrices/omen-rgf-tc3.5-t-1-p-80.hist-rhs-update-frequencies}}}
+	\label{fig:m:hist:omen2}
+  } \,
+%  \subfloat[omen3]{%
+%	\includegraphics[width=0.3\textwidth,clip=true]{{{images/matrices/omen-rgf-tc4.5-t-1-p-80.hist-rhs-update-frequencies}}}
+%	\label{fig:m:omen}
+%  } \,
+  \subfloat[feti1]{%
+	\includegraphics[width=0.3\textwidth,clip=true]{{{images/matrices/mat_Kii_sd22_size750141_load2_newton1-t-1-p-80.log-rhs-update-frequencies}}}
+	\label{fig:m:hist:feti1}
+  } \,
+  \caption{Multi-parameter histograms showing how many nonzeros of L are in panels with a certain number of columns and rows. Panels with 3000 and more rows are accumulated. This plot gives an impression of how the work, i.e., nonzeros, in L is distributed over panel dimensions.}
+  \label{fig:m:hist}
+\end{figure*}

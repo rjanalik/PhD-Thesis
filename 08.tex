@@ -1,6 +1,20 @@
 \chapter{Conclusion and Research Roadmap}
 \label{sec:conclusion}
 
+The Roofline model is widely used to visualize the performance of executed code together with the upper performance bounds given by the memory bandwidth and the processor peak performance. The model can hereby provide an insightful visualization of bottlenecks. In this thesis we applied the Roofline model, in a modified form, to the sparse triangular solve step of PARDISO, a leading sparse direct solver package, which is also part of the Intel MKL library. The performance of the forward and backward substitution process has been analyzed and benchmarked for a representative set of sparse matrices on various modern x86-type multicore architectures and the Knights Landing manycore architecture. It has been shown how to accurately measure the necessary quantities also for threaded code, and the measurement approach, its validation, as well as limitations were discussed. Furthermore, a modified version of the Roofline model has been introduced covering the serial and parallel execution phases allowing for precise in-socket performance predictions.
+
+In this thesis, PARDISO's sparse triangular solve algorithm has been analyzed regarding data transfers and floating point operations. This serves as input for our modified Roofline performance model. The model covers the serial and parallel execution phases of the forward and backward substitution and in general captures the behavior of the measured
+performance. For Intel Ivy Bridge and Haswell (desktop) systems as well as AMD Zen platforms the model error is only up to $20$\,\%. However, for Intel Haswell (server), Broadwell, and Skylake (server) the model error raises up to up to $60$\,\% depending on the system and matrix. The observed deviations require a deeper analysis
+of the architectures and the algorithm. Here, the ECM performance
+model may be a suitable tool. This model additionally accounts for in-cache traffic and the complete in-core execution. This advanced model delivers excellent predictions for vectorized code. However, modeling scalar code execution, as it is used in sparse triangular solve, is still under development. For Knights Landing initial deviations of the model
+of up to $130$\,\% result from the bottleneck given by the L2 bandwidth.
+By adjustments, the error can be reduced, however with multiple cores the situation becomes more complex as L2 or memory bandwidth can be bottlenecks. Sparse triangular solve uses only scalar loads and stores, but with one core of the evaluated AMD Zen systems, it achieves nearly the same bandwidth as obtained with the vectorized read-only benchmark. In the current factorization algorithm the serial fraction of the factor $L$
+increases with the number of cores. As a result, typically the highest performance for the sparse triangular solve phase is already reached with four or eight cores.
+PARDISO's high performance sparse triangular solve favors hardware with a high
+memory bandwidth that can ideally be saturated with one or two cores.
+
+\todop{remove old below}
+
 We analyzed the sparse triangular solve algorithm regarding data
 transfers and floating point operations.
 This serves as input for our modified roofline performance model.
