@@ -1147,26 +1147,26 @@ structure. Certainly, since the matrix is nonsymmetric, the block structure
 is only sub-optimal. We display the supernodal structure for the associated
 Cholesky factor, i.e., for the Cholesky factor of a symmetric positive definite
 matrix with same undirected graph as our matrix (see
-left part of Figure \ref{fig:supernodal_structure}). Furthermore, we display
+top part of Figure \ref{fig:supernodal_structure}). Furthermore, we display
 the supernodal structure for the factors $L$ and $U$ computed from the
-nonsymmetric matrix without pivoting (see right part of Figure \ref{fig:supernodal_structure}).
+nonsymmetric matrix without pivoting (see bottom part of Figure \ref{fig:supernodal_structure}).
 \end{example}
 \begin{figure}
  \centering
 % \sidecaption
-\begin{minipage}{.48\textwidth}
+\begin{minipage}{.72\textwidth}
  \begin{center}
 \includegraphics[width=0.99\textwidth]{figures/west0479-match-metis-chol-super} 
  \end{center}
 \end{minipage}
-~
-\begin{minipage}{.48\textwidth}
+\par \bigskip
+\begin{minipage}{.72\textwidth}
   \begin{center}
 \includegraphics[width=0.99\textwidth]{figures/west0479-match-metis-lu-super} 
  \end{center}  
 \end{minipage}
-    \caption{Supernodal structure. Left: vertical lines display the blocking of the
-supernodes with respect to the associated Cholesky factor. Right: 
+    \caption{Supernodal structure. Top: vertical lines display the blocking of the
+supernodes with respect to the associated Cholesky factor. Bottom:
 vertical and horizontal lines display the blocking of the
 supernodes applied to $L$ and $U$.}
     \label{fig:supernodal_structure}
@@ -1276,7 +1276,7 @@ Figure~\ref{fig:algo:ds}.
 
 \begin{figure}[t]
   \centering
-    \includegraphics[width=0.5\textwidth,clip=true]{images/parts-panels-separator}
+    \includegraphics[width=0.6\textwidth,clip=true]{images/parts-panels-separator}
   \caption{Sparse matrix data structures in PARDISO. Adjacent columns of $L$ exhibiting the same
 structure form panels also known as supernodes. 
 Groups of panels which touch independent elements of the right hand side $r$ are
@@ -1706,12 +1706,23 @@ For sparse direct algorithms there exist a wide range of possible methods, such 
 The Table \ref{tab:solvers} lists a few available software packages for the direct solution of sparse linear algebra problems. The interest is in software for high-performance computers for solving problems in numerical linear algebra, especially sparse direct systems.
 We are, in particular, interested in the forward and backward solution process of sparse direct solvers since they build the computational kernel, e.g., in FETI-DP methods. FETI-DP are known to be highly parallelizable, but all implementations are using sparse direct solvers as building blocks on each compute node in order to efficiently solve the coarse grid. {\color{red}We will investigate and analyze the performance of the forward/backward solution process of libraries such as CHOLMOD (\cite{cholmod2008,doi:10.1137/1.9780898718881}), MUMPS (\cite{amestoy-2000,amestoy-2001,amestoy-2006}) , and PARDISO (\cite{schenk-2004,schenk-2006,Bollhofer2020}) , and present not only numerical results but also a detailed performance analysis for a representative sparse solver kernel based on a modified Berkeley Roofline Model model in the next chapters.} \todol{remove?}
 
-In addition to PARDISO~(\cite{schenk-2004,schenk-2006,Bollhofer2020}) the considerations in this thesis may also be relevant to the sparse triangular solve phases of other  solvers like SuperLU~(\cite{li-2005}), UMFPACK~(\cite{davis-1997}), or MUMPS~(\cite{amestoy-2000,amestoy-2001,amestoy-2006}). The performance of sparse direct solvers has of course been considered earlier
+We will investigate and analyze the performance of the forward/backward solution process of PARDISO library~(\cite{schenk-2004,schenk-2006,Bollhofer2020}).
+In addition to PARDISO the considerations in this thesis may also be relevant to the sparse triangular solve phases of other  solvers like SuperLU~(\cite{li-2005}), UMFPACK~(\cite{davis-1997}), or MUMPS~(\cite{amestoy-2000,amestoy-2001,amestoy-2006}). The performance of sparse direct solvers has of course been considered earlier
 by many different authors, e.\,g.,~\cite{heath-1999,sherry-2008,marrakchi-2017,park-2014,weifeng-2016},
 using hardware relevant at the time of publication. Often, the performance is reported for the proposed implementation on a certain processor or GPU together with related metrics, e.\,g., data volume or cache misses. More advanced works such as~\cite{vuduc-2002} provide upper and lower bounds for the performance. In this thesis, it is the goal to apply analytical performance models which allow us to evaluate performance to expect and to determine bottlenecks.   For decades, traditionally, the Roofline
 model~(\cite{callahan88,hockney89,schoenauer00,williams-2009}) is used
 for this task to relate the performance of a code with the hardware's capabilities.
 
+{\color{red} For comparison and to motivate the usage of the PARDISO solver, we runs initial benchmarks on varouos matrices. Here we used CHOLMOD, MUMPS~\cite{amestoy-2000,amestoy-2001,amestoy-2006} and PARDISO~\cite{schenk-2004,kuzmin-2013} solvers. For CHOLMOD and MUMPS we set METIS reordering, so all solvers have about the same factors. We measured duration of the forward/backward substitution for our benchmark
+matrices. The results for the Ivy Bridge system are shown in Figure~\ref{fig:solvers}.}
+
+%
+\begin{figure}[tp]
+  \centering
+	\includegraphics[width=\textwidth,clip=true]{images/SolverComparison}
+   \caption{\todol{Duration of forward/backward substitution for the dense, lapl1, and lapl2 matrices for different sparse direct solvers on the IVB system.}}
+  \label{fig:solvers}
+\end{figure}
 
 \begin{table}[]
    \centering
