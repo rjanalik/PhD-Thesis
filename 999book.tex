@@ -1687,7 +1687,14 @@ panels are iterated over in reversed (rev.) order.}
 \label{sec:sparse-solvers}
 High-performance  computing mathematical libraries have been a very important part of scientific and engineering computing for years, and their importance continues to grow as microprocessor architectures become more complex and software libraries become better designed to integrate easily within applications. Despite the fact that there are various science and engineering applications, the underlying algorithms typically have remarkable similarities, especially those algorithms that are most challenging to implement well in parallel. It is not too strong a statement to say that these software libraries are essential to the broad success of scalable high-performance computing in computational sciences (\cite{kothe-2007,pitac-2005,bader-2007}).
 
-The recent trends in hardware development have added additional questions to this scenario, because today's codes are not guaranteed to exploit the performance of next-generation hardware to a satisfying degree. The so-called memory wall, i.e., the increasing performance gap between memory access and processor speed, will force scientific computing software to deal with the efficient use of complex multiple memory hierarchies. In addition, many-core architectures with hundreds of cores using a decreased processor clock rate will add additional algorithmic and software challenges to scientific computing. Autotuning tools, libraries, and software tools based on dwarfs (\cite{10.1145/1562764.1562783}) will be designed that will help researcher and application developer to improve the performance of a given application.
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.9\textwidth]{images/machine-balance-evolution.png}
+  \caption{Evolution of machine balance of processors. From \cite{mark-gates-balance}.}
+  \label{fig:machine-balance-evolution}
+\end{figure}
+
+The recent trends in hardware development have added additional questions to this scenario, because today's codes are not guaranteed to exploit the performance of next-generation hardware to a satisfying degree. The so-called memory wall, i.e., the increasing performance gap between memory access and processor speed, will force scientific computing software to deal with the efficient use of complex multiple memory hierarchies. {\color{blue} Figure \ref{fig:machine-balance-evolution} shows how many floating point operations are needed per memory access on various processors to fully utilize its power. We can clearly see the increasing trend.} In addition, many-core architectures with hundreds of cores using a decreased processor clock rate will add additional algorithmic and software challenges to scientific computing. Autotuning tools, libraries, and software tools based on dwarfs (\cite{10.1145/1562764.1562783}) will be designed that will help researcher and application developer to improve the performance of a given application.
 
 In this work we will focus on systems of linear equations that arise at the heart of many scientific and engineering applications. Many of these linear systems are sparse, i.e., most of the elements in the coefficient matrix are zero. Direct methods based on matrix factorizations are sometimes needed to ensure accurate solutions. For example, an accurate solution of sparse linear systems is needed in shift-invert Lanczos to compute interior eigenvalues. The performance and resource usage of sparse matrix factorizations are critical to time-to-solution and maximum problem size solvable on a given platform.
 
@@ -1712,17 +1719,6 @@ by many different authors, e.\,g.,~\cite{heath-1999,sherry-2008,marrakchi-2017,p
 using hardware relevant at the time of publication. Often, the performance is reported for the proposed implementation on a certain processor or GPU together with related metrics, e.\,g., data volume or cache misses. More advanced works such as~\cite{vuduc-2002} provide upper and lower bounds for the performance. In this thesis, it is the goal to apply analytical performance models which allow us to evaluate performance to expect and to determine bottlenecks.   For decades, traditionally, the Roofline
 model~(\cite{callahan88,hockney89,schoenauer00,williams-2009}) is used
 for this task to relate the performance of a code with the hardware's capabilities.
-
-{\color{red} For comparison and to motivate the usage of the PARDISO solver, we runs initial benchmarks on varouos matrices. Here we used CHOLMOD, MUMPS~\cite{amestoy-2000,amestoy-2001,amestoy-2006} and PARDISO~\cite{schenk-2004,kuzmin-2013} solvers. For CHOLMOD and MUMPS we set METIS reordering, so all solvers have about the same factors. We measured duration of the forward/backward substitution for our benchmark
-matrices. The results for the Ivy Bridge system are shown in Figure~\ref{fig:solvers}.}
-
-%
-\begin{figure}[tp]
-  \centering
-	\includegraphics[width=\textwidth,clip=true]{images/SolverComparison}
-   \caption{\todol{Duration of forward/backward substitution for the dense, lapl1, and lapl2 matrices for different sparse direct solvers on the IVB system.}}
-  \label{fig:solvers}
-\end{figure}
 
 \begin{table}[]
    \centering

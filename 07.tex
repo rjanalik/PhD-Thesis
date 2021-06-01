@@ -2,12 +2,15 @@
 \label{sec:pa}
 \label{sec:performance}
 
+\section{Single Core Performance Modeling, Evaluation and Analysis}
+\label{sec:performance:singlecore}
 
-For the code generation, we instruct
+For the code generation
+of the sparse triangular solve discussed in Chapter \ref{c:modeling}, we instruct
 the compiler via directives to unroll the
 innermost loops of Algorithms~\ref{alg:algo:fw} and \ref{alg:algo:bw}, i.\,e.,
 to perform an unrolling over the rows.
-Here, an unrolling factor of eight or 16 showed the best
+Typically an unrolling factor of eight or sixteen showed the best
 performance for all architectures.
 %
 We prohibit vectorization of these loops, which causes the
@@ -87,9 +90,7 @@ panel size $s=80$ on one NUMA LD for each hardware system.
   Green and blue bars show predictions of the original and modified roofline
 model, respectively.
   HSW-S and ZEN-S have 14 and 24 cores in total and using all cores could
-achieve, with correct NUMA placement, a higher performance, respectively. 
-  Bottom row shows the model error $e$ for the corresponding system in
-percentage.}%
+achieve, with correct NUMA placement, a higher performance, respectively.}
   \label{fig:p:pardiso}
 \end{figure*}
 
@@ -158,8 +159,8 @@ Measuring the actual clock frequency shows that ZEN-D and ZEN-S run with
 $3.8$\,GHz and $3.2$\,GHz during sparse solve, respectively.
 However, they also achieve this frequency during read-only bandwidth
 measurements.
-Until now its unclear why both systems reach a higher bandwidth with sparse
-solve compared to the scalar read-only benchmark.
+%Until now its unclear why both systems reach a higher bandwidth with sparse
+%solve compared to the scalar read-only benchmark.
 % \todo{multi stream not the answer}
 % As we are currently unable to measure the memory traffic on this architecture
 % we cannot compare it to our model assumptions we have to postpone further
@@ -176,16 +177,16 @@ solve compared to the scalar read-only benchmark.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\section{Multiple ccore Performance Modeling, Evaluation and Analysis}
+\label{sec:performance:multicore}
 
-
-
-Performance results for all matrices are shown in Figure~\ref{fig:p:pardiso}.
+Performance and modeling results on multicore architectures for all matrices are shown in Figure~\ref{fig:p:pardiso}.
 For HSW-D (second column) the main memory was not large enough for benchmarks
 with the \mymat{bddc}, \mymat{omen2}, and \mymat{omen3} matrices, which is
 indicated as ``out of memory'' in the figures.
 %
 %
-Currently we only can ensure correct NUMA placement for one locality domain; this is why
+In this work we ensure correct NUMA placement for one locality domain; this is why
 we limit the scope of the analysis to one NUMA LD only. 
 Hence, for HSW-S and ZEN-S fewer cores than the processor houses are used.
 Please keep in mind that for HSW-S, seven of 14 cores and for ZEN-S only six of

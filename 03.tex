@@ -1,6 +1,45 @@
 \chapter{Node-Level Performance Modeling of Sparse Triangular Solve}
+\label{c:modeling}
 
 Even in scientific computing, simulation code development often lacks a basic understanding of performance bottlenecks and relevant optimization opportunities. In this chapter we will use a structured model-based performance engineering approach on the compute node level for a fundamental kernel operation in sparse factorization solvers. We aim at a deep understanding of how code performance comes about and which hardware bottlenecks might apply. The pivotal ingredient of this process is a performance model which links software requirements with hardware capabilities. Such models are often simplified such as the well-known Berkeley Roofline model or the Erlangen ECM model, but it leads to deeper insights and strikingly more accurate runtime predictions.
+
+{\color{blue} For comparison and to motivate the usage of the PARDISO solver, we runs initial benchmarks on varouos matrices. Here we used CHOLMOD~(\cite{cholmod2008,doi:10.1137/1.9780898718881}), MUMPS~(\cite{amestoy-2000,amestoy-2001,amestoy-2006}) and PARDISO~(\cite{schenk-2004,kuzmin-2013}) solvers. For CHOLMOD and MUMPS we set METIS reordering, so all solvers have about the same factors. We measured duration of the forward/backward substitution for our benchmark
+matrices. The results for the Ivy Bridge system are shown in Figure~\ref{fig:solvers}.
+
+The package PARDISO\footnote{A discussion of the algorithms used in
+PARDISO, the user manual and more information on the solver can be found at
+\url{http://www.pardiso-project.org}}
+is a thread-safe, high-performance and memory-effi\-cient,
+serial and parallel solver for the direct solution of unsymmetric
+and symmetric sparse linear systems on shared memory multiprocessors.
+The solver uses a combination
+of left- and right-looking Level-3 BLAS supernode techniques
+(\cite{AndBBDDDGHMOS99}).
+In order to improve sequential and parallel sparse
+numerical factorization performance, the algorithms are based on
+a Level-3 BLAS update and pipelining parallelism is exploited with
+a combination of left- and right-looking supernode techniques.
+
+PARDISO calculates the solution of a set of sparse linear equations
+$AX=B$ with multiple right-hand sides, using a parallel $LU$, $LDL^T$ or $LL^T$
+factorization, where $A$ and $X,\,B$ are $n$ by $n$ and $n$ by $nrhs$ matrices
+respectively. PARDISO supports a wide range of sparse matrix types and
+computes the solution of real or complex,
+symmetric, structurally symmetric or unsymmetric, positive definite,
+indefinite or Hermitian sparse linear system of equations on shared-memory
+multiprocessing architectures.
+
+The parallel pivoting methods for unsymmetric matrices allow complete supernode pivoting in order to compromise numerical stability and scalability during the factorization process. For sufficiently large problem sizes numerical experiments demonstrate that the scalability of the parallel algorithm is nearly independent of the shared-memory multiprocessing architecture and a speedup of up to seven using eight processors has been observed. The package is implemented using multi-threading using OpenMP directives. PARDISO performs the following analysis steps depending on the structure
+of the input matrix $A$. See \cite{Bollhofer2020} for further details.
+}
+
+%
+\begin{figure}[tp]
+  \centering
+	\includegraphics[width=\textwidth,clip=true]{images/SolverComparison}
+   \caption{Duration of forward/backward substitution for the dense, lapl1, and lapl2 matrices for different sparse direct solvers on the IVB system.}
+  \label{fig:solvers}
+\end{figure}
 
 In this chapter, we will mainly analyze the data transfer between the different cache levels and the FLOPs performed during the sparse triangular solve phase. The results of this analyzis are used as input for our performance model. Therefore, we mostly inspect the different instantiations of the loops resulting from Algorithm~\ref{alg:algo:fw} and \ref{alg:algo:bw}. We only consider the innermost loops because all the arithmetics is performed here. Our assumption is that the instructions regarding control variables of the loops are negligible, hence we do not them into account.
 %Here, we only consider the innermost loops and do not
@@ -96,6 +135,14 @@ Before the separator is then serially updated, the results of the temporary
 arrays are gathered back into \vr{}. 
 The backward substitution works the same, just reversed, and
 updates to different temporary arrays are not required.
+{\color{blue} Figure \ref{fig:ecm-parallel-model} shows a possible execution of forward solve. The nested dissection reordering assigns to every partition about the same number of columns. However, panels in different partitions can have different size (number of columns). Then different threads execute differently unrolled code, as can be seen on the left side of Figure \ref{fig:ecm-parallel-model}. For easier modeling we can assume the execution of the unrollings is sorted and evenly distributed over cores, as shows the right side of the Figure \ref{fig:ecm-parallel-model}.}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.9\textwidth,clip=true]{images/ecm-parallel-model}
+   \caption{Possible real execution of forward solve. In the parallel phase cores can execute differently unrolled loops at the same time. For easier modeling the execution of the unrollings is sorted and evenly distributed over all cores.}
+  \label{fig:ecm-parallel-model}%
+\end{figure}
 
 %\begin{algorithm}[t]
 %  \begin{algorithmic}[1]
@@ -321,6 +368,7 @@ active part of \vr{}.
 At some point the active part can be completely kept in the L2 or even the L1 cache.
 This also holds true for \vindx{}, except when a new panel starts, then
 the panel's row indices must first be loaded from memory.
+{\color{blue} With Intel L2 cache 356\,kB and L1 cache 32\,kB, maximum about 13000 and 1600 elemets of \vr{}, \vindx{} and \vlnz{} could fit in the L2 and L1 cache, respectively. However, due to the associativity and replacement strategy of the cache and the need to store other date, it is reasonable to expect only half of the size can be used. We can expect if the active part of \vr{} is less than about 6000, it can be kept in L2, and if it is less than about 800 it can be kept in L1.}
 
 \begin{figure}[t]
   \centering%
@@ -394,7 +442,6 @@ to the same element and is not considered for the data transfer analysis.
 %
 Figure~\ref{fig:ecm:data-bw} displays the data transfers occurring for one
 nonzero update if \vr{} is cached in L3 cache.
-\todol{add assumption on how many vector elements can be stored on level 2 cache and level 3 cache}
 
 \begin{figure}[t]
   \centering%
