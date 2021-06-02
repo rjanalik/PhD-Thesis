@@ -27248,3 +27248,161 @@ journal = {The International Journal of High Performance Computing Applications}
 doi = {10.1177/10943420211003313},
 note		= {\bibdoiurl{10.1177/10943420211003313}}
 }
+
+@article{KöstlerRüde+2013+91+96,
+author = {Harald Köstler and Ulrich Rüde},
+doi = {doi:10.1524/itit.2013.0010},
+url = {https://doi.org/10.1524/itit.2013.0010},
+title = {The CSE Software Challenge — Covering the Complete Stack},
+journal = {},
+number = {3},
+volume = {55},
+year = {2013},
+pages = {91--96}
+}
+
+@ARTICLE{8423171,
+  author={Balaprakash, Prasanna and Dongarra, Jack and Gamblin, Todd and Hall, Mary and Hollingsworth, Jeffrey K. and Norris, Boyana and Vuduc, Richard},
+  journal={Proceedings of the IEEE},
+  title={Autotuning in High-Performance Computing Applications},
+  year={2018},
+  volume={106},
+  number={11},
+  pages={2068-2083},
+  doi={10.1109/JPROC.2018.2841200}}
+
+@INPROCEEDINGS{9307836,
+  author={Alappat, Christie and Laukemann, Jan and Gruber, Thomas and Hager, Georg and Wellein, Gerhard and Meyer, Nils and Wettig, Tilo},
+  booktitle={2020 IEEE/ACM Performance Modeling, Benchmarking and Simulation of High Performance Computer Systems (PMBS)},
+  title={Performance Modeling of Streaming Kernels and Sparse Matrix-Vector Multiplication on A64FX},
+  year={2020},
+  volume={},
+  number={},
+  pages={1-7},
+  doi={10.1109/PMBS51919.2020.00006}
+}
+
+@INPROCEEDINGS{9307865,
+  author={Nguyen, Tan and Williams, Samuel and Siracusa, Marco and MacLean, Colin and Doerfler, Douglas and Wright, Nicholas J.},
+  booktitle={2020 IEEE/ACM Performance Modeling, Benchmarking and Simulation of High Performance Computer Systems (PMBS)},
+  title={The Performance and Energy Efficiency Potential of FPGAs in Scientific Computing},
+  year={2020},
+  volume={},
+  number={},
+  pages={8-19},
+  doi={10.1109/PMBS51919.2020.00007}}
+
+@InProceedings{10.1007/978-3-030-50743-5_22,
+author="Madsen, Jonathan R.
+and Awan, Muaaz G.
+and Brunie, Hugo
+and Deslippe, Jack
+and Gayatri, Rahul
+and Oliker, Leonid
+and Wang, Yunsong
+and Yang, Charlene
+and Williams, Samuel",
+editor="Sadayappan, Ponnuswamy
+and Chamberlain, Bradford L.
+and Juckeland, Guido
+and Ltaief, Hatem",
+title="Timemory: Modular Performance Analysis for HPC",
+booktitle="High Performance Computing",
+year="2020",
+publisher="Springer International Publishing",
+address="Cham",
+pages="434--452",
+abstract="HPC has undergone a significant transition toward heterogeneous architectures. This transition has introduced several issues in code migration to support multiple frameworks for targeting the various architectures. In order to cope with these challenges, projects such as Kokkos and LLVM create abstractions which map a generic front-end API to the backend that supports the targeted architecture. This paper presents a complementary framework for performance measurement and analysis. Several performance measurement and analysis tools in existence provide their capabilities through various methods but the common theme among these tools are prohibitive limitations in terms of user-level extensions. For this reason, software developers commonly have to learn multiple tools and valuable analysis methods, such as the roofline model, are frequently required to be generated manually. The timemory framework provides complete modularity for performance measurement and analysis and eliminates all restrictions on user-level extensions. The timemory framework also provides a highly-efficient and intuitive method for handling multiple tools/measurements (i.e., ``components'') concurrently. The intersection of these characteristics provide ample evidence that timemory can serve as the common interface for existing performance measurement and analysis tools. Timemory components are developed in C++ but includes multi-language support for C, Fortran, and Python codes. Numerous components are provided by the library itself -- including, but not limited to, timers, memory usage, hardware counters, and FLOP and instruction roofline models. Additionally, analysis of the intrinsic overhead demonstrates superior performance in comparison with popular tools.",
+isbn="978-3-030-50743-5"
+}
+
+@article{https://doi.org/10.1002/cpe.5547,
+author = {Yang, Charlene and Kurth, Thorsten and Williams, Samuel},
+title = {Hierarchical Roofline analysis for GPUs: Accelerating performance optimization for the NERSC-9 Perlmutter system},
+journal = {Concurrency and Computation: Practice and Experience},
+volume = {32},
+number = {20},
+pages = {e5547},
+keywords = {code optimization, Cray, NVIDIA GPU, performance analysis, Roofline, tensor core},
+doi = {https://doi.org/10.1002/cpe.5547},
+url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/cpe.5547},
+eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/cpe.5547},
+note = {e5547 cpe.5547},
+abstract = {Summary The Roofline performance model provides an intuitive and insightful approach to identifying performance bottlenecks and guiding performance optimization. In preparation for the next-generation supercomputer Perlmutter at NERSC, this paper presents a methodology to construct a hierarchical Roofline on NVIDIA GPUs and extends it to support reduced precision and Tensor Cores. The hierarchical Roofline incorporates L1, L2, device memory, and system memory bandwidths into one single figure, and it offers more profound insights into performance analysis than the traditional DRAM-only Roofline. We use our Roofline methodology to analyze three proxy applications: GPP from BerkeleyGW, HPGMG from AMReX, and conv2d from TensorFlow. In doing so, we demonstrate the ability of our methodology to readily understand various aspects of performance and performance bottlenecks on NVIDIA GPUs and motivate code optimizations.},
+year = {2020}
+}
+
+@InProceedings{10.1007/978-3-319-32149-3_12,
+author="Druinsky, Alex
+and Ghysels, Pieter
+and Li, Xiaoye S.
+and Marques, Osni
+and Williams, Samuel
+and Barker, Andrew
+and Kalchev, Delyan
+and Vassilevski, Panayot",
+editor="Wyrzykowski, Roman
+and Deelman, Ewa
+and Dongarra, Jack
+and Karczewski, Konrad
+and Kitowski, Jacek
+and Wiatr, Kazimierz",
+title="Comparative Performance Analysis of Coarse Solvers for Algebraic Multigrid on Multicore and Manycore Architectures",
+booktitle="Parallel Processing and Applied Mathematics",
+year="2016",
+publisher="Springer International Publishing",
+address="Cham",
+pages="116--127",
+abstract="We study the performance of a two-level algebraic-multigrid algorithm, with a focus on the impact of the coarse-grid solver on performance. We consider two algorithms for solving the coarse-space systems: the preconditioned conjugate gradient method and a new robust HSS-embedded low-rank sparse-factorization algorithm. Our test data comes from the SPE Comparative Solution Project for oil-reservoir simulations. We contrast the performance of our code on one 12-core socket of a Cray XC30 machine with performance on a 60-core Intel Xeon Phi coprocessor. To obtain top performance, we optimized the code to take full advantage of fine-grained parallelism and made it thread-friendly for high thread count. We also developed a bounds-and-bottlenecks performance model of the solver which we used to guide us through the optimization effort, and also carried out performance tuning in the solver's large parameter space. As a result, significant speedups were obtained on both machines.",
+isbn="978-3-319-32149-3"
+}
+
+@INPROCEEDINGS{6569852,
+  author={Choi, Jee Whan and Bedard, Daniel and Fowler, Robert and Vuduc, Richard},
+  booktitle={2013 IEEE 27th International Symposium on Parallel and Distributed Processing},
+  title={A Roofline Model of Energy},
+  year={2013},
+  volume={},
+  number={},
+  pages={661-672},
+  doi={10.1109/IPDPS.2013.77}}
+
+@article{MARQUES2020257,
+title = {Application-driven Cache-Aware Roofline Model},
+journal = {Future Generation Computer Systems},
+volume = {107},
+pages = {257-273},
+year = {2020},
+issn = {0167-739X},
+doi = {https://doi.org/10.1016/j.future.2020.01.044},
+url = {https://www.sciencedirect.com/science/article/pii/S0167739X19309586},
+author = {Diogo Marques and Aleksandar Ilic and Zakhar A. Matveev and Leonel Sousa},
+keywords = {Cache-Aware Roofline Model, Exascale applications, Performance modeling, Application characterization},
+abstract = {In the coming exascale era, the complexity of modern applications and hardware resources imposes significant challenges for boosting the efficiency via execution fine-tuning. To abstract this complexity in an intuitive way, recent application analysis tools rely on insightful modeling, e.g., Intel® Advisor with Cache-aware Roofline Model. However, these approaches mainly consider the maximum architecture capabilities, which may limit their usability when characterizing real-world applications. To address this issue, a novel Cache-Aware Roofline Model for more accurate performance modeling of multi-cores is proposed, which realistically resembles application requirements. The proposed fine-grain modeling relies on micro-benchmarking to decouple the attainable performance of the micro-architecture for different utilization scenarios and for a diverse set of functional units and memory levels. Memory sub-system traffic simulation, dynamic and static analyses are also used to derive the requirements of the applications. Experimental results for a real multi-core system with an Intel server processor and for a set of 13 kernels from exascale proxy applications, show that the proposed models provide more accurate application characterization, optimization hints and bottleneck detection in comparison to the state-of-the-art models.}
+}
+
+@Inbook{Minami2019,
+author="Minami, Kazuo",
+editor="Geshi, Masaaki",
+title="Performance Optimization of Applications",
+bookTitle="The Art of High Performance Computing for Computational Science, Vol. 2: Advanced Techniques and Examples for Materials Science",
+year="2019",
+publisher="Springer Singapore",
+address="Singapore",
+pages="11--39",
+abstract="In this chapter, we present procedures for performance evaluation that we have used for practical applications. The method is outlined in Sect. 2.1, and Sects. 2.2--2.6 describe the details of the method. The classification of problems related to high parallelism and the classification of applications from the viewpoint of single-CPU performance are described. Sections 2.7 and 2.8 then describe performance optimization techniques for each problem pattern related to high parallelism and the techniques for single-CPU performance optimization according to application classification.",
+isbn="978-981-13-9802-5",
+doi="10.1007/978-981-13-9802-5_2",
+url="https://doi.org/10.1007/978-981-13-9802-5_2"
+}
+
+@INPROCEEDINGS{9059264,
+  author={Ding, Nan and Williams, Samuel},
+  booktitle={2019 IEEE/ACM Performance Modeling, Benchmarking and Simulation of High Performance Computer Systems (PMBS)},
+  title={An Instruction Roofline Model for GPUs},
+  year={2019},
+  volume={},
+  number={},
+  pages={7-18},
+  doi={10.1109/PMBS49563.2019.00007}
+}
