@@ -36,39 +36,32 @@ show any performance improvement.
 \begin{figure}[t]%
 \centering%
 \captionsetup[subfigure]{justification=centering,farskip=0pt}
-\subfloat[][
-
-IVB]{%
-\includegraphics[height=2.9cm,clip=true]{images/perf/ps-n-20000/p-single-core-emmy-n-20000}
+\subfloat[][\\IVB]{%
+\includegraphics[height=6.5cm,clip=true]{images/perf/ps-n-20000/p-single-core-emmy-n-20000}
 } %
-\subfloat[HSW-D]{%
-\includegraphics[height=2.9cm,clip=true]{images/perf/ps-n-20000/p-single-core-woody-hsw-n-20000}
+   \subfloat[][{\\HSW-D}]{%
+\includegraphics[height=6.5cm,clip=true]{images/perf/ps-n-20000/p-single-core-woody-hsw-n-20000}
 } %
-\subfloat[HSW-S]{%
-\includegraphics[height=2.9cm,clip=true]{images/perf/ps-n-20000/p-single-core-hasep1-n-20000}
+   \subfloat[][\\HSW-S]{%
+\includegraphics[height=6.5cm,clip=true]{images/perf/ps-n-20000/p-single-core-hasep1-n-20000}
 } %
-\subfloat[][
-
-BDW]{%
-\includegraphics[height=2.9cm,clip=true]{images/perf/ps-n-20000/p-single-core-meggie-n-20000}
+\subfloat[][\\BDW]{%
+\includegraphics[height=6.5cm,clip=true]{images/perf/ps-n-20000/p-single-core-meggie-n-20000}
 } %
-\subfloat[][
-
-SKX]{%
-\includegraphics[height=2.9cm,clip=true]{images/perf/ps-n-20000/p-single-core-skylakesp2-n-20000}
+   \\[2eM]
+\subfloat[][\\SKX]{%
+\includegraphics[height=6.5cm,clip=true]{images/perf/ps-n-20000/p-single-core-skylakesp2-n-20000}
 } %
-\subfloat[][
-
-KNL]{%
-\includegraphics[height=2.9cm,clip=true]{images/perf/ps-n-20000/p-single-core-knightmare1-n-20000}
+\subfloat[][\\KNL]{%
+\includegraphics[height=6.5cm,clip=true]{images/perf/ps-n-20000/p-single-core-knightmare1-n-20000}
 \label{fig:p:single-core:knl}
 } %
-\subfloat[ZEN-D]{%
-\includegraphics[height=2.9cm,clip=true]{images/perf/ps-n-20000/p-single-core-summitridge1-n-20000}
+   \subfloat[][\\ZEN-D]{%
+\includegraphics[height=6.5cm,clip=true]{images/perf/ps-n-20000/p-single-core-summitridge1-n-20000}
 \label{fig:p:single-core:zen-d}
 } %
-\subfloat[ZEN-S]{%
-\includegraphics[height=2.9cm,clip=true]{images/perf/ps-n-20000/p-single-core-naples1-n-20000}
+   \subfloat[][\\ZEN-S]{%
+\includegraphics[height=6.5cm,clip=true]{images/perf/ps-n-20000/p-single-core-naples1-n-20000}
 \label{fig:p:single-core:zen-s}
 } %
   \caption{Performance of PARDISO's sparse triangular solve
@@ -81,18 +74,49 @@ KNL]{%
   \label{fig:p:single-core}%
 \end{figure}
 
-\begin{figure*}%
+%\begin{figure*}%
+%  \centering%
+%  \input{perf-table-matrices.tex}%
+%  %
+%  \caption{Performance of sparse triangular solve with benchmark matrices of
+%panel size $s=80$ on one NUMA LD for each hardware system.
+%  Green and blue bars show predictions of the original and modified roofline
+%model, respectively.
+%  HSW-S and ZEN-S have 14 and 24 cores in total and using all cores could
+%achieve, with correct NUMA placement, a higher performance, respectively.}
+%  \label{fig:p:pardiso}
+%\end{figure*}
+
+\begin{figure}%
   \centering%
-  \input{perf-table-matrices.tex}%
+  \begin{adjustbox}{angle=90}
+     \input{perf-table-matrices-1-2.tex}%
+  \end{adjustbox}
   %
-  \caption{Performance of sparse triangular solve with benchmark matrices of
+  \caption{Performance of sparse triangular solve with first half of benchmark matrices of
 panel size $s=80$ on one NUMA LD for each hardware system.
   Green and blue bars show predictions of the original and modified roofline
 model, respectively.
   HSW-S and ZEN-S have 14 and 24 cores in total and using all cores could
 achieve, with correct NUMA placement, a higher performance, respectively.}
-  \label{fig:p:pardiso}
-\end{figure*}
+  %\ContinuedFloat
+  \label{fig:p:pardiso-1}
+\end{figure}
+
+\begin{figure}%
+  \centering%
+  \begin{adjustbox}{angle=90}
+     \input{perf-table-matrices-2-2.tex}%
+  \end{adjustbox}
+  %
+  \caption{Performance of sparse triangular solve with second half of benchmark matrices of
+panel size $s=80$ on one NUMA LD for each hardware system.
+  Green and blue bars show predictions of the original and modified roofline
+model, respectively.
+  HSW-S and ZEN-S have 14 and 24 cores in total and using all cores could
+achieve, with correct NUMA placement, a higher performance, respectively.}
+  \label{fig:p:pardiso-2}
+\end{figure}
 
 For the single core measurements we use the matrix \mymat{dense}.
 We create three variants of it, where the maximum panel size $\panelsize$ is
@@ -180,7 +204,7 @@ measurements.
 \section{Multiple ccore Performance Modeling, Evaluation and Analysis}
 \label{sec:performance:multicore}
 
-Performance and modeling results on multicore architectures for all matrices are shown in Figure~\ref{fig:p:pardiso}.
+Performance and modeling results on multicore architectures for all matrices are shown in Figure~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2}.
 For HSW-D (second column) the main memory was not large enough for benchmarks
 with the \mymat{bddc}, \mymat{omen2}, and \mymat{omen3} matrices, which is
 indicated as ``out of memory'' in the figures.
@@ -231,7 +255,7 @@ Hence, we excluded HBM measurements from the plots as it gives no further
 insight.
 %
 With SKX hosting $20$ cores in one NUMA LD the impact of the separator becomes
-visible (fifth column of Figure~\ref{fig:p:pardiso}).
+visible (fifth column of Figure~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2}).
 The separator of \mymat{lapl1}, \mymat{lapl2}, and \mymat{bddc}\/ strongly increases 
 over the number of cores and limits the scaling of the performance early.
 The maximum performance here is already reached with four cores.
@@ -242,7 +266,7 @@ Only with \mymat{omen1}, where the separator stays small, performance increases
 up to 16~cores.
 All other architectures follow this pattern up to the number of cores used.
 
-Figure~\ref{fig:p:pardiso} also shows the performance limits for the original
+Figure~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2} also show the performance limits for the original
 \eqref{eq:rm:simple} and the modified roofline model \eqref{eq:rm:mod}
 as green and blue bars, respectively.
 As the traditional model misses the serial fraction of the execution it scales
@@ -254,15 +278,15 @@ This is increasingly pronounced, the larger the serial fraction becomes.
 %core bandwidth.
 %
 Systems saturating with one core nearly the total memory bandwidth exhibit
-only a marginal gap, like HSW-D (second column in Figure~\ref{fig:p:pardiso}) or
-slightly more pronounced ZEN-D (seventh column in Figure~\ref{fig:p:pardiso}).
+only a marginal gap, like HSW-D (second column in Figure~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2}) or
+slightly more pronounced ZEN-D (seventh column in Figure~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2}).
 
 In general the modified roofline model captures the behavior of the measured
-performance over all systems and matrices as Figure~\ref{fig:p:pardiso} shows.
+performance over all systems and matrices as Figures~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2} show.
 %
 %
 IVB and HSW-D, ZEN-D, and ZEN-S exhibit a model error of around $20$\,\% shown
-in the bottom row of Figure~\ref{fig:p:pardiso}. 
+in the bottom row of Figure~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2}.
 For HSW-S, BDW, and SKX the model deviates up to $60$\,\% from the measurements.
 %
 % Especially the predictions for the \mymat{omen} matrices are around $10$\,\%
@@ -285,7 +309,7 @@ Depending on the matrix and the size of its separator, L2 or memory bandwidth ca
 now be the bottleneck.
 %
 In order to keep the model simple, for KNL, we show
-as red bars in Figure~\ref{fig:p:pardiso},
+as red bars in Figure~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2},
 in addition
 to the modified
 roofline model, 
