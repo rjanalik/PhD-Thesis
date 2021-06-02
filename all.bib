@@ -27406,3 +27406,94 @@ url="https://doi.org/10.1007/978-981-13-9802-5_2"
   pages={7-18},
   doi={10.1109/PMBS49563.2019.00007}
 }
+
+@article{ISI:000471881700007,
+title = {A massively parallel and memory-efficient FEM toolbox with a hybrid
+total FETI solver with accelerator support},
+author = {Lubomir Riha and Michal Merta and Radim Vavrik and Tomas Brzobohaty and Alexandros Markopoulos and Ondrej Meca and Ondrej Vysocky and Tomas Kozubek and Vit Vondrak},
+doi = {10.1177/1094342018798452},
+issn = {1094-3420},
+year = {2019},
+date = {2019-07-01},
+journal = {INTERNATIONAL JOURNAL OF HIGH PERFORMANCE COMPUTING APPLICATIONS},
+volume = {33},
+number = {4},
+pages = {660-677},
+publisher = {SAGE PUBLICATIONS LTD},
+address = {1 OLIVERS YARD, 55 CITY ROAD, LONDON EC1Y 1SP, ENGLAND},
+abstract = {In this article, we present the ExaScale PaRallel finite element tearing
+and interconnecting SOlver (ESPRESO) finite element method (FEM)
+library, which includes an FEM toolbox with interfaces to professional
+and open-source simulation tools, and a massively parallel hybrid total
+finite element tearing and interconnecting (HTFETI) solver which can
+fully utilize the Oak Ridge Leadership Computing Facility Titan
+supercomputer and achieve superlinear scaling. This article presents
+several new techniques for finite element tearing and interconnecting
+(FETI) solvers designed for efficient utilization of supercomputers with
+a focus on (i) performance-we present a fivefold reduction of solver
+runtime for the Laplace equation by redesigning the FETI solver and
+offloading the key workload to the accelerator. We compare Intel Xeon
+Phi 7120p and Tesla K80 and P100 accelerators to Intel Xeon E5-2680v3
+and Xeon Phi 7210 central processing units; and (ii) memory
+efficiency-we present two techniques which increase the efficiency of
+the HTFETI solver 1.8 times and push the limits of the largest possible
+problem ESPRESO that can solve from 124 to 223 billion unknowns for
+problems with unstructured meshes. Finally, we show that by dynamically
+tuning hardware parameters, we can reduce energy consumption by up to
+33%.},
+keywords = {},
+pubstate = {published},
+tppubtype = {article}
+}
+
+@inproceedings{ISI:000469334300010,
+title = {Using ESPRESO as Linear Solver Library for Third Party FEM Tools for
+Solving Large Scale Problems},
+author = {Ondrej Meca and Lubomir Riha and Alexandros Markopoulos and Tomas Brzobohaty and Tomas Kozubek},
+editor = {T {Kozubek and M Cermak and P Tichy and R Blaheta and J Sistek and D Lukas and J} Jaros},
+doi = {10.1007/978-3-319-97136-0_10},
+issn = {0302-9743},
+year = {2018},
+date = {2018-01-01},
+booktitle = {HIGH PERFORMANCE COMPUTING IN SCIENCE AND ENGINEERING, HPCSE 2017},
+volume = {11087},
+pages = {130-143},
+publisher = {SPRINGER INTERNATIONAL PUBLISHING AG},
+address = {GEWERBESTRASSE 11, CHAM, CH-6330, SWITZERLAND},
+organization = {VSB Tech Univ Ostrava, IT4Innovat Natl Supercomputing Ctr},
+series = {Lecture Notes in Computer Science},
+abstract = {ESPRESO is a FEM package that includes a Hybrid Total FETI (HTFETI)
+linear solver targeted at solving large scale engineering problems. The
+scalability of the solver was tested on several of the world's largest
+supercomputers. To provide our scalable implementation of HTFETI
+algorithms to all potential users, a simple C API was developed and is
+presented. The paper describes API methods, compilation and linking
+process.
+As a proof of concept we interfaced ESPRESO with the CSC ELMER solver
+and compared its performance with the ELMER FETI solver. HTFETI performs
+two level decomposition, which significantly improves both memory
+utilization and solver performance. To select optimal second level
+decomposition we have developed a performance model that controls
+decomposition automatically. This is a major simplification for all
+users that ensures optimal solver settings.
+We show that the ESPRESO HTFETI solver is up to 3.7 times faster than
+the ELMER FETI solver when running on 13 500 MPI processes (the 614
+compute nodes of the Salomon supercomputer) and solving 1.5 billion
+unknown problems of 3D linear elasticity.},
+note = {3rd International Conference on High Performance Computing in Science
+and Engineering (HPCSE), Karolinka, CZECH REPUBLIC, MAY 22-25, 2017},
+keywords = {},
+pubstate = {published},
+tppubtype = {inproceedings}
+}
+
+@article{klawonn-fetidp,
+author = {Klawonn, Axel and Rheinbach, Oliver},
+year = {2010},
+month = {01},
+pages = {5 - 32},
+title = {Highly scalable parallel domain decomposition methods with an application to biomechanics},
+volume = {90},
+journal = {ZAMM - Journal of Applied Mathematics and Mechanics / Zeitschrift f\"{u}r Angewandte Mathematik und Mechanik},
+doi = {10.1002/zamm.200900329}
+}
