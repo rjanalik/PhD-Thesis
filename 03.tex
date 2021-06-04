@@ -3,9 +3,7 @@
 
 Even in scientific computing, simulation code development often lacks a basic understanding of performance bottlenecks and relevant optimization opportunities. In this chapter we will use a structured model-based performance engineering approach on the compute node level for a fundamental kernel operation in sparse factorization solvers. We aim at a deep understanding of how code performance comes about and which hardware bottlenecks might apply. The pivotal ingredient of this process is a performance model which links software requirements with hardware capabilities. Such models are often simplified such as the well-known Berkeley Roofline model or the Erlangen ECM model, but it leads to deeper insights and strikingly more accurate runtime predictions.
 
-{\color{blue} For comparison and to motivate the usage of the PARDISO solver, we runs initial benchmarks on varouos matrices. Here we used CHOLMOD~(\cite{cholmod2008,doi:10.1137/1.9780898718881}), MUMPS~(\cite{amestoy-2000,amestoy-2001,amestoy-2006}) and PARDISO~(\cite{schenk-2004,kuzmin-2013}) solvers. For CHOLMOD and MUMPS we set METIS reordering, so all solvers have about the same factors. We measured duration of the forward/backward substitution for our benchmark
-matrices. The results for the Ivy Bridge system are shown in Figure~\ref{fig:solvers}.
-
+{\color{blue}
 The package PARDISO\footnote{A discussion of the algorithms used in
 PARDISO, the user manual and more information on the solver can be found at
 \url{http://www.pardiso-project.org}}
@@ -21,16 +19,18 @@ a Level-3 BLAS update and pipelining parallelism is exploited with
 a combination of left- and right-looking supernode techniques.
 
 PARDISO calculates the solution of a set of sparse linear equations
-$AX=B$ with multiple right-hand sides, using a parallel $LU$, $LDL^T$ or $LL^T$
-factorization, where $A$ and $X,\,B$ are $n$ by $n$ and $n$ by $nrhs$ matrices
-respectively. PARDISO supports a wide range of sparse matrix types and
+with multiple right-hand sides, using a parallel $LU$, $LDL^T$ or $LL^T$
+factorization. PARDISO supports a wide range of sparse matrix types and
 computes the solution of real or complex,
 symmetric, structurally symmetric or unsymmetric, positive definite,
 indefinite or Hermitian sparse linear system of equations on shared-memory
 multiprocessing architectures.
 
-The parallel pivoting methods for unsymmetric matrices allow complete supernode pivoting in order to compromise numerical stability and scalability during the factorization process. For sufficiently large problem sizes numerical experiments demonstrate that the scalability of the parallel algorithm is nearly independent of the shared-memory multiprocessing architecture and a speedup of up to seven using eight processors has been observed. The package is implemented using multi-threading using OpenMP directives. PARDISO performs the following analysis steps depending on the structure
+The parallel pivoting methods for unsymmetric matrices allow complete supernode pivoting in order to compromise numerical stability and scalability during the factorization process. For sufficiently large problem sizes numerical experiments demonstrate that the scalability of the parallel algorithm is nearly independent of the shared-memory multiprocessing architecture and a speedup of up to seven using eight processors has been observed. The package is implemented using multi-threading using OpenMP directives. PARDISO performs the analysis steps depending on the structure
 of the input matrix $A$. See \cite{Bollhofer2020} for further details.
+
+For comparison and to motivate the usage of the PARDISO solver, we run initial benchmarks on varouos matrices. Here we used CHOLMOD~(\cite{cholmod2008,doi:10.1137/1.9780898718881}), MUMPS~(\cite{amestoy-2000,amestoy-2001,amestoy-2006}) and PARDISO~(\cite{schenk-2004,kuzmin-2013}) solvers. For CHOLMOD and MUMPS we set METIS reordering, so all solvers have about the same factors. We measured duration of the forward/backward substitution for our benchmark
+matrices. The results for the Ivy Bridge system are shown in Figure~\ref{fig:solvers}.
 }
 
 %
@@ -135,7 +135,7 @@ Before the separator is then serially updated, the results of the temporary
 arrays are gathered back into \vr{}. 
 The backward substitution works the same, just reversed, and
 updates to different temporary arrays are not required.
-{\color{blue} Figure \ref{fig:ecm-parallel-model} shows a possible execution of forward solve. The nested dissection reordering assigns to every partition about the same number of columns. However, panels in different partitions can have different size (number of columns). Then different threads execute differently unrolled code, as can be seen on the left side of Figure \ref{fig:ecm-parallel-model}. For easier modeling we can assume the execution of the unrollings is sorted and evenly distributed over cores, as shows the right side of the Figure \ref{fig:ecm-parallel-model}.}
+{\color{blue} Figure \ref{fig:ecm-parallel-model} shows a possible execution of forward solve. The nested dissection reordering assigns to every partition about the same number of columns. However, panels in different partitions can have different size (number of columns). Then different threads execute differently unrolled code, as can be seen on the left side of Figure \ref{fig:ecm-parallel-model}. For easier modeling we assume the execution of the unrollings is sorted and evenly distributed over cores, as shows the right side of the Figure \ref{fig:ecm-parallel-model}.}
 
 \begin{figure}[t]
   \centering

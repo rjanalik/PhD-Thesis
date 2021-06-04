@@ -33,7 +33,7 @@ and 1-way column unrolling.
 However, SKX also supports vector scatter/gather instructions, but did not
 show any performance improvement.
 
-\begin{figure}[t]%
+\begin{figure}[tp]%
 \centering%
 \captionsetup[subfigure]{justification=centering,farskip=0pt}
 \subfloat[][\\IVB]{%
@@ -86,37 +86,6 @@ show any performance improvement.
 %achieve, with correct NUMA placement, a higher performance, respectively.}
 %  \label{fig:p:pardiso}
 %\end{figure*}
-
-\begin{figure}%
-  \centering%
-  \begin{adjustbox}{angle=90}
-     \input{perf-table-matrices-1-2.tex}%
-  \end{adjustbox}
-  %
-  \caption{Performance of sparse triangular solve with first half of benchmark matrices of
-panel size $s=80$ on one NUMA LD for each hardware system.
-  Green and blue bars show predictions of the original and modified roofline
-model, respectively.
-  HSW-S and ZEN-S have 14 and 24 cores in total and using all cores could
-achieve, with correct NUMA placement, a higher performance, respectively.}
-  %\ContinuedFloat
-  \label{fig:p:pardiso-1}
-\end{figure}
-
-\begin{figure}%
-  \centering%
-  \begin{adjustbox}{angle=90}
-     \input{perf-table-matrices-2-2.tex}%
-  \end{adjustbox}
-  %
-  \caption{Performance of sparse triangular solve with second half of benchmark matrices of
-panel size $s=80$ on one NUMA LD for each hardware system.
-  Green and blue bars show predictions of the original and modified roofline
-model, respectively.
-  HSW-S and ZEN-S have 14 and 24 cores in total and using all cores could
-achieve, with correct NUMA placement, a higher performance, respectively.}
-  \label{fig:p:pardiso-2}
-\end{figure}
 
 For the single core measurements we use the matrix \mymat{dense}.
 We create three variants of it, where the maximum panel size $\panelsize$ is
@@ -203,6 +172,37 @@ measurements.
 
 \section{Multiple ccore Performance Modeling, Evaluation and Analysis}
 \label{sec:performance:multicore}
+
+\begin{figure}[tp]%
+  \centering%
+  \begin{adjustbox}{angle=90}
+     \input{perf-table-matrices-1-2.tex}%
+  \end{adjustbox}
+  %
+  \caption{Performance of sparse triangular solve with first half of benchmark matrices of
+panel size $s=80$ on one NUMA LD for each hardware system.
+  Green and blue bars show predictions of the original and modified roofline
+model, respectively.
+  HSW-S and ZEN-S have 14 and 24 cores in total and using all cores could
+achieve, with correct NUMA placement, a higher performance, respectively.}
+  %\ContinuedFloat
+  \label{fig:p:pardiso-1}
+\end{figure}
+
+\begin{figure}[tp]%
+  \centering%
+  \begin{adjustbox}{angle=90}
+     \input{perf-table-matrices-2-2.tex}%
+  \end{adjustbox}
+  %
+  \caption{Performance of sparse triangular solve with second half of benchmark matrices of
+panel size $s=80$ on one NUMA LD for each hardware system.
+  Green and blue bars show predictions of the original and modified roofline
+model, respectively.
+  HSW-S and ZEN-S have 14 and 24 cores in total and using all cores could
+achieve, with correct NUMA placement, a higher performance, respectively.}
+  \label{fig:p:pardiso-2}
+\end{figure}
 
 Performance and modeling results on multicore architectures for all matrices are shown in Figure~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2}.
 For HSW-D (second column) the main memory was not large enough for benchmarks
