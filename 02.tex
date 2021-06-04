@@ -2,9 +2,9 @@
 
 %{\color{blue} juraj: introduction to performance modelling: know the max performance limit before doing further optimizations, what is the hw utilization of the code?}
 
-Performance engineering plays an important role in development of scientific software. In order to achieve optimal performance, one needs to analyze the code and computer architecture to identify bottlenecks and possibilities for optimization. This helps us spend our effort only where there is a potential for improvement.
+Performance engineering plays an important role in development of scientific software. In order to achieve optimal performance, one needs to analyze the code and computer architecture to identify bottlenecks and possibilities for optimization (\cite{KöstlerRüde+2013+91+96,Minami2019}). This helps us spend our effort only where there is a potential for improvement.
 %It is also useful to have realistic expectations about performance given code can achieve.
-While simple code can be often analyzed using intuition and guessing, this is not possible for nontrivial codes. Performance models are helping us to analyze a code by guiding our attention on important features and neglecting unnecessary details.
+While simple code can be often analyzed using intuition and guessing, this is not possible for nontrivial codes. Performance models are helping us to analyze a code by guiding our attention on important features and neglecting unnecessary details~(\cite{Gropp99,Williams:EECS-2008-164,KHWPAF14}).
 %
 %In this chapter we analyze forward and backward substitution code used in direct methods for solving sparse linear systems. Due to the fact that part of the algorithm is executed sequentially and part in parallel, the performance predictions are challenging. With our extension to the roofline model we are able to model such code. The predictions are then compared to measurements for a representative set of sparse matrices.
 %
@@ -253,6 +253,7 @@ It contains a set of various kernels, for example, dot product, daxpy, load, sto
 
 Programmers often do not need an understanding of every detail of CPU design. They should focus on general concepts rather than details of every available architecture. A tool that can provide a simplified model of the CPU hiding most of the architecture specific complexity is very valuable. Probably the most popular tool was popularized by \cite{williams-2009}. This tool is called the Roofline model.
 It became very popular because it hides most of the CPU complexity and presents an intuitive and easy to use model that can guide performance engineering.
+{\color{blue} This model has proven to be useful not only on the most common architecture, x86\_64, where it was extended to address cache hierarchy (\cite{MARQUES2020257}), but it was successfully used also on other architectures, e.\,g., ARM, an architecture developed for battery powered devices, where power efficiency is the biggest concern, but since then it found its way to desktop computers and even the most powerful supercomputers~(\cite{9307836}); GPU accelerators, where (\cite{9059264,https://doi.org/10.1002/cpe.5547}); Intel Xeon Phi (\cite{10.1007/978-3-319-32149-3_12}) and even FPGA~(\cite{9307865}). Moreover it was also used for modeling energy consumption (\cite{6569852}).}
 
 %\todop{
 %abstraction, hides detais (ports, ...)
