@@ -10712,7 +10712,7 @@
   booktitle	= {Proceedings of the 19th Design Automation Conference},
   year		= 1997,
   organization	= {IEEE},
-  pages		= {175–-181}
+  pages		= {175--181}
 }
 
 @Article{	  fie73,
@@ -27496,4 +27496,65 @@ title = {Highly scalable parallel domain decomposition methods with an applicati
 volume = {90},
 journal = {ZAMM - Journal of Applied Mathematics and Mechanics / Zeitschrift f\"{u}r Angewandte Mathematik und Mechanik},
 doi = {10.1002/zamm.200900329}
+}
+
+@article{lanczos-1980,
+title = {he spectral transformation L\'{a}nczos method for the numerical solution of large sparse generalized symmetric eigenvalue problems},
+author = {Thomas Ericsson and Axel Ruhe},
+year = {1980},
+date = {Oct. 1980},
+journal = {Mathematics of Computation},
+volume = {35},
+number = {152},
+pages = {1251-1268},
+publisher = {American Mathematical Society},
+pubstate = {published},
+tppubtype = {article}
+}
+
+@article{https://doi.org/10.1002/nme.6640,
+author = {Lin, Chao-Ping and Xie, Huiqing and Grimes, Roger and Bai, Zhaojun},
+title = {On the shift-invert Lanczos method for the buckling eigenvalue problem},
+journal = {International Journal for Numerical Methods in Engineering},
+volume = {122},
+number = {11},
+pages = {2751-2769},
+keywords = {buckling analysis, eigenvalue problem, Lanczos method, shift-invert, singular pencil},
+doi = {https://doi.org/10.1002/nme.6640},
+url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/nme.6640},
+eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/nme.6640},
+abstract = {Abstract We consider the problem of extracting a few desired eigenpairs of the buckling eigenvalue problem Kx=λKGx, where K is symmetric positive semi-definite, KG is symmetric indefinite, and the pencil K−λKG is singular, namely, K and KG share a nontrivial common nullspace. Moreover, in practical buckling analysis of structures, bases for the nullspace of K and the common nullspace of K and KG are available. There are two open issues for developing an industrial strength shift-invert Lanczos method: (1) the shift-invert operator (K−σKG)−1 does not exist or is extremely ill-conditioned, and (2) the use of the semi-inner product induced by K drives the Lanczos vectors rapidly toward the nullspace of K, which leads to a rapid growth of the Lanczos vectors in norms and causes permanent loss of information and the failure of the method. In this paper, we address these two issues by proposing a generalized buckling spectral transformation of the singular pencil K−λKG and a regularization of the inner product via a low-rank updating of the semi-positive definiteness of K. The efficacy of our approach is demonstrated by numerical examples, including one from industrial buckling analysis.},
+year = {2021}
+}
+
+@article{10.1145/1236463.1236465,
+author = {Gould, Nicholas I. M. and Scott, Jennifer A. and Hu, Yifan},
+title = {A Numerical Evaluation of Sparse Direct Solvers for the Solution of Large Sparse Symmetric Linear Systems of Equations},
+year = {2007},
+issue_date = {June 2007},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {33},
+number = {2},
+issn = {0098-3500},
+url = {https://doi.org/10.1145/1236463.1236465},
+doi = {10.1145/1236463.1236465},
+abstract = {In recent years a number of solvers for the direct solution of large sparse symmetric linear systems of equations have been developed. These include solvers that are designed for the solution of positive definite systems as well as those that are principally intended for solving indefinite problems. In this study, we use performance profiles as a tool for evaluating and comparing the performance of serial sparse direct solvers on an extensive set of symmetric test problems taken from a range of practical applications.},
+journal = {ACM Trans. Math. Softw.},
+month = jun,
+pages = {10-es},
+numpages = {32},
+keywords = {symmetric linear systems, direct solvers, software, Sparse matrices, Gaussian elimination}
+}
+
+@ARTICLE{8846109,
+  author={Kardo\v{s}, Juraj and Kourounis, Drosos and Schenk, Olaf},
+  journal={IEEE Transactions on Power Systems},
+  title={Two-Level Parallel Augmented Schur Complement Interior-Point Algorithms for the Solution of Security Constrained Optimal Power Flow Problems},
+  year={2020},
+  volume={35},
+  number={2},
+  pages={1340-1350},
+  doi={10.1109/TPWRS.2019.2942964},
+  note={\bibdoiurl{10.1109/TPWRS.2019.2942964}}
 }
