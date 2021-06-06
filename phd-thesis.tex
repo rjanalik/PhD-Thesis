@@ -289,9 +289,9 @@ Direct solvers are based on matrix factorization, which is then followed by forw
 Performance modeling of algorithms involved in solving these linear systems reveals the computational bottlenecks, which can guide node-level performance optimizations and shows the best performance that can be achieved.
 The Berkeley roofline model is widely used to predict the upper bound of a code based on processor peak performance and memory bandwidth. Modification of the Roofline model allows us to model performance of forward and backward substitution codes, which are a combination of sequential and parallel execution. The model predictions are compared with various measurements for a representative set of sparse matrices on different x86\_64 processors.
 
-   {\color{red} In this thesis we will investigate and analyze the performance of the forward/backward solution process of the PARDISO direct sparse solver and present not only numerical
+ In this thesis we will investigate and analyze the performance of the forward/backward solution process of the PARDISO direct sparse solver and present not only numerical
 results, but also a detailed performance analysis for its sparse solver kernel. This analysis is based on the Roofline model, a resource-driven and practically applicable model, and describe the performance of sparse kernel loops. We establish a modified Roofline model that captures the serial and parallel execution phases which allows us to predict the in-socket scaling over the processor cores. This distinction is important as the amount of the serial fraction depends on the matrix used and can have a significant negative impact on performance. The performance analysis and modeling performed in this paper is limited to a single node, however, the code considered here is also a building block for the
-   MPI parallel version. Hence, also the distributed memory implementation of PARDISO will profit from any enhancement achieved.}
+   MPI parallel version. Hence, also the distributed memory implementation of PARDISO will profit from any enhancement achieved.
 \end{abstract}
 
 \begin{acknowledgements}
