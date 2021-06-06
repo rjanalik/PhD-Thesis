@@ -1361,8 +1361,7 @@ only updates to different temporary arrays are not required.
 The complete forward substitution and backward substitution  is listed in Algorithms~\ref{alg:algo:fw} and \ref{alg:algo:bw}.
 %
 
-
- \begin{algorithm}[tp]
+\begin{algorithm}[tp]
    \begin{algorithmic}[1]
      \Procedure{Backward}{}
        \For{panel $p$ in sep. rev.} \Comment{serial execution}
@@ -1398,6 +1397,7 @@ The complete forward substitution and backward substitution  is listed in Algori
 panels are iterated over in reversed (rev.) order.}
    \label{alg:algo:bw}
 \end{algorithm}
+\afterpage{\clearpage}
 
 %\section{Application --- Circuit Simulation}
 %~\label{sec:appl} 
@@ -1720,7 +1720,7 @@ by many different authors, e.\,g.,~\cite{heath-1999,sherry-2008,marrakchi-2017,p
 using hardware relevant at the time of publication. Often, the performance is reported for the proposed implementation on a certain processor or GPU together with related metrics, e.\,g., data volume or cache misses. More advanced works such as~\cite{vuduc-2002} provide upper and lower bounds for the performance. {\color{blue} In this thesis, the goal is to apply analytical performance models which allow us not only to evaluate performance, but also to anticipate and prevent bottlenecks. Traditionally}, the Roofline
 model~(\cite{callahan88,hockney89,schoenauer00,williams-2009}) {\color{blue}has been} used
 for this task to relate the performance of a code with the hardware's capabilities.
-\todol{close it somehow}
+{\color{blue} The Berkeley Roofline model is introduced in Chapter \ref{sec:roofline}. Our modification of the model, which allows us to model combination of sequential and parallel execution, is described in Chapter \ref{sec:mrm}. Finally in Chapter \ref{sec:performance} the model is evaluated on various matrices and CPU architectures.}
 
 \begin{table}[]
    \centering

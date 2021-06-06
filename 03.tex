@@ -41,7 +41,7 @@ matrices. The results for the Ivy Bridge system are shown in Figure~\ref{fig:sol
   \label{fig:solvers}
 \end{figure}
 
-In this chapter, we will mainly analyze the data transfer between the different cache levels and the FLOPs performed during the sparse triangular solve phase. The results of this analyzis are used as input for our performance model. Therefore, we mostly inspect the different instantiations of the loops resulting from Algorithm~\ref{alg:algo:fw} and \ref{alg:algo:bw}. We only consider the innermost loops because all the arithmetics is performed here. Our assumption is that the instructions regarding control variables of the loops are negligible, hence we do not them into account.
+In this chapter, we will mainly analyze the data transfer between the different cache levels and the FLOPs performed during the sparse triangular solve phase. The results of this analyzis are used as input for our performance model. Therefore, we mostly inspect the different instantiations of the loops resulting from Algorithm~\ref{alg:algo:fw} and \ref{alg:algo:bw} on page \pageref{alg:algo:fw} and \pageref{alg:algo:bw}. We only consider the innermost loops because all the arithmetics is performed here. Our assumption is that the instructions regarding control variables of the loops are negligible, hence we do not them into account.
 %Here, we only consider the innermost loops and do not
 %distinguish between updates of~\vr{} or temporary arrays~\vtemp{}.
 
@@ -368,7 +368,7 @@ active part of \vr{}.
 At some point the active part can be completely kept in the L2 or even the L1 cache.
 This also holds true for \vindx{}, except when a new panel starts, then
 the panel's row indices must first be loaded from memory.
-{\color{blue} With Intel L2 cache 356\,kB and L1 cache 32\,kB, maximum about 13000 and 1600 elemets of \vr{}, \vindx{} and \vlnz{} could fit in the L2 and L1 cache, respectively. However, due to the associativity and replacement strategy of the cache and the need to store other date, it is reasonable to expect only half of the size can be used. We can expect if the active part of \vr{} is less than about 6000, it can be kept in L2, and if it is less than about 800 it can be kept in L1.}
+{\color{blue} With Intel L2 cache 356\,kB and L1 cache 32\,kB, maximum about 13000 and 1600 elemets of \vr{}, \vindx{} and \vlnz{} could fit in the L2 and L1 cache, respectively. However, due to the associativity and replacement strategy of the cache and the need to store other date, it is reasonable to expect only half of the size can be used. We can expect if the active part of \vr{} is less than about 6000 elements, it can be kept in L2 cache, and if it is less than about 800 elements it fits in L1 cache.}
 
 \begin{figure}[t]
   \centering%
@@ -625,7 +625,7 @@ The inputs for the ECM model are summarized in Table \ref{tab:ecm:data}. The val
 \end{table}
 \end{comment}
 
-\section[Application of Berkeley Modified Roofline Model]{Application of Berkeley Modified Roofline Model on Sparse Triangular Solve}
+\section[Application of Modified Berkeley Roofline Model]{Application of Modified Berkeley Roofline Model on Sparse Triangular Solve}
 \label{sec:mrm}
 
 % \begin{table}[tp]
