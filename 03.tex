@@ -291,6 +291,7 @@ Elements of the vector \vxlnz{} (column start indices in the vector \vlnz{}) and
 indices of row indices for each panel) are stored as $8$\,B integers,
 whereas for the entries of the vector \vindx{} (row indices for each panel) $4$\,B integers
 are used.
+\enlargethispage*{\baselineskip}
 
 \subsection{Data transfers and FLOPs without unrolling}
 \label{sec:pm:dt}
@@ -367,6 +368,7 @@ At some point the active part can be completely kept in the L2 or even the L1 ca
 This also holds true for \vindx{}, except when a new panel starts, then
 the panel's row indices must first be loaded from memory.
 With Intel L2 cache 356\,kB and L1 cache 32\,kB, maximum about 13000 and 1600 elemets of \vr{}, \vindx{} and \vlnz{} could fit in the L2 and L1 cache, respectively. However, due to the associativity and replacement strategy of the cache and the need to store other data, it is reasonable to expect only half of the size can be used. We can expect if the active part of \vr{} is less than about 6000 elements, it can be kept in L2 cache, and if it is less than about 800 elements it fits in L1 cache.
+\clearpage
 
 \begin{figure}[t]
   \centering%
