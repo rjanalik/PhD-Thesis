@@ -1,4 +1,4 @@
-\chapter{Performance Modeling of Sparse Factorization Solvers}
+\chapter{Performance modeling of sparse factorization solvers}
 
 %{\color{blue} juraj: introduction to performance modelling: know the max performance limit before doing further optimizations, what is the hw utilization of the code?}
 
@@ -70,7 +70,7 @@ The chapter is organized as follows. In Section \ref{sec:arch} computer architec
 %If $B_c < B_m$ then the code’s performance is limited by the max performance, it is compute bound. Optimizing memory access of such code does not improve performance. One should focus on optimizing computations, for example using vector instructions as much as possible.
 %If $B_c > B_m$ then the code’s performance is limited by the memory bandwidth, hence it is memory bound. Here performance can be improved by optimizing memory access pattern, for example by reusing data loaded to cache us much as possible, so they don't have to be loaded from memory.
 
-\section[Memory Hierarchies, Autotuning, and Solvers]{Exploiting the Memory Hierarchies, Autotuning\\ Research, and Sparse Factorization Solvers}
+\section[Memory hierarchies, autotuning, and solvers]{Exploiting the memory hierarchies, autotuning \linebreak research, and sparse factorization solvers}
 \label{sec:modeling-intro}
 
 Modern microprocessors are highly sensitive to the spatial and temporal locality of data. Regardless of the programming model, performance of future parallel applications will crucially depend on the quality of the generated code which is traditionally the responsibility of the compiler. The compiler selects which optimization to perform in terms of, e.g., loop-unrolling, out-of-order instruction capabilities, or register scheduling. Choosing parameters for these optimizations, and selecting among alternative implementations, is the key to efficient use of the underlying hardware. The resulting space of optimization alternatives is large (\cite{8423171}).
@@ -203,7 +203,7 @@ A more realistic bandwidth can be obtained using microbenchmarks, ideally with s
 %\texttt{likwid-bench} from the LIKWID toolbox is a popular application for benchmarking different kernels.
 In the following section we will review a performance tool called LIKWID which supports software developers, benchmarkers, and application users to model and get the best performance on a given system. We will use this tool later for performance modeling for a sparse factorization solver.
 
-\section{Performance modeling using the LIKWID Tools}
+\section{Performance modeling using the LIKWID tools}
 \label{sec:likwid}
 
 LIKWID ("like I knew what I'm doing") (\cite{likwid-2010-arxiv}) is a set of command line tools to support optimization and performance engineering.
@@ -249,7 +249,7 @@ To be sure the benchmark measures the proper thing, the code most likely has to 
 \texttt{likwid-bench} is a benchmark suite for prototyping low-level assembly kernels. 
 It contains a set of various kernels, for example, dot product, daxpy, load, store, copy, and many others. It allows the user to define his own kernels. The kernels are defined as text files that are compiled during compilation of the suite. And the suite takes care of everything else: running the kernel on a problem of a given size, on a given number of threads, and presenting results to the user.
 
-\section[Berkeley roofline model]{Berkeley roofline model - A Performance Model for Multicore Architectures}
+\section[Berkeley roofline model]{Berkeley roofline model - a performance model for multicore architectures}
 \label{sec:roofline}
 
 Programmers often do not need an understanding of every detail of CPU design. They should focus on general concepts rather than details of every available architecture. A tool that can provide a simplified model of the CPU hiding most of the architecture specific complexity is very valuable. Probably the most popular tool was popularized by \cite{williams-2009}. This tool is called the roofline model.
@@ -306,12 +306,12 @@ And the orange kernel (arithmetic intensity $4 \approx B_m^{-1}$) is between the
 %Performance of any kernel on the right side of this point ($B_c < B_m$ or $I > B_m^{-1}$) is limited by $P_{max}$. We call such kernel compute bound.
 %Performance of any kernel on the left side of this point ($B_c > B_m$ or $I < B_m^{-1}$) is limited by $b_s$. We call such kernel memory bound.
 
-\subsection{Roofline Ceilings}
+\subsection{Roofline ceilings}
 
 For realistic applications the measured performance of a kernel is often far below the roofline. The CPU and memory architecture utilize several paradigms that improve the performance, as described in section \ref{sec:arch}. To get close to the maximum performance the kernel needs to exploit these. Failing to do so results in a huge performance penalty.
 For both bounds the roofline model takes into account, in-core execution and memory bandwidth; we can show ceilings showing impact on performance when certain optimizations are not implemented.
 
-\subsubsection*{In-core Roofline Ceilings}
+\subsubsection*{In-core roofline ceilings}
 
 %\todop{
 %vectorization
@@ -366,7 +366,7 @@ Visualization of some in-core ceilings is given in Figure \ref{fig:roofline_emmy
   \label{fig:roofline_emmy_core-ceilings}
 \end{figure}
 
-\subsubsection*{Bandwidth Roofline Ceilings}
+\subsubsection*{Bandwidth roofline ceilings}
 
 %\todop{
 %prefetching?
@@ -520,7 +520,7 @@ As this is beyond the scope of the ECM model, typically, a microbenchmark
 resembling the used access pattern by the code under investigation is used
 to measure the attainable bandwidth and use it as input for the model.
 
-\section{ECM Model Application}
+\section{ECM model application}
 \label{sec:ecm-application}
 
 \subsection{DAXPY vector addition}

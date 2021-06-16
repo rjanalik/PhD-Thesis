@@ -1,4 +1,4 @@
-\chapter{Node-Level Performance Modeling of Sparse Triangular Solve}
+\chapter{Node-level performance modeling of sparse triangular solve}
 \label{c:modeling}
 
 Even in scientific computing, simulation code development often lacks a basic understanding of performance bottlenecks and relevant optimization opportunities. In this chapter we will use a structured model-based performance engineering approach on the compute node level for a fundamental kernel operation in sparse factorization solvers. We aim at a deep understanding of how code performance comes about and which hardware bottlenecks might apply. The pivotal ingredient of this process is a performance model which links software requirements with hardware capabilities. Such models are often simplified such as the well-known Berkeley roofline model or the Erlangen ECM model, but it leads to deeper insights and strikingly more accurate runtime predictions.
@@ -43,7 +43,7 @@ In this chapter, we will mainly analyze the data transfer between the different 
 %Here, we only consider the innermost loops and do not
 %distinguish between updates of~\vr{} or temporary arrays~\vtemp{}.
 
-\section{Algorithm and Data Structures of Sparse Triangular Solve}
+\section{Algorithm and data structures of sparse triangular solve}
 % \section{Algorithm and Data Structures of the Forward/Backward Substitution}
 
 \label{sec:algo}
@@ -261,7 +261,7 @@ However, typically the number of rows for sparse problems is too small to
 benefit from this optimization and at worst it could introduce significant
 overhead.
 
-\section{Performance Analysis of Sparse Triangular Solve}
+\section{Performance analysis of sparse triangular solve}
 %\section{Analysis of the Forward/Backward Substitution} 
 \label{sec:sds}
 
@@ -528,7 +528,7 @@ With larger panel sizes in total, fewer
 row indices \vindx{} are needed for the
 whole matrix.
 
-\section{Application of Erlangen ECM Model on Sparse Triangular Solve \todol{todo}}
+\section{Application of Erlangen ECM model on sparse triangular solve \todol{todo}}
 \label{sec:ecm-fwbw}
 
 As shown in Chapter \ref{sec:sds}, there are many factors influencing the performance. One of these factors is, for example, unrolling. It has impact on whether the active part of \vr{} or if \vindx{} is already loaded in cache or not. Detailed performance evaluation would require a model for every combination of these parameters and combining these models based on detailed analysis of a matrix $A$ and its factor $L$. For real world matrices, this is not possible.
@@ -654,7 +654,7 @@ The inputs for the ECM model are summarized in Table \ref{tab:ecm:data}. The val
 \end{table}
 \end{comment}
 
-\section[Application of Modified Berkeley Roofline Model]{Application of Modified Berkeley Roofline Model on Sparse Triangular Solve}
+\section[Application of modified Berkeley roofline model]{Application of modified Berkeley roofline model on sparse triangular solve}
 \label{sec:mrm}
 
 % \begin{table}[tp]
@@ -1046,7 +1046,7 @@ studied for stencil kernels.
 %-- %\end{SCtable}
 %-- \end{table*}
 
-\section{Experimental Testbed for the Performance Evaluation}
+\section{Experimental testbed for the performance evaluation}
 \label{sec:tb}
 
 The specifications of the systems used for the performance analysis are described
@@ -1161,7 +1161,7 @@ the processors.
 This is either a scalar FMA or, if unavailable, a scalar addition and
 multiplication for processing a nonzero.
 
-\subsection{Matrices for Performance Modeling}
+\subsection{Matrices for performance modeling}
 
 \begin{table*}[t]
   \centering
