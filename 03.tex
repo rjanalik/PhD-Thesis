@@ -528,132 +528,6 @@ With larger panel sizes in total, fewer
 row indices \vindx{} are needed for the
 whole matrix.
 
-\section{Application of Erlangen ECM model on sparse triangular solve \todol{todo}}
-\label{sec:ecm-fwbw}
-
-As shown in Chapter \ref{sec:sds}, there are many factors influencing the performance. One of these factors is, for example, unrolling. It has impact on whether the active part of \vr{} or if \vindx{} is already loaded in cache or not. Detailed performance evaluation would require a model for every combination of these parameters and combining these models based on detailed analysis of a matrix $A$ and its factor $L$. For real world matrices, this is not possible.
-To make the modeling feasible, we focus only on two extreme cases: first, we consider the code without unrolling that reads \vindx{} from the memory and second, 8-way unrolled code that already has \vindx{} in cache. In both cases we are assuming the active part of \vr{} is large and the data reside in L3 cache. The first scenario achieves the worst possible performance, while the second one can perform close to the theoretical maximum. These two cases give us a range of expected performance, such that for any matrix the sparse triangular solve algorithm should be within these bounds.
-
-%\todop{Worst case}
-%Processing one element of \vlnz{} without unrolling takes 2 FLOPs and requires 28\,B or 20\,B transfered between cache levels or registers for forward and backward substitution, respectively, and 12\,B are read from memory.
-For the ECM model of the worst case we consider eight iterations of the inner most loop (8 rows) in order to fill one cache line.
-Eight iterations of both forward and backward substitution without unrolling require sixteen $8$\,B loads (\verb|r[:]| and \verb|l[:]|) and eight $4$\,B loads (\verb'idx[:]').
-On top of that, the forward substitution also requires eight $8$\,B stores (\verb'r[:]').
-These loads and stores need $32$ addresses (forward substitution) or $24$ addresses (backward substitution) to be generated, which takes $16$ or $12$ cycles, respectively. We assume that all the addresses are generated on ports 2 and 3. The simple AGU on port 7 is not used as we showed in Sections~\ref{sec:epm} and \ref{sec:ecm-indirect-daxpy}.
-The floating point arithmetics for eight iterations consists of 8 multiplications and 8 additions. This can be done in 8 cycles using the units on ports 0 and 1.
-Unlike in the DAXPY case, only 96\,B (or 1.5\,cl) are read from memory.
-This leads to expected performance of 1.18\,GF/s (forward substitution) or 1.46\,GF/s (backward substitution).
-
-%\todop{Best case}
-For the ECM model of the best case with 8-way unrolling we take 8 columns and in every column 8 rows (8 iterations of the inner most loop).
-Eight iterations of forward substitution with 8-way unrolling require 672\,B (10.5\,cl) to be loaded from cache and 512\,B (8\,cl) read from memory.
-Backward substitution require 608\,B (9.5\,cl) to be loaded from cache and 512\,B (8\,cl) read from memory.
-These loads and stores need $88$ addresses (forward substitution) or $80$ addresses (backward substitution) to be generated, which takes $44$ or $40$ cycles, respectively.
-The floating point arithmetics consist of 64 multiplications and 64 additions. This can be done in 64 cycles.
-In the best case we assume \vindx{} is kept in the cache, thus only 512\,B (8\,cl) are read from memory.
-This leads to expected performance 2.7\,GF/s (forward substitution) or 2.86\,GF/s (backward substitution).
-
-\todop{ref images}
-
-\begin{comment}
-%For the ECM model we consider 8 sequential iterations of the innermost loop, which fill one 64\,B cache line.
-
-\todop{ \\
-Algorithm similar to indexed daxpy (Section \ref{sec:ecm-indirect-daxpy}). \\
-Detailed description of the algorithm in Chapter \ref{sec:algo}. \\
-Analysis of the code including unrolling in Chapter \ref{sec:sds}. \\
-\\
-Computations here\\
-Elements form L are used only once, hence they are always fetched from the memory. We can ignore the tL1..tL3. \\
-\\}
-
-In this section we describe ECM model of the forward forward (Algorithm~\ref{alg:algo:fw}) and backward (Algorithm~\ref{alg:algo:bw}) substitution. We focus our attention on the inner-most loop iterating over rows with nonzero entries in a column.
-
-The forward substitution is an indexed DAXPY kernel analyzed in Section~\ref{sec:ecm-indirect-daxpy}, but for the forward substitution we have different assumptions regarding where the data reside. Moreover the code is unrolled, processing several columns at once, which reduces the data transfers.
-\todol{continue here}
-The overlapping part of in-core execution is exactly the same as in the indirect daxpy.
-Again we take 8 iterations (or 8 rows) as an unit of work, because it fills one cache line. Note that the supernodes in L are stored column-wise, ignoring the sparsity, as described in Chapter \ref{sec:algo}.
-We will take into account 1 column for 1-way unroling, 2 columns for 2-way unrolling and 8 columns for 8-way unrolling.
-This gives
-\begin{eqnarray}
-   t^1_\text{ol} & = & \ \ 6\,\cyw \\
-   t^2_\text{ol} & = & 12\,\cyw \\
-   t^8_\text{ol} & = & 48\,\cyw
-\end{eqnarray}
-
-In PARDISO always the most efficient code is used. When a supernode has eight or more columns, the 8-way unrolling is used. 2-way unrolling is used for the remining columns and 1-way unrolling is used only for one column, in case the number of columns is odd.
-id is loaded only once per supernode. It could happen in any of the code variants 1-, 2- or 8-way unrolled, depending on the size of the supernode, as shown in Figure \ref{fig:ecm:data}.
-We assume id is always loaded from memory in the 1-way unrolled code and for the 2- or 8-way unrolled code it is already present in cache. This allows us to keep the model simple and independent of the nonzero structure of the matrix and its factor L.
-
-In the indexed daxpy r was loaded and stored from/to memory. The right hand side is often assembled just before calling the forward and backward substitution, so it is reasonable to assume that r is already in the cache. We also assume r is small enough to fit the L3 (LLC) cache and as it is used again and again, so it is not evicted.
-In case that r was not already present in the cache, it has to be loaded from memory. For reasonably big matrices we can ignore this load from memory, as it happens only once, and assume it is always present in the cache.
-
-There is one difference between the forward and backward substitution in the access pattern to r.
-The forward substituion updates different entries in r, the backward substitution always updates the same entry. The updated values in the forward substitution need to be stored in cache after every update (red text and arrows in Figure \ref{fig:ecm:data}), while the only value updated in the backward substituion is kept in register.
-
-Eight iterations of both forward and backward substitution (1-way unrolled) require sixteen $8$\,B loads (\verb|r[:]| and \verb|l[:]|) and eight $4$\,B loads (\verb'idx[:]').
-On top of that the forward substitution also requires eight $8$\,B stores (\verb'r[:]').
-These loads and stores need $32$ addresses (forward substitution) or $24$ addresses (backward substitution) to be generated, which takes $16$ or $12$ cycles, respectively. We assume all the addresses are generated on ports 2 and 3. The simple AGU on port 7 is not used as we showed in Sections \ref{sec:epm} and \ref{sec:ecm-indirect-daxpy}.
-\todol{use 1 row as an unit of work?}
-
-\todop{
-ops, cycles, normalized \\
-32 24 16 12 16 12 \\
-40 32 20 16 10 8 \\
-88 80 44 40 5.5 5
-}
-
-The floating ponit arithmetics for eight iterations in one column (1-way unrolled) consists of 8 multiplications and 8 additions. This can be done in 8 cycles using the units on ports 0 and 1. The 2- and 8-way unrolled code processes 2 or 8 columns, which require 16 or 64 additions and multiplications respectively. Hence the overlapping part of in-core execution takes 16 cycles for 2-way unrolled code and 64 cycles for 8-way unrolled code.
-
-Unlike in the daxpy case, the amount of data transfered between adjacent cache levels or L1 and registers is different from what is transfered between L3 and memory. We define the work to be for the forward substitution
-\begin{eqnarray}
-   W^{\text{fw}-1}_\text{cache} & = & 224\,\Bw \\
-   W^{\text{fw}-1}_\text{mem}   & = & 96\,\Bw \\
-   W^{\text{fw}-2}_\text{cache} & = & 288\,\Bw \\
-   W^{\text{fw}-2}_\text{mem}   & = & 128\,\Bw \\
-   W^{\text{fw}-8}_\text{cache} & = & 672\,\Bw \\
-   W^{\text{fw}-8}_\text{mem}   & = & 512\,\Bw
-\end{eqnarray}
-and for the backward substitution
-\begin{eqnarray}
-   W^{\text{bw}-1}_\text{cache} & = & 160\,\Bw \\
-   W^{\text{bw}-1}_\text{mem}   & = & 96\,\Bw \\
-   W^{\text{bw}-2}_\text{cache} & = & 224\,\Bw \\
-   W^{\text{bw}-2}_\text{mem}   & = & 128\,\Bw \\
-   W^{\text{bw}-8}_\text{cache} & = & 608\,\Bw \\
-   W^{\text{bw}-8}_\text{mem}   & = & 512\,\Bw
-\end{eqnarray}
-For details please refer to Figure \ref{fig:ecm:data}.
-
-The inputs for the ECM model are summarized in Table \ref{tab:ecm:data}. The values are for clarity normalized for 1 column.
-
-\begin{table}[!t]
-  \centering
-  \begin{tabular}{|l|c|c|c|c|c|c|c|}
-     \hline
-     \multicolumn{2}{|c|}{} & \multicolumn{3}{c|}{forward} & \multicolumn{3}{c|}{backward} \\
-     \cline{3-8}
-     \multicolumn{2}{|c|}{} & 1-way & 2-way & 8-way & 1-way & 2-way & 8-way \\
-     \hline
-     $W_\text{cache}$ & [B] & 224 & 144 & 84 & 160 & 112 & 76 \\
-     $W_\text{mem}$ & [B] & 96 & 64 & 64 & 96 & 64 & 64 \\
-     \hline
-     tol & [cy] & 8 & 8 & 8 & 8 & 8 & 8 \\
-     \hline
-     tL1 & [cy] & 16 & 10 & 5.5 & 12 & 8 & 5 \\
-     tL2 & [cy] & 3.5 & 2.25 & 1.3125 & 2.5 & 1.75 & 1.1875 \\
-     tL3 & [cy] & 3.5 & 2.25 & 1.3125 & 2.5 & 1.75 & 1.1875 \\
-     tmem & [cy] & 8.25 & 5.5 & 5.5 & 8.25 & 5.5 & 5.5 \\
-     \hline
-     Pmem & [GB/s] & 16.5 & 16.6 & 14.2 & 14.6 & 15.2 & 13.6 \\
-     Pmem & [GF/s] & 1.18 & 1.84 & 2.7 & 1.46 & 2.16 & 2.86 \\
-     \hline
-  \end{tabular}
-  \caption{\todol{...}}
-  \label{tab:ecm:data}
-\end{table}
-\end{comment}
-
 \section[Application of modified Berkeley roofline model]{Application of modified Berkeley roofline model on sparse triangular solve}
 \label{sec:mrm}
 
@@ -1045,6 +919,133 @@ studied for stencil kernels.
 %-- %\end{table}
 %-- %\end{SCtable}
 %-- \end{table*}
+
+\section{Application of Erlangen ECM model on sparse triangular solve}
+\label{sec:ecm-fwbw}
+
+As shown in Chapter \ref{sec:sds}, there are many factors influencing the performance. For example unrolling, active part of \vr{} or if \vindx{} is already loaded in cache or not. Detailed performance evaluation would require a model for every combination of these parameters and combining these models based on detailed analysis of a matrix $A$ and its factor $L$. For real world matrices, this is not possible.
+To make the modeling feasible, we focus only on two extreme cases: first, we consider the code without unrolling that reads \vindx{} from the memory and second, 8-way unrolled code that already has \vindx{} in cache. In both cases we are assuming the active part of \vr{} is large and the data reside in the L3 cache. The first scenario achieves the worst possible performance, while the second one can perform close to the theoretical maximum. These two cases give us a range of expected performance, such that for any matrix the sparse triangular solve algorithm should be within these bounds.
+
+%\todop{Worst case}
+%Processing one element of \vlnz{} without unrolling takes 2 FLOPs and requires 28\,B or 20\,B transfered between cache levels or registers for forward and backward substitution, respectively, and 12\,B are read from memory.
+For the ECM model of the worst case we consider eight iterations of the inner most loop (8 rows) in order to fill one cache line.
+Eight iterations of both forward and backward substitution without unrolling require sixteen $8$\,B loads (\verb|r[:]| and \verb|l[:]|) and eight $4$\,B loads (\verb'idx[:]').
+On top of that, the forward substitution also requires eight $8$\,B stores (\verb'r[:]').
+These loads and stores need $32$ addresses (forward substitution) or $24$ addresses (backward substitution) to be generated, which takes $16$ or $12$ cycles, respectively. We assume that all the addresses are generated on ports 2 and 3. The simple AGU on port 7 is not used as we showed in Sections~\ref{sec:epm} and \ref{sec:ecm-indirect-daxpy}.
+The floating point arithmetics for eight iterations consists of 8 multiplications and 8 additions. This can be done in 8 cycles using the units on ports 0 and 1.
+Unlike in the DAXPY case, only 96\,B (or 1.5\,cl) are read from memory.
+This leads to expected performance of 1.18\,GF/s (forward substitution) or 1.46\,GF/s (backward substitution).
+
+%\todop{Best case}
+For the ECM model of the best case with 8-way unrolling we take 8 columns and in every column 8 rows (8 iterations of the innermost loop).
+Eight iterations of forward substitution with 8-way unrolling require 672\,B (10.5\,cl) to be loaded from cache and 512\,B (8\,cl) read from memory.
+Backward substitution require 608\,B (9.5\,cl) to be loaded from cache and 512\,B (8\,cl) read from memory.
+These loads and stores need $88$ addresses (forward substitution) or $80$ addresses (backward substitution) to be generated, which takes $44$ or $40$ cycles, respectively.
+The floating point arithmetics consist of 64 multiplications and 64 additions. This can be done in 64 cycles.
+In the best case we assume \vindx{} is kept in the cache, thus only 512\,B (8\,cl) are read from memory.
+This leads to expected performance 2.7\,GF/s (forward substitution) or 2.86\,GF/s (backward substitution).
+
+\todol{ref images}
+
+
+\begin{comment}
+%For the ECM model we consider 8 sequential iterations of the innermost loop, which fill one 64\,B cache line.
+
+\todop{ \\
+Algorithm similar to indexed daxpy (Section \ref{sec:ecm-indirect-daxpy}). \\
+Detailed description of the algorithm in Chapter \ref{sec:algo}. \\
+Analysis of the code including unrolling in Chapter \ref{sec:sds}. \\
+\\
+Computations here\\
+Elements form L are used only once, hence they are always fetched from the memory. We can ignore the tL1..tL3. \\
+\\}
+
+In this section we describe ECM model of the forward forward (Algorithm~\ref{alg:algo:fw}) and backward (Algorithm~\ref{alg:algo:bw}) substitution. We focus our attention on the inner-most loop iterating over rows with nonzero entries in a column.
+
+The forward substitution is an indexed DAXPY kernel analyzed in Section~\ref{sec:ecm-indirect-daxpy}, but for the forward substitution we have different assumptions regarding where the data reside. Moreover the code is unrolled, processing several columns at once, which reduces the data transfers.
+\todol{continue here}
+The overlapping part of in-core execution is exactly the same as in the indirect daxpy.
+Again we take 8 iterations (or 8 rows) as an unit of work, because it fills one cache line. Note that the supernodes in L are stored column-wise, ignoring the sparsity, as described in Chapter \ref{sec:algo}.
+We will take into account 1 column for 1-way unroling, 2 columns for 2-way unrolling and 8 columns for 8-way unrolling.
+This gives
+\begin{eqnarray}
+   t^1_\text{ol} & = & \ \ 6\,\cyw \\
+   t^2_\text{ol} & = & 12\,\cyw \\
+   t^8_\text{ol} & = & 48\,\cyw
+\end{eqnarray}
+
+In PARDISO always the most efficient code is used. When a supernode has eight or more columns, the 8-way unrolling is used. 2-way unrolling is used for the remining columns and 1-way unrolling is used only for one column, in case the number of columns is odd.
+id is loaded only once per supernode. It could happen in any of the code variants 1-, 2- or 8-way unrolled, depending on the size of the supernode, as shown in Figure \ref{fig:ecm:data}.
+We assume id is always loaded from memory in the 1-way unrolled code and for the 2- or 8-way unrolled code it is already present in cache. This allows us to keep the model simple and independent of the nonzero structure of the matrix and its factor L.
+
+In the indexed daxpy r was loaded and stored from/to memory. The right hand side is often assembled just before calling the forward and backward substitution, so it is reasonable to assume that r is already in the cache. We also assume r is small enough to fit the L3 (LLC) cache and as it is used again and again, so it is not evicted.
+In case that r was not already present in the cache, it has to be loaded from memory. For reasonably big matrices we can ignore this load from memory, as it happens only once, and assume it is always present in the cache.
+
+There is one difference between the forward and backward substitution in the access pattern to r.
+The forward substituion updates different entries in r, the backward substitution always updates the same entry. The updated values in the forward substitution need to be stored in cache after every update (red text and arrows in Figure \ref{fig:ecm:data}), while the only value updated in the backward substituion is kept in register.
+
+Eight iterations of both forward and backward substitution (1-way unrolled) require sixteen $8$\,B loads (\verb|r[:]| and \verb|l[:]|) and eight $4$\,B loads (\verb'idx[:]').
+On top of that the forward substitution also requires eight $8$\,B stores (\verb'r[:]').
+These loads and stores need $32$ addresses (forward substitution) or $24$ addresses (backward substitution) to be generated, which takes $16$ or $12$ cycles, respectively. We assume all the addresses are generated on ports 2 and 3. The simple AGU on port 7 is not used as we showed in Sections \ref{sec:epm} and \ref{sec:ecm-indirect-daxpy}.
+\todol{use 1 row as an unit of work?}
+
+\todop{
+ops, cycles, normalized \\
+32 24 16 12 16 12 \\
+40 32 20 16 10 8 \\
+88 80 44 40 5.5 5
+}
+
+The floating ponit arithmetics for eight iterations in one column (1-way unrolled) consists of 8 multiplications and 8 additions. This can be done in 8 cycles using the units on ports 0 and 1. The 2- and 8-way unrolled code processes 2 or 8 columns, which require 16 or 64 additions and multiplications respectively. Hence the overlapping part of in-core execution takes 16 cycles for 2-way unrolled code and 64 cycles for 8-way unrolled code.
+
+Unlike in the daxpy case, the amount of data transfered between adjacent cache levels or L1 and registers is different from what is transfered between L3 and memory. We define the work to be for the forward substitution
+\begin{eqnarray}
+   W^{\text{fw}-1}_\text{cache} & = & 224\,\Bw \\
+   W^{\text{fw}-1}_\text{mem}   & = & 96\,\Bw \\
+   W^{\text{fw}-2}_\text{cache} & = & 288\,\Bw \\
+   W^{\text{fw}-2}_\text{mem}   & = & 128\,\Bw \\
+   W^{\text{fw}-8}_\text{cache} & = & 672\,\Bw \\
+   W^{\text{fw}-8}_\text{mem}   & = & 512\,\Bw
+\end{eqnarray}
+and for the backward substitution
+\begin{eqnarray}
+   W^{\text{bw}-1}_\text{cache} & = & 160\,\Bw \\
+   W^{\text{bw}-1}_\text{mem}   & = & 96\,\Bw \\
+   W^{\text{bw}-2}_\text{cache} & = & 224\,\Bw \\
+   W^{\text{bw}-2}_\text{mem}   & = & 128\,\Bw \\
+   W^{\text{bw}-8}_\text{cache} & = & 608\,\Bw \\
+   W^{\text{bw}-8}_\text{mem}   & = & 512\,\Bw
+\end{eqnarray}
+For details please refer to Figure \ref{fig:ecm:data}.
+
+The inputs for the ECM model are summarized in Table \ref{tab:ecm:data}. The values are for clarity normalized for 1 column.
+
+\begin{table}[!t]
+  \centering
+  \begin{tabular}{|l|c|c|c|c|c|c|c|}
+     \hline
+     \multicolumn{2}{|c|}{} & \multicolumn{3}{c|}{forward} & \multicolumn{3}{c|}{backward} \\
+     \cline{3-8}
+     \multicolumn{2}{|c|}{} & 1-way & 2-way & 8-way & 1-way & 2-way & 8-way \\
+     \hline
+     $W_\text{cache}$ & [B] & 224 & 144 & 84 & 160 & 112 & 76 \\
+     $W_\text{mem}$ & [B] & 96 & 64 & 64 & 96 & 64 & 64 \\
+     \hline
+     tol & [cy] & 8 & 8 & 8 & 8 & 8 & 8 \\
+     \hline
+     tL1 & [cy] & 16 & 10 & 5.5 & 12 & 8 & 5 \\
+     tL2 & [cy] & 3.5 & 2.25 & 1.3125 & 2.5 & 1.75 & 1.1875 \\
+     tL3 & [cy] & 3.5 & 2.25 & 1.3125 & 2.5 & 1.75 & 1.1875 \\
+     tmem & [cy] & 8.25 & 5.5 & 5.5 & 8.25 & 5.5 & 5.5 \\
+     \hline
+     Pmem & [GB/s] & 16.5 & 16.6 & 14.2 & 14.6 & 15.2 & 13.6 \\
+     Pmem & [GF/s] & 1.18 & 1.84 & 2.7 & 1.46 & 2.16 & 2.86 \\
+     \hline
+  \end{tabular}
+  \caption{\todol{...}}
+  \label{tab:ecm:data}
+\end{table}
+\end{comment}
 
 \section{Experimental testbed for the performance evaluation}
 \label{sec:tb}
