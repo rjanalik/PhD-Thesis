@@ -1,12 +1,12 @@
 \chapter{Node-Level Performance Modeling of Sparse Triangular Solve}
 \label{c:modeling}
 
-Even in scientific computing, simulation code development often lacks a basic understanding of performance bottlenecks and relevant optimization opportunities. In this chapter we will use a structured model-based performance engineering approach on the compute node level for a fundamental kernel operation in sparse factorization solvers. We aim at a deep understanding of how code performance comes about and which hardware bottlenecks might apply. The pivotal ingredient of this process is a performance model which links software requirements with hardware capabilities. Such models are often simplified such as the well-known Berkeley Roofline model or the Erlangen ECM model, but it leads to deeper insights and strikingly more accurate runtime predictions.
+Even in scientific computing, simulation code development often lacks a basic understanding of performance bottlenecks and relevant optimization opportunities. In this chapter we will use a structured model-based performance engineering approach on the compute node level for a fundamental kernel operation in sparse factorization solvers. We aim at a deep understanding of how code performance comes about and which hardware bottlenecks might apply. The pivotal ingredient of this process is a performance model which links software requirements with hardware capabilities. Such models are often simplified such as the well-known Berkeley roofline model or the Erlangen ECM model, but it leads to deeper insights and strikingly more accurate runtime predictions.
 
 The package PARDISO\footnote{A discussion of the algorithms used in
-PARDISO, the user manual and more information on the solver can be found at
+PARDISO, the user manual, and more information on the solver can be found at
 \url{http://www.pardiso-project.org}}
-is a thread-safe, high-performance and memory-effi\-cient,
+is a thread-safe, high-performance, and memory-effi\-cient,
 serial and parallel solver for the direct solution of unsymmetric
 and symmetric sparse linear systems on shared memory multiprocessors.
 The solver uses a combination
@@ -18,17 +18,17 @@ a Level-3 BLAS update and pipelining parallelism is exploited with
 a combination of left- and right-looking supernode techniques.
 
 PARDISO calculates the solution of a set of sparse linear equations
-with multiple right-hand sides, using a parallel $LU$, $LDL^T$ or $LL^T$
+with multiple right-hand sides, using a parallel $LU$, $LDL^T$, or $LL^T$
 factorization. PARDISO supports a wide range of sparse matrix types and
 computes the solution of real or complex,
 symmetric, structurally symmetric or unsymmetric, positive definite,
 indefinite or Hermitian sparse linear system of equations on shared-memory
 multiprocessing architectures.
 
-The parallel pivoting methods for unsymmetric matrices allow complete supernode pivoting in order to compromise numerical stability and scalability during the factorization process. For sufficiently large problem sizes numerical experiments demonstrate that the scalability of the parallel algorithm is nearly independent of the shared-memory multiprocessing architecture and a speedup of up to seven using eight processors has been observed. The package is implemented using multi-threading using OpenMP directives. PARDISO performs the analysis steps depending on the structure
+The parallel pivoting methods for unsymmetric matrices allow complete supernode pivoting in order to ensure numerical stability and scalability during the factorization process. For sufficiently large problem sizes numerical experiments demonstrate that the scalability of the parallel algorithm is nearly independent of the shared-memory multiprocessing architecture and a speedup of up to seven using eight processors has been observed. The package is implemented using multithreading using OpenMP directives. PARDISO performs the analysis steps depending on the structure
 of the input matrix $A$. See \cite{Bollhofer2020} for further details.
 
-For comparison and to motivate the usage of the PARDISO solver, we run initial benchmarks on varouos matrices. Here we used CHOLMOD~(\cite{cholmod2008,doi:10.1137/1.9780898718881}), MUMPS~(\cite{amestoy-2000,amestoy-2001,amestoy-2006}) and PARDISO~(\cite{schenk-2004,kuzmin-2013}) solvers. For CHOLMOD and MUMPS we set METIS reordering, so all solvers have about the same factors. We measured duration of the forward/backward substitution for our benchmark
+For comparison and to motivate the usage of the PARDISO solver, we run initial benchmarks on varouos matrices. Here we used CHOLMOD~(\cite{cholmod2008,doi:10.1137/1.9780898718881}), MUMPS~(\cite{amestoy-2000,amestoy-2001,amestoy-2006}), and PARDISO~(\cite{schenk-2004,kuzmin-2013}) solvers. For CHOLMOD and MUMPS we set METIS reordering, so all solvers have about the same factors. We measured duration of the forward/backward substitution for our benchmark
 matrices. The results for the Ivy Bridge system are shown in Figure~\ref{fig:solvers}.
 
 %
@@ -39,7 +39,7 @@ matrices. The results for the Ivy Bridge system are shown in Figure~\ref{fig:sol
   \label{fig:solvers}
 \end{figure}
 
-In this chapter, we will mainly analyze the data transfer between the different cache levels and the FLOPs performed during the sparse triangular solve phase. The results of this analyzis are used as input for our performance model. Therefore, we mostly inspect the different instantiations of the loops resulting from Algorithm~\ref{alg:algo:fw} and \ref{alg:algo:bw} on page \pageref{alg:algo:fw} and \pageref{alg:algo:bw}. We only consider the innermost loops because all the arithmetics is performed here. Our assumption is that the instructions regarding control variables of the loops are negligible, hence we do not them into account.
+In this chapter, we will mainly analyze the data transfer between the different cache levels and the FLOPs performed during the sparse triangular solve phase. The results of this analysis are used as input for our performance model. Therefore, we mostly inspect the different instantiations of the loops resulting from Algorithms~\ref{alg:algo:fw} and \ref{alg:algo:bw} on page \pageref{alg:algo:fw} and \pageref{alg:algo:bw}. We only consider the innermost loops because all the arithmetics are performed here. Our assumption is that the instructions regarding control variables of the loops are negligible, hence we do not them into account.
 %Here, we only consider the innermost loops and do not
 %distinguish between updates of~\vr{} or temporary arrays~\vtemp{}.
 
@@ -62,9 +62,9 @@ $
 is solved via forward substitution. This is followed by a diagonal solve
 $
   \label{eq:dg}
-  Dz=y,
+  Dz=y
 $
-and afterwards the resulting $z$ vector is used to solve for the solution vector 
+and, afterwards, the resulting $z$ vector is used to solve for the solution vector
 %
 $
   \label{eq:bw}
@@ -100,7 +100,7 @@ The columns of a panel are stored consecutively in memory excluding the zero
 entries. 
 Note that columns of panels are padded in the front with zeros so they get the 
 same length as the first column inside their panel. 
-The padding is of utmost performance for the PARDISO solver to use Level-2/3
+The padding is of utmost importance for the PARDISO solver to use Level-2/3
 BLAS and LAPACK functionalities. Please see~\cite{Bollhofer2020} for more
 details.
 Furthermore, panels are stored consecutively in the array \vlnz{}.
@@ -133,7 +133,7 @@ Before the separator is then serially updated, the results of the temporary
 arrays are gathered back into \vr{}. 
 The backward substitution works the same, just reversed, and
 updates to different temporary arrays are not required.
-Figure \ref{fig:ecm-parallel-model} shows a possible execution of forward solve. The nested dissection reordering assigns to every partition about the same number of columns. However, panels in different partitions can have different size (number of columns). Then different threads execute differently unrolled code, as can be seen on the left side of Figure \ref{fig:ecm-parallel-model}. For easier modeling we assume the execution of the unrollings is sorted and evenly distributed over cores, as shows the right side of the Figure \ref{fig:ecm-parallel-model}.
+Figure \ref{fig:ecm-parallel-model} shows a possible execution of forward solve. The nested dissection reordering assigns to every partition about the same number of columns. However, panels in different partitions can have different size (number of columns). Then different threads execute differently unrolled code, as can be seen on the left side of Figure \ref{fig:ecm-parallel-model}. For easier modeling we assume the execution of the unrollings is sorted and evenly distributed over cores, as shows the right side of Figure \ref{fig:ecm-parallel-model}.
 
 \begin{figure}[t]
   \centering
@@ -243,14 +243,14 @@ straightforward vectorization.
 % For performance reasons (discussed later in section~\ref{sec:pam}) the loops over the
 % columns (blue text) in algorithms~\ref{alg:algo:fw} and~\ref{alg:algo:bw} are $1$-, $2$-,
 % and $8$-way unrolled.
-For performance reasons (discussed in section~\ref{sec:pm:dt:wu}) the
+For performance reasons (discussed in Section~\ref{sec:pm:dt:wu}) the
 loops over the columns (blue text) in Algorithm~\ref{alg:algo:fw} are $1$-,
 $2$-, and $8$-way unrolled.
 %\mycomment{OR: Blau wird im Druck nicht gut sichtbar sein. Ist uns das egal,
 %weil wir sowieso nur vom PDF ausgehen? MW: ja davon wuerde ich ausgehen.}
 The algorithm for the backward substitution in Algorithm~\ref{alg:algo:bw} 
-looks nearly the same, except that first
-the serial part is executed, which is then followed by the parallel section.
+looks nearly the same, except that
+the serial part is executed first, which is then followed by the parallel section.
 %
 
 Parallel handling of the separator during the forward and backward
@@ -338,12 +338,12 @@ the loops in lines $21$--$24$, we only discuss the latter.
 %
 During each iteration one nonzero is processed, two FLOPs are performed,
 namely, a multiplication and an addition, and the following elements get
-loaded and stored, loaded: \vindx{} ($4$~\,B), \vr{} ($8$~\,B), \vlnz{}
+loaded and stored: loaded: \vindx{} ($4$~\,B), \vr{} ($8$~\,B), \vlnz{}
 ($8$~\,B); stored: \vr{} ($8$~\,B).
 
 How much data are transferred inside the cache hierarchy depends on the size of
 the caches, their replacement strategies, the size of \vr{}, the average panel
-size, as well as the structure of the panels, i.\,e.,\ which part of \vr{} is
+size, as well as the structure of the panels, i.e.,\ which part of \vr{} is
 accessed.
 Here we assume \vr{} is small enough to be kept at least in last level cache
 (LLC) and temporal locality ensures it is not evicted.
@@ -367,7 +367,7 @@ active part of \vr{}.
 At some point the active part can be completely kept in the L2 or even the L1 cache.
 This also holds true for \vindx{}, except when a new panel starts, then
 the panel's row indices must first be loaded from memory.
-With Intel L2 cache 356\,kB and L1 cache 32\,kB, maximum about 13000 and 1600 elemets of \vr{}, \vindx{} and \vlnz{} could fit in the L2 and L1 cache, respectively. However, due to the associativity and replacement strategy of the cache and the need to store other data, it is reasonable to expect only half of the size can be used. We can expect if the active part of \vr{} is less than about 6000 elements, it can be kept in L2 cache, and if it is less than about 800 elements it fits in L1 cache.
+With Intel L2 cache 256\,kB and L1 cache 32\,kB, a maximum of about 13000 and 1600 elements of \vr{}, \vindx{}, and \vlnz{} could fit into the L2 and L1 caches, respectively. However, due to the associativity and replacement strategy of the cache and the need to store other data, it is reasonable to expect only half of the size can be used. We can expect if the active part of \vr{} is less than about 6000 elements, it can be kept in the L2 cache, and if it is less than about 800 elements it fits into the L1 cache.
 \clearpage
 
 \begin{figure}[t]
@@ -416,7 +416,7 @@ With Intel L2 cache 356\,kB and L1 cache 32\,kB, maximum about 13000 and 1600 el
 %1 and the cache line size.}.
 
 The innermost loop of the backward substitution from
-Algorithm~\ref{alg:algo:bw}, is %looks like 
+Algorithm~\ref{alg:algo:bw} is %looks like
 % The innermost loop from lines $5$--$9$ is the same as the one from lines
 % $17$--$20$ of the backward
 % substitution from Algorithm~\ref{alg:algo:bw}, which we only discuss the former,
@@ -468,7 +468,7 @@ nonzero update if \vr{} is cached in L3 cache.
 \label{sec:pm:dt:wu}
 
 %
-As noted in section~\ref{sec:algo} it is beneficial to handle several columns
+As noted in Section~\ref{sec:algo} it is beneficial to handle several columns
 at once.
 %\sout{In PARDISO loops over columns \uwave{are additionally to no unrolling manually $2$- and $8$-times unrolled and used when a panel contains more than one column.}}
 For this purpose PARDISO has additionally 2- and 8-way manually unrolled
@@ -515,7 +515,7 @@ $2$-way unrolling:
 Also here four FLOPs per iteration are performed, two entries of \vlnz{} are
 loaded and the corresponding element of \vr{} is loaded only once.
 %
-For a $u$-way unrolling $2 \times u$\,FLOPs and $u \times 12\,\text{B} +
+For a $u$-way unrolling, $2 \times u$\,FLOPs and $u \times 12\,\text{B} +
 8\,\text{B}$ are loaded.
 
 As already noted, we assume \vr{} and a panel's current row indices from
@@ -780,7 +780,7 @@ $P_\text{max}$ further by a factor of four.
 And, finally, if the floating point instruction mix does not equally utilize a
 processors floating point units, $P_\text{max}$ is again reduced.
 % \todo{This is a forward reference.}
-For example, the Ivy Bridge (IVB) system (section~\ref{sec:tb}, Table~\ref{tab:hw}) hosts an add and
+For example, the Ivy Bridge (IVB) system (Section~\ref{sec:tb}, Table~\ref{tab:hw}) hosts an add and
 multiply unit, but if only one type of floating point instruction is used, only
 half of the theoretical floating
 point performance can be attained. 
@@ -790,7 +790,7 @@ scalar FMA instructions
 for the core loops of the %\sout{forward/backward substitution} 
 sparse triangular solve
 for architectures
-with AVX2 support and scalar add/multiply instructions for
+with AVX2 support and scalar \linebreak add/multiply instructions for
 architectures without FMA support like IVB.
 
 The attainable memory bandwidth $B$ is measured with a microbenchmark,
@@ -820,7 +820,7 @@ denotes FLOP.
 %1 levels and uses the data transfer and FLOP counts from Sect.~\ref{sec:sds}.
 Table~\ref{tab:mrm:bc} lists the code balance for different unrolling factors
 when the factor $L$ must be fetched from memory and uses the data transfer and
-FLOP counts from section~\ref{sec:sds}.
+FLOP counts from Section~\ref{sec:sds}.
 In contrast, the \textit{machine balance} $B_m$ defines the ratio for the whole system
 and uses the ratio of the attainable memory bandwidth $B$ to the maximum floating point
 performance $P_\text{max}$.
@@ -831,7 +831,7 @@ This bandwidth is found in Table~\ref{tab:hw} for all systems.
 If $B_c > B_m$ then the roofline model indicates 
 that the code's performance is
 limited by the memory bandwidth,
-i.\,e., that the code is memory bound.
+i.e., that the code is memory bound.
 %1 This is the case for sparse direct solve for all unrollings, when data is
 %1 located in L2, L3, or memory.
 {This is the case for the sparse %\sout{direct} 
@@ -851,7 +851,7 @@ completely located in memory.}
   \centering
    \begin{tabular}{ll|cm{0.8eM}cm{0.8eM}c|cm{0.8eM}cm{0.8eM}c}
   \hline
-  substitution && \multicolumn{5}{c|}{forward} & \multicolumn{5}{c}{backward} \\
+  Substitution && \multicolumn{5}{c|}{Forward} & \multicolumn{5}{c}{Backward} \\
   %\cline{3-5} \cline{7-9}
   \hline
      $u$    &     &  1   &  & 2    &  & 8        & 1     &  & 2   &  & 8  \\
@@ -866,10 +866,10 @@ Values depend on actual panel size $s$ and possible cache reuse.}
   \label{tab:mrm:bc}
 \end{table}
 
-To determine performance limits, we only consider the case when data resides in
+To determine performance limits, we only consider the case when data reside in
 memory.
 Therefore the data transfers between the L3 cache and memory are relevant as shown
-in Figure~\ref{fig:ecm:data-fw} and \ref{fig:ecm:data-bw}.
+in Figures~\ref{fig:ecm:data-fw} and \ref{fig:ecm:data-bw}.
 Only nonzero entries of $L$ with the corresponding panel indices are loaded. 
 Their amount depends only on the structure of $L$ and is independent of the used
 loop unrollings.
@@ -1119,18 +1119,19 @@ As compiler, Intel C/Fortran Compiler version 17.0.1 was used.
     \includegraphics[height=0.4\linewidth,clip=true]{images/stream/StreamReadSingleCoreFullProcessor}
     \label{fig:mrm:bw-single-core}
   }%
-  \caption{Bandwidth over the number of cores of the read only benchmark in a
+  \caption{\protect\subref{fig:mrm:bw-scaling} Bandwidth over the number of cores of the read only benchmark in a
 scalar and vectorized version exemplified on HSW-D and
-HSW-S~\protect\subref{fig:mrm:bw-scaling}.
-Single core bandwidth and saturated bandwidth with all available cores of the
-processor/cluster~\protect\subref{fig:mrm:bw-single-core}.}
+HSW-S.
+\protect\linebreak
+\protect\subref{fig:mrm:bw-single-core} Single core bandwidth and saturated bandwidth with all available cores of the
+processor/cluster.}
   \label{fig:mrm:bw}
 \end{figure}
 
 For the performance model an effective memory bandwidth is required.
 For the evaluation of the effective bandwidth we measure read-only bandwidth.
 The measurements are reported in Table~\ref{tab:hw}.
-As discussed in section~\ref{sec:mrm} only scalar loads are used.
+As discussed in Section~\ref{sec:mrm} only scalar loads are used.
 %
 If enough cores are used then both scalar and vectorized read-only benchmarks
 saturate the memory bandwidth with the only difference being that the saturation of
@@ -1146,11 +1147,11 @@ vectorized read-only benchmark for the single core and the usage of all cores
 inside a NUMA LD over all systems in the test bed.
 IVB, HSW-S, and the ZEN-based
 systems reach,
-with one core and vector loads between $15$\,\% and
-$25$\,\%,
+with one core and vector loads between $15\,\%$ and
+$25\,\%$,
 a higher bandwidth
 than with scalar load instructions.
-However, utilizing the full NUMA LD nearly no difference is visible.
+However, utilizing the full NUMA LD, nearly no difference is visible.
 %
 
 % \section{Machine Balance $B_m$}
@@ -1167,7 +1168,7 @@ multiplication for processing a nonzero.
   \small
   \begin{tabular}{ll|rrrrrr}
   \hline
-  matrix      &&  \multicolumn{1}{c}{${n}$} &&
+  Matrix      &&  \multicolumn{1}{c}{${n}$} &&
             \multicolumn{1}{c}{${\text{nnz}(A)}$}  &&
             \multicolumn{1}{c}{${\text{nnz}(L)}$}   \\
 %  {\bfseries matrix}      &&  \multicolumn{1}{c}{$\bm{n}$} &&
@@ -1273,6 +1274,6 @@ counts which are powers of two.
 	\includegraphics[width=0.3\textwidth,clip=true]{{{images/matrices/mat_Kii_sd22_size750141_load2_newton1-t-1-p-80.log-rhs-update-frequencies}}}
 	\label{fig:m:hist:feti1}
   } \,
-  \caption{Multi-parameter histograms showing how many nonzeros of L are in panels with a certain number of columns and rows. Panels with 3000 and more rows are accumulated. This plot gives an impression of how the work, i.e., nonzeros, in L is distributed over panel dimensions.}
+  \caption{Multiparameter histograms showing how many nonzeros of L are in panels with a certain number of columns and rows. Panels with 3000 and more rows are accumulated. This plot gives an impression of how the work, i.e., nonzeros, in L is distributed over panel dimensions.}
   \label{fig:m:hist}
 \end{figure*}

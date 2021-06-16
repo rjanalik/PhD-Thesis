@@ -4,7 +4,7 @@
 
 Performance engineering plays an important role in development of scientific software. In order to achieve optimal performance, one needs to analyze the code and computer architecture to identify bottlenecks and possibilities for optimization (\cite{KöstlerRüde+2013+91+96,Minami2019}). This helps us spend our effort only where there is a potential for improvement.
 %It is also useful to have realistic expectations about performance given code can achieve.
-While simple code can be often analyzed using intuition and guessing, this is not possible for nontrivial codes. Performance models are helping us to analyze a code by guiding our attention on important features and neglecting unnecessary details~(\cite{Gropp99,Williams:EECS-2008-164,KHWPAF14}).
+While simple code can often be analyzed using intuition and guessing, this is not possible for nontrivial codes. Performance models are helping us to analyze a code by guiding our attention on important features and neglecting unnecessary details~(\cite{Gropp99,Williams:EECS-2008-164,KHWPAF14}).
 %
 %In this chapter we analyze forward and backward substitution code used in direct methods for solving sparse linear systems. Due to the fact that part of the algorithm is executed sequentially and part in parallel, the performance predictions are challenging. With our extension to the roofline model we are able to model such code. The predictions are then compared to measurements for a representative set of sparse matrices.
 %
@@ -13,7 +13,7 @@ While simple code can be often analyzed using intuition and guessing, this is no
 %
 This chapter reviews two performance models we will later use for modeling forward and backward substitution code used in sparse factorization solvers.
 
-The chapter is organized as follows. In Section \ref{sec:arch} computer architecture is briefly introduced. Next, Section \ref{sec:likwid} reviews a collection of command line tools called LIKWID. These tools are useful for various performance engineering tasks, e.g. determining the hardware and its specification, micro-benchmarking and profiling. After that, two established performance models are reviewed: Berkeley Roofline model in Section \ref{sec:roofline} and Erlangen Execution-cache-memory model in Section \ref{sec:ecm}. Finally in Section \ref{sec:ecm-application} Execution-cache-memory model is used to analyze performance of two simple computational kernels. Models of these two kernels will be later used as a base for modeling sparse triangular solve.
+The chapter is organized as follows. In Section \ref{sec:arch} computer architecture is briefly introduced. Next, Section \ref{sec:likwid} reviews a collection of command line tools called LIKWID. These tools are useful for various performance engineering tasks, e.g., determining the hardware and its specification, microbenchmarking, and profiling. After that, two established performance models are reviewed: the Berkeley roofline model in Section \ref{sec:roofline} and Erlangen execution-cache-memory model in Section \ref{sec:ecm}. Finally in Section \ref{sec:ecm-application} the execution-cache-memory model is used to analyze performance of two simple computational kernels. Models of these two kernels will be used later as a base for modeling sparse triangular solves.
 
 %\section{Code parameters}
 %
@@ -73,7 +73,7 @@ The chapter is organized as follows. In Section \ref{sec:arch} computer architec
 \section[Memory Hierarchies, Autotuning, and Solvers]{Exploiting the Memory Hierarchies, Autotuning\\ Research, and Sparse Factorization Solvers}
 \label{sec:modeling-intro}
 
-Modern microprocessors are highly sensitive to the spatial and temporal locality of data. Regardless of the programming model, performance of future parallel applications will crucially depend on the quality of the generated code which is traditionally the responsibility of the compiler. The compiler selects which optimization to perform in terms of, e.g., loop-unrolling, out-of-order instruction capabilities, or register scheduling. Choosing parameters for these optimizations, and selecting among alternative implementations, is the key to efficient use of the underlying hardware. The resulting space of optimization alternative is large (\cite{8423171}).
+Modern microprocessors are highly sensitive to the spatial and temporal locality of data. Regardless of the programming model, performance of future parallel applications will crucially depend on the quality of the generated code which is traditionally the responsibility of the compiler. The compiler selects which optimization to perform in terms of, e.g., loop-unrolling, out-of-order instruction capabilities, or register scheduling. Choosing parameters for these optimizations, and selecting among alternative implementations, is the key to efficient use of the underlying hardware. The resulting space of optimization alternatives is large (\cite{8423171}).
 
 Autotuner projects such as, e.g. ATLAS~\footnote{Automatically Tuned Linear Algebra Software} (\cite{whaley04,WN147}), FLAME~\footnote{Formal Linear Algebra Methods Environment} (\cite{Flame:2005}), and OSKI~\footnote{Optimized Sparse Kernel Interface} (\cite{Demmel2005:selftune:linalg,Vuduc2003:thesis,Lee2004:spmv:symm}),
 gained popularity as a very effective approach for producing high-quality portable scientific code. In these projects, the set of library kernels is automatically optimized by generating many variants of a given kernel and by running that kernel in a target platform. The search process may take hours to complete on the platform. However, it needs to be performed only once when the library is installed on the platform. The resulting codes might be
@@ -114,10 +114,10 @@ The new version of an AVX extension, called AVX2, adds support for vectorized FM
   \label{fig:hsw-microarch}
 \end{figure}
 
-The parallelism can be exploited not only on the level of multiple cores, but also on the instruction-level within a single processor, an example of which is instruction pipelining. Pipelining attempts to divide incoming instructions into a series of sequential steps, allowing the processor to dispatch a new instruction every cycle, instead of performing a whole instruction which takes several cycles. Additionally, in order to maximize instruction throughput, the instructions are executed out of order, if there are available processing units.
+The parallelism can be exploited not only on the level of multiple cores, but also on the instruction level within a single processor, an example of which is instruction pipelining. Pipelining attempts to divide incoming instructions into a series of sequential steps, allowing the processor to dispatch a new instruction every cycle, instead of performing a whole instruction which takes several cycles. Additionally, in order to maximize instruction throughput, the instructions are executed out of order, if there are available processing units.
 A CPU core of Intel Haswell microarchitecture is shown in Figure \ref{fig:hsw-microarch}, consisting of eight dispatch ports in total, four of which have units for computational operations and four for memory operations. The scheduler can dispatch up to eight micro-ops every cycle, one on each port.
 
-Another level of complexity is introduced when considering data movements. The CPU performs all operations on data stored in registers, the fast but small memory inside the CPU. Before the computations start, data have to first be loaded from memory to registers and when the computations are done, they have to be stored back to memory. The memory is very slow compared to the registers, which introduces a significant bottleneck hampering the performance of a computation. To make the memory access more efficient there are multiple levels of memory between the CPU and main memory, each with different size and access speed, referred to as cache. Usually the cache has three levels, called L1, L2, and L3. L1 is closest to the CPU and has the smallest size (few kB), while L3 is closest to the memory and has the largest size (few MB). Any data transferred between the memory and registers have to go through all cache levels. 
+Another level of complexity is introduced when considering data movements. The CPU performs all operations on data stored in registers, the fast but small memory inside the CPU. Before the computations start, data have to first be loaded from memory to registers and when the computations are done, they have to be restored back to memory. The memory is very slow compared to the registers, which introduces a significant bottleneck hampering the performance of a computation. To make the memory access more efficient there are multiple levels of memory between the CPU and main memory, each with a different size and access speed, referred to as cache. Usually the cache has three levels, called L1, L2, and L3. L1 is closest to the CPU and has the smallest size (few kB), while L3 is closest to the memory and has the largest size (few MB). Any data transferred between the memory and registers have to go through all cache levels.
 In some cases data are often reused in the computation, thus they can stay in the cache, avoiding communication with the slow memory.
 
 In order to improve performance and the ability of the system to be expanded, e.g., in the case of servers often having more than one processor, every processor has its own memory and memory controller. This memory layout is called NUMA (Non-Uniform Memory Access). The benefit of such an architecture is that it increases memory bandwidth, the rate at which data can be read and stored into memory, which prevents a~bottleneck introduced by all the cores accessing the memory and saturating the available bandwidth, resulting in idle cores waiting for data instead of doing useful computation. On the other hand, introducing multiple memory domains creates problems when one processor needs to access data in memory belonging to another processor. This situation is possible but not very efficient, as it increases the load at a single memory controller and, additionally, the data have to be transferred through a link between processors, which can become a bottleneck. The programmer works with a virtual memory spanning all memory domains, so he does not see this underlying complexity, but he should keep this in mind in order to write efficient code. For example, an operating system places memory pages to the physical memory of the processor that writes to the page for the first time, so called first touch. If a single thread initializes all the data that are then accessed in parallel, it might allocate the data in a suboptimal way. If the initialization is performed in parallel, significantly better memory utilization can be achieved.
@@ -172,11 +172,11 @@ In order to improve performance and the ability of the system to be expanded, e.
     \hline
 \\[0.01em]
   \end{tabular}
-  \caption{Details of Evaluated Hardware Systems.
+  \caption{Details of evaluated hardware systems.
 % ISA Lists the Latest Extension Supported by the Processor.
 % Read Memory Bandwidth, Floating Point Instructions per Cycle (ADD+MULL and
 % FMA Instructions), and Machine Balance is Reported for Scalar Execution.
-KNL's Bandwidth Numbers are for DDR Memory.}
+KNL's bandwidth numbers are for DDR memory.}
 % ECM: 2 cy L1/L2 bei HSW/BDW entgegen der Doku
 % STREAM:
 % read = summation
@@ -190,25 +190,25 @@ KNL's Bandwidth Numbers are for DDR Memory.}
 %}
 \end{table*}
 
-Modern server processors contain a lot of cores (usually 14 or more) and with so many cores accessing the memory it is very easy to saturate the memory bandwidth. Intel solves this problem by splitting the memory and L3 cache between two NUMA domains and use second memory controller. This reduces the number of cores using the same memory controller and doubles the memory bandwidth. Intel calls this architecture Cluster-on-Die (CoD).
+Modern server processors contain a lot of cores (usually 14 or more) and with so many cores accessing the memory it is very easy to saturate the memory bandwidth. Intel solves this problem by splitting the memory and L3 cache between two NUMA domains and use second memory controllers. This reduces the number of cores using the same memory controller and doubles the memory bandwidth. Intel calls this architecture Cluster-on-Die (CoD).
 %Cluster-on-Die (CoD) solves a problem with saturation of memory bandwidth on server CPUs from Intel. These CPUs have many cores (14 or more), but only few can are able to saturate the memory bandwidth. When CoD is enabled, the cores, memory and L3 cache are split to two NUMA domains and second memory controller is used. This reduces the number of cores using the same memory controller and doubles the memory bandwidth.
 
 Peak performance of a CPU is a theoretical maximum the processor can\linebreak achieve. It requires utilization of all cores running at the base frequency and every core achieving the highest possible floating point throughput.
 Evaluation of the peak performance of modern CPUs is a very intricate process, requiring one to consider a multitude of factors. It depends on an instruction set and the number and type of units in a core. A detailed analysis of different Intel architectures can be found in \cite{dolbeau-2018}.
-As an example we can analyze Intel Xeon E5-2695 v3. This is a 14 core CPU with Haswell architecture and base frequency 2.3\,GHz (detailed description is in Table \ref{tab:hw}). The Haswell architecture supports AVX2 instructions (8 FLOPs per instruction) and can execute two instructions per cycle (ports 1 and 5), resulting in a total of 16 FLOPs per cycle per core.
+As an example we can analyze Intel Xeon E5-2695 v3. This is a 14 core CPU with Haswell architecture and base frequency of 2.3\,GHz (detailed description is in Table \ref{tab:hw}). The Haswell architecture supports AVX2 instructions (8 FLOPs per instruction) and can execute two instructions per cycle (ports 1 and 5), resulting in a total of 16 FLOPs per cycle per core.
 Consequently, the peak performance is $P_{peak} = 2.3 * 14 * 8 * 2 = 515.2\,\textrm{GFLOPs/s}$.
 
 The theoretical memory bandwidth can be found in a datasheet, but the attainable bandwidth of a specific application depends on the access patters, number of threads used, whether NUMA is used, and other factors. Using the theoretical bandwidth is thus not precise for purposes of performance analysis.
 A more realistic bandwidth can be obtained using microbenchmarks, ideally with similar memory access patterns as the application.
 %\texttt{likwid-bench} from the LIKWID toolbox is a popular application for benchmarking different kernels.
-In the following section we will review a performance tool called LIKWID which supports software developers, benchmarkers and application users to model and get the best performance on a given system. We will use this tool later for performance modeling for a sparse factorization solver.
+In the following section we will review a performance tool called LIKWID which supports software developers, benchmarkers, and application users to model and get the best performance on a given system. We will use this tool later for performance modeling for a sparse factorization solver.
 
 \section{Performance modeling using the LIKWID Tools}
 \label{sec:likwid}
 
-LIKWID ("Like I Knew What I'm Doing") (\cite{likwid-2010-arxiv}) is set of command line tools to support optimization and performance engineering.
+LIKWID ("Like I Knew What I'm Doing") (\cite{likwid-2010-arxiv}) is a set of command line tools to support optimization and performance engineering.
 It consists of tools that display thread and cache topology, discover CPU and memory performance using benchmarks, alter CPU frequency and other settings, and allow performance evaluation of user applications.
-Typical workflow using the LIKWID tools could be (i) use \texttt{likwid-topology} to find information about the hardware, (ii) gather various performance metrics using \texttt{likwid-bench} (memory bandwidth, performance using different instruction sets, etc.). Next, (iii) run an application specifying thread affinity using \texttt{likwid-pin} and (iv) evaluate performance a of user application using \texttt{likwid-perfctr} by collecing performance metrics either for the whole runtime or only for a specified code region.
+Typical workflow using the LIKWID tools could be (i) use \texttt{likwid-topology} to find information about the hardware; (ii) gather various performance metrics using \texttt{likwid-bench} (memory bandwidth, performance using different instruction sets, etc.). Next, (iii) run an application specifying thread affinity using \texttt{likwid-pin}; and (iv) evaluate performance of a user application using \texttt{likwid-perfctr} by collecing performance metrics either for the whole runtime or only for a specified code region.
 A short description of the most useful tools follows.
 
 \subsection*{likwid-topology}
@@ -226,7 +226,7 @@ Some OpenMP implementations create shepherd threads. These threads do not execut
 
 \subsection*{likwid-perfctr}
 
-All modern CPUs provide hardware counters, registers that can be set to count various hardware events. The main purpose of these counters is to help manufacturers with development of the CPU, but they are also available to the user. The counters are accessed using model specific registers (MSR) and can be configured to count various events like fetching data, storing data, cache hits/misses, or calculations. As the counters are implemented in hardware, they come with no overhead. A downside of using the counters is that they measure events on a given core and cannot distinguish between processes. However, on systems with only one user this is usually not a problem.
+All modern CPUs provide hardware counters, registers that can be set to count various hardware events. The main purpose of these counters is to help manufacturers with development of the CPU, but they are also available to the user. The counters are accessed using model specific registers (MSRs) and can be configured to count various events like fetching data, storing data, cache hits/misses, or calculations. As the counters are implemented in hardware, they come with no overhead. A downside of using the counters is that they measure events on a given core and cannot distinguish between processes. However, on systems with only one user this is usually not a problem.
 
 \texttt{likwid-perfctr} is a command line tool that configures and reads the counters and is used as a wrapper for a user application.
 It can be used in two modes: it can either measure the whole runtime of the application or only specific blocks of code called regions.
@@ -238,23 +238,23 @@ After the user application finishes, the data from counters are processed and a 
 The measured events are specified as command line arguments to the wrapper application, so the measurement can be repeated several times measuring different events without recompiling the code.
 The raw counts usually do not provide a lot of insight. However, \texttt{likwid-perfctr} can combine the raw counts to derive useful performance metrics like FLOPs/s or memory bandwidth.
 %
-Additionally, \texttt{likwid-perfctr} has also functionality of \texttt{likwid-pin}. This is very important because without pinning the threads could move between cores, making the measurements inaccurate.
+Additionally, \texttt{likwid-perfctr} also has the functionality of \texttt{likwid-pin}. This is very important because without pinning the threads could move between cores, making the measurements inaccurate.
 \enlargethispage*{\baselineskip}
 
 \subsection*{likwid-bench}
 
-Writing a benchmark is a very intricate process. The purpose of a benchmark is to measure some specific computation; however, the naive user code might not necessarily be the most efficient implementation. A compiler exploits a lot of optimizations, e.g., if results of some computations are not used, these computations are often dropped altogether. Alternatively, a compiler can replace the user code by more efficient implementation. In both cases, the benchmark would end up measuring something different from what was intended.
+Writing a benchmark is a very intricate process. The purpose of a benchmark is to measure some specific computation; however, the naive user code might not necessarily be the most efficient implementation. A compiler exploits a lot of optimizations, e.g., if results of some computations are not used, these computations are often dropped altogether. Alternatively, a compiler can replace the user code by a more efficient implementation. In both cases, the benchmark would end up measuring something different from what was intended.
 To be sure the benchmark measures the proper thing, the code most likely has to be written in assembly or at least the user should check the assembly generated by a compiler.
 
 \texttt{likwid-bench} is a benchmark suite for prototyping low-level assembly kernels. 
 It contains a set of various kernels, for example, dot product, daxpy, load, store, copy, and many others. It allows the user to define his own kernels. The kernels are defined as text files that are compiled during compilation of the suite. And the suite takes care of everything else: running the kernel on a problem of a given size, on a given number of threads, and presenting results to the user.
 
-\section[Berkeley Roofline model]{Berkeley Roofline model - A Performance Model for Multicore Architectures}
+\section[Berkeley roofline model]{Berkeley roofline model - A Performance Model for Multicore Architectures}
 \label{sec:roofline}
 
-Programmers often do not need an understanding of every detail of CPU design. They should focus on general concepts rather than details of every available architecture. A tool that can provide a simplified model of the CPU hiding most of the architecture specific complexity is very valuable. Probably the most popular tool was popularized by \cite{williams-2009}. This tool is called the Roofline model.
+Programmers often do not need an understanding of every detail of CPU design. They should focus on general concepts rather than details of every available architecture. A tool that can provide a simplified model of the CPU hiding most of the architecture specific complexity is very valuable. Probably the most popular tool was popularized by \cite{williams-2009}. This tool is called the roofline model.
 It became very popular because it hides most of the CPU complexity and presents an intuitive and easy to use model that can guide performance engineering.
-This model has proven to be useful not only on the most common architecture, x86\_64, where it was extended to address cache hierarchy (\cite{MARQUES2020257}), but it was successfully used also on other architectures, e.\,g., ARM, an architecture developed for battery powered devices, where power efficiency is the biggest concern, but since then it found its way to desktop computers and even the most powerful supercomputers~(\cite{9307836}); GPU accelerators, where (\cite{9059264,https://doi.org/10.1002/cpe.5547}); Intel Xeon Phi (\cite{10.1007/978-3-319-32149-3_12}) and even FPGA~(\cite{9307865}). Moreover it was also used for modeling energy consumption (\cite{6569852}).
+This model has proven to be useful not only on the most common architecture, x86\_64, where it was extended to address cache hierarchy (\cite{MARQUES2020257}), but it was successfully used also on other architectures, e.\,g., ARM, an architecture developed for battery powered devices, where power efficiency is the biggest concern, but since then it found its way to desktop computers and even the most powerful supercomputers~(\cite{9307836}); GPU accelerators (\cite{9059264,https://doi.org/10.1002/cpe.5547}); Intel Xeon Phi (\cite{10.1007/978-3-319-32149-3_12}) and even FPGA~(\cite{9307865}). Moreover it was also used for modeling energy consumption (\cite{6569852}).
 
 %\todop{
 %abstraction, hides detais (ports, ...)
@@ -309,7 +309,7 @@ And the orange kernel (arithmetic intensity $4 \approx B_m^{-1}$) is between the
 \subsection{Roofline Ceilings}
 
 For realistic applications the measured performance of a kernel is often far below the roofline. The CPU and memory architecture utilize several paradigms that improve the performance, as described in section \ref{sec:arch}. To get close to the maximum performance the kernel needs to exploit these. Failing to do so results in a huge performance penalty.
-For both bounds the roofline model takes into account, in-core execution and memory bandwidth, we can show ceilings showing impact on performance when certain optimizations are not implemented.
+For both bounds the roofline model takes into account, in-core execution and memory bandwidth; we can show ceilings showing impact on performance when certain optimizations are not implemented.
 
 \subsubsection*{In-core Roofline Ceilings}
 
@@ -325,7 +325,7 @@ If the compiler is unable to use these instructions, it comes with a huge penalt
 %In kernels like dot product, there is often multiplication followed by addition. To make these computations more efficient, many modern CPU architectures compute operations similar to $a=a+b*c$ in one instruction. This type of instructions is called fused multiply-add (FMA).
 %Other widely used computation is applying the same operation on many operands, vector addition $A[:]=B[:]+C[:]$. This is in hardware implemented using so called vector instructions. Advanced Vector Extensions (AVX) operates on registers of size 256\,b, which can store 4 operands in double precision or 8 in single precision. One AVX instruction performs 4 FLOPs. And AVX2 adds support of vectorized FMA operations, so 8 FLOPs are performed in a single instruction.
 
-For example, the following code snippet computes sum of elements in a vector.
+For example, the following code snippet computes sum of elements in a vector:
 \begin{algorithmic}[1]
   %\State sum = 0.0
   \For{i = 0; i < n; i++}
@@ -344,10 +344,10 @@ But the compiler can transform this code introducing new variables.
   \EndFor
 \end{algorithmic}%
 In this code there are no dependencies anymore, so it can be vectorized.
-This means the four consecutive elements from the array fit in a 256\,b AVX register and the same for the sum variables. Then AVX instruction computes all four operations at the same time, achieving 4 FLOPs per instruction.
+This means the four consecutive elements from the array fit into a 256\,b AVX register and the same for the sum variables. Then the AVX instruction computes all four operations at the same time, achieving 4 FLOPs per instruction.
 
 Another example is a prefix sum.
-In this case there are loop-carried dependencies preventing vectorization.
+In this case there are loop-carried dependencies preventing vectorization:
 \begin{algorithmic}[1]
   \For{i = 1; i < n-1; i++}
       \State a[i] += a[i-1]
@@ -362,7 +362,7 @@ Visualization of some in-core ceilings is given in Figure \ref{fig:roofline_emmy
 \begin{figure}[t]
    \centering
    \includegraphics[width=0.7\textwidth,clip=true]{images/roofline/roofline_emmy_Xeon2660v2_core-ceilings.pdf}
-   \caption{Berkeley Roofline model of Intel Xeon E5-2660 v2 with various in-core ceilings for 1 and 10 cores.}
+   \caption{Berkeley roofline model of Intel Xeon E5-2660 v2 with various in-core ceilings for 1 and 10 cores.}
   \label{fig:roofline_emmy_core-ceilings}
 \end{figure}
 
@@ -372,11 +372,11 @@ Visualization of some in-core ceilings is given in Figure \ref{fig:roofline_emmy
 %prefetching?
 %}
 
-In Figure \ref{fig:mrm:bw-scaling} we can see memory bandwidth achieved by two Haswell processors (desktop and server) using a different number of cores. The desktop processor nearly saturates the bandwidth with one core, but the server processor achieves only about 40\% of bandwidth with a single core and needs at least 3 or 4 cores to fully saturate the bandwidth.
+In Figure \ref{fig:mrm:bw-scaling} we can see memory bandwidth achieved by two Haswell processors (desktop and server) using a different number of cores. The desktop processor nearly saturates the bandwidth with one core, but the server processor achieves only about 40\,\% of bandwidth with a single core and needs at least 3 or 4 cores to fully saturate the bandwidth.
 
-When data are transferred between memory and the L3 cache or different cache levels, they are always transferred in chunks called cache line. On Intel processors the size of cache line is usually 64\,B. Even if only 1\,B is needed, the whole cache line is transferred. Or when data are accessed with nonunit stride, some data are transferred and not used. This can lead to saturating the memory bandwidth while getting little useful data.
+When data are transferred between memory and the L3 cache or different cache levels, they are always transferred in chunks called cache line. On Intel processors the size of the cache line is usually 64\,B. Even if only 1\,B is needed, the whole cache line is transferred. Or when data are accessed with nonunit stride, some data are transferred and not used. This can lead to saturating the memory bandwidth while getting little useful data.
 
-When NUMA is used, there is a memory controller at every NUMA domain. If all data are allocated on the same controller, this can happen, for example, by wrong first touch (initializing the data sequentially), then the other controllers are not used, lowering the bandwidth. Also when processes from one domain access data from another domain, the communication goes through a NUMA link between domains, which can become a bottleneck.
+When NUMA is used, there is a memory controller at every NUMA domain. If all data are allocated on the same controller (this can happen, for example, by wrong first touch (initializing the data sequentially)), then the other controllers are not used, lowering the bandwidth. Also when processes from one domain access data from another domain, the communication goes through a NUMA link between domains, which can become a bottleneck.
 
 In Figure \ref{fig:roofline_emmy_memory-ceilings} we can see the effect of lower bandwidth when single core is used on the roofline model. As the bandwidth is lower, the corresponding line moves down. Note also the intersection of the horizontal and skewed line. It moved from arithmetic intensity 4\,F/B to about 16\,F/B, so a kernel that is compute bound on 10 cores could become memory bound on 1 core.
 
@@ -452,8 +452,8 @@ The Roofline model is a simple model
 for performance prediction in the saturated case.
 Hereby it is assumed code is limited by floating point performance or by the
 memory bandwidth.
-The ECM performance model (\cite{treibig-2010-ecm,hager-2012-ecm}) is a refinement
-of the Roofline model.\footnote{For further details regarding the ECM model refer
+The Execution-cache-memory (ECM) performance model (\cite{treibig-2010-ecm,hager-2012-ecm}) is a refinement
+of the roofline model.\footnote{For further details regarding the ECM model refer
 to~\cite{stengel-2015}.}
 In contrast it allows a performance prediction on the single core level as well
 as a scaling prediction over the socket.
@@ -472,7 +472,7 @@ scale perfectly.
 The ECM model has some restrictions on the code to be analyzed.
 It is important that streaming accesses are performed. This means prefetching
 works perfectly and can hide latency effects.
-The ECM model predicts the number of CPU cycles (cy) required to execute a certain number of iterations of a given loop on a single core. Since the smallest amount of data transferred between cache levels is one cache line (CL), it is a reasonable unit of work for the predictions. The size of cache line on Intel processors is 64\,B, which is for streaming kernels 8 iterations with floating point numbers in double precision.
+The ECM model predicts the number of CPU cycles (cy) required to execute a certain number of iterations of a given loop on a single core. Since the smallest amount of data transferred between cache levels is one cache line (CL), it is a reasonable unit of work for the predictions. The size of the cache line on Intel processors is 64\,B, which is for streaming kernels 8 iterations with floating point numbers in double precision.
 
 To construct the model, we consider two parts separately: the in-core execution, assuming all data were already fetched to the L1 cache and there are no cache misses, and the time to fetch the data from its location to the L1 cache.
  %the main memory or the cache level where it is assumed to be stored
@@ -488,16 +488,16 @@ port~$4$) of sizes up to $32$\,B at the same time (\cite{intel-orm-2016}), each.
 Each load and store requires an address to be generated by an address
 generation unit (AGU, ports~$2$,~$3$, and~$7$).
 However on port~$7$ only a simple AGU is located, which is limited to simple
-addressing modes\footnote{AGUs on port 2 and 3 support addressing "base plus index plus offset", AGU on port 7 supports only simple addressing mode "base plus offset".}~(\cite{intel-orm-2016,hofmann-2016-hsw}).
+addressing modes\footnote{AGUs on ports 2 and 3 support addressing "base plus index plus offset," AGU on port 7 supports only simple addressing mode "base plus offset."}~(\cite{intel-orm-2016,hofmann-2016-hsw}).
 %
 For floating point operations, the cores host two 
-FMA units (port~$0$ and~$1$), two multiplication (MUL) units (port~$0$
+FMA units (ports~$0$ and~$1$), two multiplication (MUL) units (ports~$0$
 and~$1$), and one add (ADD) unit (port~$1$).
 
 For the ECM model the duration of the execution inside the core is split into
 two categories.
 The first one comprises only data movement between registers and the L1 cache,
-i.\,e.,\ loads and stores occurring on port~$2D$,~$3D$, and~$4$.
+i.e.,\ loads and stores occurring on ports~$2D$,~$3D$, and~$4$.
 The second category consists of the rest, which can possibly overlap with the
 loads and stores, like arithmetic and logic.
 The execution in-core time $T_{core}$ is set to the time of the port with the longest execution time.
@@ -589,17 +589,17 @@ The instruction scheduler takes care that no data dependencies are violated.
 \begin{figure}[t]
   \centering
   \includegraphics[width=0.42\textwidth,clip=true]{images/ecm-hsw-daxpy}
-  \caption{Run time contributions of different execution ports and cache/memory
-hierarchy levels for eight iterations of the daxpy kernel on HSW-S (Haswell micro-architecture). It seems that the simple AGU on port~$7$ is not used and all the addresses are generated on ports~$2$ and~$3$.}
+  \caption{Runtime contributions of different execution ports and cache/memory
+hierarchy levels for eight iterations of the daxpy kernel on HSW-S (Haswell microarchitecture). It seems that the simple AGU on port~$7$ is not used and all the addresses are generated on ports~$2$ and~$3$.}
   \label{fig:daxpy:ecm}
 \end{figure}
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=0.60\textwidth,clip=true]{images/daxpy-bw-hasep1-f-2_3-w-cy}
-   \caption{Memory bandwidth (left) and duration in CPU cycles of 8 iterations, i.\,e.,\ two iterations of the
-compiler generated loop (right), for the daxpy kernel on HSW-S.
-   Measurement (black) and ECM prediction (red).
+   \caption{Memory bandwidth (left) and duration in CPU cycles of 8 iterations, i.e.,\ two iterations of the
+compiler generated loop (right), for the daxpy kernel on HSW-S:
+   measurement (black) and ECM prediction (red).
    As the vectors are getting larger and cannot fit in the higher cache levels, the number of cycles for performing 8 iterations increases, which means the performance decreases.
    Note that the total
 working set required for vectors
@@ -617,17 +617,17 @@ working set required for vectors
 %We use the tool's throughput mode, where it is assumed that iterations of the
 %loop are independent and can overlap due to the out-of-order engine.
 %Further we assume no pipeline bubbles of the different ports.
-Haswell can perform two loads (port $2D$ and $3D$) and one store (port $4$) of
+Haswell can perform two loads (ports $2D$ and $3D$) and one store (port $4$) of
 sizes up to $32$\,B at the same time~(\cite{agner-2016-11-3}).
 This constellation requires the store address to be simple addressing as only in
-this case the address generation unit (AGU) on port~$7$ can be used.
+this case can the address generation unit (AGU) on port~$7$ be used.
 % Effectively this boils down to either two loads or one load and store.
 %
-For floating point operations relevant, it hosts two FMA units (port 0 and
-1) two MUL units (port 0 and 1), and one ADD unit (port 1).
+For relevant floating point operations, it hosts two FMA units (ports 0 and
+1) two MUL units (ports 0 and 1), and one ADD unit (port 1).
 
-Under this considerations two iterations of the compiled loop would require $1$\,cy
-for the FMA (port $0$ and $1$), $2$\,cy for the four AVX loads (port $2$ and $3$),
+Under these considerations two iterations of the compiled loop would require $1$\,cy
+for the FMA (ports $0$ and $1$), $2$\,cy for the four AVX loads (ports $2$ and $3$),
 and $2$\,cy for the four AVX stores (port $4$).
 $6$ addresses need to be generated.
 This takes $2$\,cy, if the simple AGU on port $7$ is used.
@@ -636,17 +636,17 @@ The distribution of the instructions over the ports is found in Figure~\ref{fig:
 
 For the ECM model the duration of the execution inside the core is split into
 two categories.
-The first one comprises only data movement between registers and L1 cache,
-i.\,e.\ loads, stores occurring and address generation.
+The first one comprises only data movement between registers and the L1 cache,
+i.e.\ loads, stores occurring, and address generation.
 The second category consists of the rest, which can possibly overlap with the
 loads and stores, like arithmetic, logic.
 %We classify the ports into arithmetic/logic (port $0$, $1$, $5$, and $6$) and
 %data movement (port $2$, $3$, $4$, and $7$).
-The maximum duration $t_\text{L1}$ of the first class (port $2$, $3$, $4$, and $7$) is
+The maximum duration $t_\text{L1}$ of the first class (ports $2$, $3$, $4$, and $7$) is
 \be
   t_\text{L1} = 2\,\cyw.
 \ee
-The maximum duration of the latter class (port $0$, $1$, $5$, and $6$), $t_\text{ol}$, is
+The maximum duration of the latter class (ports $0$, $1$, $5$, and $6$), $t_\text{ol}$, is
 \be
   t_\text{ol} = 1\,\cyw
 \ee
@@ -669,13 +669,13 @@ where $W$ denotes the loop specific work performed and $f$ clock
 frequency of the core.
 For this loop with $W=192$\,B and $f=2.3$\,GHz we have $P_\text{L1} =
 220.8$\,GB/s.
-Figure~\ref{fig:daxpy:perf} shows ECM prediction and measured performance for DAXPY kernel of various vector lengths. The graph on the left shows performance and the graph on the right number of CPU cycles needed to perform 8 iterations of the loop. We can see that larger vectors that do not fin in L1 cache and need to be stored in L2 or L3 cache or even the main memory require more cycles, which results in worse performance.
+Figure~\ref{fig:daxpy:perf} shows ECM prediction and measured performance for the DAXPY kernel of various vector lengths. The graph on the left shows performance and the graph on the right the number of CPU cycles needed to perform 8 iterations of the loop. We can see that larger vectors that do not fit into the L1 cache and need to be stored in the  L2 or L3 cache or even the main memory require more cycles, which results in worse performance.
 %Measurements shown in Figure~\ref{fig:daxpy:perf} reveal that only around
-The measurements for L1 cache reveal that only around
+The measurements for the L1 cache reveal that only around
 $145$\,GB/s are reached.
 If the simple AGU on port~$7$ is not used, the store addresses are
 generated by the two remaining AGUs.
-This causes $t_\text{ol}$ to be increased by $1$\,\cyw{} and becoming the new
+This causes $t_\text{ol}$ to be increased by $1$\,\cyw{} and become the new
 bottleneck.
 This results in a corrected
 %
@@ -702,7 +702,7 @@ Hence it takes
 \ee
 %
 to transfer our three cache lines, respectively.
-For computing the performance $P_\text{L2}$ and $P_\text{L3}$, when data resides
+For computing the performance $P_\text{L2}$ and $P_\text{L3}$, when data reside
 in the L2 or L3 cache, respectively, we have to add $t_\text{L2}$ and $t_\text{L3}$
 to the duration of the data path, as on the considered Intel architectures data
 transfers seem be be serialized when streaming accesses occur.\footnote{This need
@@ -736,7 +736,7 @@ In our case $P_\text{L2} = 55.2$\,GB/s and $P_\text{L3} = 31.5$\,GB/s.
 To determine the memory bandwidth we use \textsc{McCalpin's} STREAM copy
 benchmark (\cite{mccalpin-1995}) which achieves (without nontemporal stores and
 including the write allocate) a bandwidth of $\approx 26.9$\,GB/s when all cores
-of a cluster are utilized\footnote{When Cluster-on-Die (COD) is enabled, the cores are split into two NUMA domains. The HSW-S processor has 14 cores, that are split in two NUMA domains, each with 7 cores.}.
+of a cluster are utilized.\footnote{When Cluster-on-Die (CoD) is enabled, the cores are split into two NUMA domains. The HSW-S processor has 14 cores, that are split into two NUMA domains, each with 7 cores.}
 With the core's clock frequency of $2.3$\,GHz it takes $5.5$\,cy to transfer one
 cache line between L3 cache and memory.
 Transferring our three cache lines between these two levels takes then
@@ -757,7 +757,7 @@ This leads to $P_\text{mem} = 14.5$\,GB/s.
 \subsection{Indirect DAXPY}
 \label{sec:ecm-indirect-daxpy}
 
-Indirect DAXPY is similar to the code analyzed in section \ref{sec:epm}, with the difference of indirect access \verb|idx| to the vector \verb|r|.
+Indirect DAXPY is similar to the code analyzed in section \ref{sec:epm}, with the difference of indirect access \verb|idx| to the vector \verb|r|:
 
 %
 \begin{lstlisting}
@@ -787,22 +787,22 @@ for (int i = 0; i < N; i += 4)
 \end{lstlisting}
 %
 For the ECM model we determine the duration of the execution of the code inside
-the core under the assumption all operands reside in L1 cache.
+the core under the assumption all operands reside in the L1 cache.
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=0.56\textwidth,clip=true]{images/ecm-hsw-daxpy-indirect}
-  \caption{Run time contributions of different execution ports and cache/memory
-hierarchy levels for eight iterations of the indirect daxpy kernel on HSW-S (Haswell micro-architecture).}
+  \caption{Runtime contributions of different execution ports and cache/memory
+hierarchy levels for eight iterations of the indirect daxpy kernel on HSW-S (Haswell microarchitecture).}
   \label{fig:daxpy-indirect:ecm}
 \end{figure}
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=0.60\textwidth,clip=true]{images/daxpy-indirect-bw-hasep1-f-2_3-w-cy}
-   \caption{Memory bandwidth (left) and duration in CPU cycles of 8 iterations, i.\,e.,\ two iteration of the
-compiler generated loop (right), for the indirect daxpy kernel on HSW-S.
-   Measurement (black) and ECM prediction (red).
+   \caption{Memory bandwidth (left) and duration in CPU cycles of 8 iterations, i.e.,\ two iteration of the
+compiler generated loop (right), for the indirect daxpy kernel on HSW-S:
+   measurement (black) and ECM prediction (red).
    As the vectors are getting larger and cannot fit in the higher cache levels, the number of cycles for performing 8 iterations increases, which means the performance decreases.}
   \label{fig:daxpy-indirect:perf}
 \end{figure}
@@ -817,24 +817,24 @@ We define the work performed by eight iterations of the loop (or two iterations 
 
 How long the execution takes depends on the underlying architecture. 
 In order to determine this, we take a look at the Intel Haswell
-microarchitecture in Fig.~\ref{fig:hsw-microarch}.
-The super-scalar design has several ports with different execution units for
+microarchitecture in Figure~\ref{fig:hsw-microarch}.
+The superscalar design has several ports with different execution units for
 different types of instructions.
 Instructions scheduled to different ports run independently.
 The instruction scheduler takes care that no data dependencies are violated.
 Instructions inside ports are pipelined, but only one instruction per port can
 be issued per cycle.
-Haswell can perform two loads (port $2D$ and $3D$) and one store (port $4$) of
+Haswell can perform two loads (ports $2D$ and $3D$) and one store (port $4$) of
 sizes up to $32$\,B at the same time~(\cite{agner-2016-11-3}).
 This constellation requires the store address to be simple addressing as only in
 this case the address generation unit (AGU) on port~$7$ can be used.
 % Effectively this boils down to either two loads or one load and store.
 %
-For floating point operations relevant, it hosts two FMA units (port 0 and
-1) two MUL units (port 0 and 1), and one ADD unit (port 1).
+For relevant floating point operations, it hosts two FMA units (ports 0 and
+1), two MUL units (ports 0 and 1), and one ADD unit (port 1).
 
-Under this considerations two iterations of the compiled loop would require $4$\,cy
-for the FMA (port $0$ and $1$), $12$\,cy for the twenty four loads (port $2$ and $3$),
+Under these considerations, two iterations of the compiled loop would require $4$\,cy
+for the FMA (ports $0$ and $1$), $12$\,cy for the twenty-four loads (ports $2$ and $3$),
 and $8$\,cy for the eight stores (port $4$).
 $32$ addresses need to be generated. We assume the simple AGU on port $7$ is not used, as we observed for DAXPY (section \ref{sec:epm}). Generating all $32$ addresses on AGUs on ports $2$ and $3$ requires $16$\,cy.
 Instructions regarding index counter increments are for this case negligible, hence we ignore them.
@@ -843,8 +843,8 @@ Instructions regarding index counter increments are for this case negligible, he
 %$14$\,cy due to two AGUs on port $3$ and $4$.
 We assume that the out-of-order engine can fill bubbles in the pipelines of the
 different ports as the loop iterations are independent of each other.
-We classify the ports into arithmetic/logic (port $0$, $1$, $5$, and $6$) and
-data movement (port $2$, $3$, $4$, and $7$). 
+We classify the ports into arithmetic/logic (ports $0$, $1$, $5$, and $6$) and
+data movement (ports $2$, $3$, $4$, and $7$).
 The maximum duration $t_\text{ol}$ of the first class of ports is 
 %
 \be
@@ -862,13 +862,13 @@ load/store data from/to L1 is
 %
 % for the duration of the data transfers between core and L1 cache.
 %
-The performance $P_\text{L1}$, when all data is fetched from L1, is then computed as 
+The performance $P_\text{L1}$, when all data are fetched from L1, is then computed as
 %
 \be
   P_\text{L1} = \frac{W}{\max(t_\text{ol}, t_\text{L1})} f,
 \ee
 %
-where $W$ denotes the loop specific work performed and $f$ clock frequency of the core.
+where $W$ denotes the loop specific work performed and $f$ the clock frequency of the core.
 For this loop with $W=224$\,B and $f=2.3$\,GHz we have $P_\text{L1} =
 32.2$\,GB/s,
 %On HSW1 only $\approx 31$\,GB/s, i.\,e.\ 80\,\% of the predicted
@@ -876,13 +876,13 @@ For this loop with $W=224$\,B and $f=2.3$\,GHz we have $P_\text{L1} =
 which is in line with the measurements in
 Figure~\ref{fig:daxpy-indirect:perf}.
 
-Modeling the performance when data resides in different cache levels from L1
-requires to analyse the data transfers between these levels.
-In this case this is straight forward as vector \verb'r', \verb'l', and
+Modeling the performance when data reside in different cache levels than L1
+requires analyzing the data transfers between these levels.
+In this case this is straightforward as vectors \verb'r', \verb'l', and
 \verb'idx' are streamed from/to memory and no cache reuse takes place.
 Throughout the cache/memory hierarchy we transfer between each cache level
 $224$\,B $= 3.5$\,cl (cache lines) for each iteration: load $64$\,B of
-\verb'l', load $64$\,B of \verb'r', load $32$\,B of \verb'idx' and store $64$\,B
+\verb'l', load $64$\,B of \verb'r', load $32$\,B of \verb'idx', and store $64$\,B
 of \verb'r'.
 
 Transferring a cache line between L1/L2 and L2/L3 takes $1$\,cy (\cite{intel-orm-2016}). Hence it takes
@@ -892,8 +892,8 @@ Transferring a cache line between L1/L2 and L2/L3 takes $1$\,cy (\cite{intel-orm
 \ee
 %
 to transfer our $224$\,B.
-For computing the performance $P_\text{L2}$ and $P_\text{L3}$, when data resides
-in L2 or L3 cache, respectively, we
+For computing the performance $P_\text{L2}$ and $P_\text{L3}$, when data reside
+in the L2 or L3 cache, respectively, we
 have to add $t_\text{L2}$ and $t_\text{L3}$ to the duration of the data path, as on the considered
 Intel architectures data transfers seem be be serialized when streaming accesses
 occur\footnote{This need not to be the actual implementation inside the
@@ -915,12 +915,12 @@ How many cache lines per cycle can be transferred between L3 and memory could
 theoretically be obtained by taking the nominal memory bandwidth into account.
 However, this bandwidth is practically never reached and depends strongly on the
 access pattern used.
-This is caused by the organization of the memory subsystem, where e.\,g.\ banking
-conflicts and DRAM page misses incur performance.
+This is caused by the organization of the memory subsystem, where, e.g., banking
+conflicts and DRAM page misses reduce performance.
 With detailed knowledge about the internals of the memory controller
 (scheduling strategies, thresholds for strategy switching, ...) and DRAM modules
 this could also be modeled, which is far from being trivial (\cite{jacob-2007}).
-As this is beyond the scope of the ECM model typically a micro benchmark
+As this is beyond the scope of the ECM model, typically a microbenchmark
 resembling the used access pattern by the code under investigation is used
 to measure the attainable bandwidth and use it as input for the model.
 %
@@ -946,7 +946,7 @@ t_\text{L3} + t_\text{mem})} f.
 %
 %This leads to $P_\text{mem} = 10.2$\,GB/s. 
 This leads to $P_\text{mem} = 12.2$\,GB/s. 
-Which is about $23\,\%$ less than the achieved performance on HSW-S architecture. While the ECM prediction of the DAXPY kernel is in line with measurements, in case of indirect DAXPY kernel the ECM model underestimates the measured performance. The ECM model was developed and studied mostly for vectorized codes. As indirect DAXPY kernel is not vectorized, it would require further investigation.
+Which is about $23\,\%$ less than the achieved performance on HSW-S architecture. While the ECM prediction of the DAXPY kernel is in line with measurements, in the case of an indirect DAXPY kernel the ECM model underestimates the measured performance. The ECM model was developed and studied mostly for vectorized codes. As the indirect DAXPY kernel is not vectorized, it would require further investigation.
 
 %% The required information on the hardware capabilities can be obtained from the
 %% data sheets of the vendors or measured via micro-benchmarks.

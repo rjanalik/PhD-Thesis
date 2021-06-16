@@ -2,7 +2,7 @@
 \label{sec:pa}
 \label{sec:performance}
 
-\section{Single Core Performance Modeling, Evaluation and Analysis}
+\section{Single Core Performance Modeling, Evaluation, and Analysis}
 \label{sec:performance:singlecore}
 
 For the code generation
@@ -26,8 +26,8 @@ This is required as AVX2 only includes a vector gather instruction.
 %
 Only for the 1-way column unrolling of the sparse triangular solve
 %\mycomment{OR: alle ``sparse solve'' durch ``forward/backward substitution'' ersetzen}
-with KNL the compiler
-generated loop utilizing vector scatter/gather instructions is superior to
+with KNL is the compiler
+generated loop utilizing vector scatter/gather instructions superior to
 the scalar version, which is why we use this version for the combination of KNL
 and 1-way column unrolling.
 However, SKX also supports vector scatter/gather instructions, but did not
@@ -94,8 +94,8 @@ This enables isolated measurement of the $1$-, $2$-, and $8$-way
 unrolled loops.
 Furthermore, the matrix \mymat{dense} exhibits the most homogeneous access pattern
 as memory is only accessed in long contiguous streams and relates best to our
-read-only benchmark (section~\ref{sec:tb:membw}) used as input for the modified
-roofline model (section~\ref{sec:mrm}, \eqref{eq:rm:mod}).
+read-only benchmark (Section~\ref{sec:tb:membw}) used as input for the modified
+roofline model (Section~\ref{sec:mrm}, \eqref{eq:rm:mod}).
 %
 Figure~\ref{fig:p:single-core} shows the measured performance for all systems in
 our testbed for sparse triangular solve.
@@ -112,12 +112,12 @@ The modified roofline model predictions for the Intel based systems (except for
 KNL) deviate up to $25$\,\% from the measurements, but achieve a higher
 performance with larger panels.
 %
-For KNL the model error is in the range of $55$\,\% to $160$\,\% over all panel
+For KNL the model error is in the range of $55\,\%$ to $160\,\%$ over all panel
 sizes which suggests some error in the model assumptions.
 On KNL a STREAM-like (scalar) copy and read benchmark achieves an L2 bandwidth of
 around $7.8$\,GB/s and $8.5$\,GB/s with one core,
 respectively.
-From Figure~\ref{fig:ecm:data-fw} and \ref{fig:ecm:data-bw}, we see that between the L1 and L2 caches (depending on
+From Figures~\ref{fig:ecm:data-fw} and \ref{fig:ecm:data-bw}, we see that between the L1 and L2 caches (depending on
 the matrix) we might have a higher code
 balance compared to the one we assume between memory and L2.
 As the measured L2 bandwidth is nearly equal to the memory read-only bandwidth
@@ -142,7 +142,7 @@ further investigation.
 % \todo{multi stream?}
 %
 The roofline model for the AMD-based ZEN systems underestimates the
-performance by up to $20$\,\%.
+performance by up to $20\,\%$.
 It seems that sparse solve in the cases of ZEN-D and $s=2, 80$ and ZEN-S and $s=80$
 achieves the bandwidth obtained with the vectorized read benchmark as the bars
 in Figures~\ref{fig:p:single-core:zen-d} and~\ref{fig:p:single-core:zen-s} match
@@ -170,7 +170,7 @@ measurements.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Multiple ccore Performance Modeling, Evaluation and Analysis}
+\section{Multiple core Performance Modeling, Evaluation, and Analysis}
 \label{sec:performance:multicore}
 
 \begin{figure}[tp]%
@@ -204,7 +204,7 @@ achieve, with correct NUMA placement, a higher performance, respectively.}
   \label{fig:p:pardiso-2}
 \end{figure}
 
-Performance and modeling results on multicore architectures for all matrices are shown in Figure~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2}.
+Performance and modeling results on multicore architectures for all matrices are shown in Figures~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2}.
 For HSW-D (second column) the main memory was not large enough for benchmarks
 with the \mymat{bddc}, \mymat{omen2}, and \mymat{omen3} matrices, which is
 indicated as ``out of memory'' in the figures.
@@ -237,14 +237,14 @@ of the separator in the factor $L$ with increasing number of threads as already
 observed in scaling studies for sparse solve in~\cite{klawonn-2015}.
 %
 Figure~\ref{fig:p:serial-fraciton} shows the fraction of nonzeros in $L$ which are
-part of the separator, i.\,e.,\ the part which must be executed serially.
+part of the separator, i.e., the part which must be executed serially.
 Except for \mymat{omen1} this prohibits the efficient usage of larger core
 counts and the test matrices reach their highest performance already with four
 or eight cores.
 %
 This is also the reason why we cannot efficiently utilize KNL's high bandwidth
 memory.
-Despite its bandwidth scales (nearly) linearly with the number of cores, its
+Despite that its bandwidth scales (nearly) linearly with the number of cores, its
 single core bandwidth is not significantly different from the one delivered from
 main memory.
 Only with higher core counts can the full HBM bandwidth be obtained.
@@ -255,18 +255,18 @@ Hence, we excluded HBM measurements from the plots as it gives no further
 insight.
 %
 With SKX hosting $20$ cores in one NUMA LD the impact of the separator becomes
-visible (fifth column of Figure~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2}).
+visible (fifth column of Figures~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2}).
 The separator of \mymat{lapl1}, \mymat{lapl2}, and \mymat{bddc}\/ strongly increases 
 over the number of cores and limits the scaling of the performance early.
 The maximum performance here is already reached with four cores.
 The increase of the serial fraction for \mymat{omen2} and \mymat{omen3} is not
 that pronounced.
 Here, the performance peak is reached with eight cores.
-Only with \mymat{omen1}, where the separator stays small, performance increases
+Only with \mymat{omen1}, where the separator stays small, does performance increase
 up to 16~cores.
 All other architectures follow this pattern up to the number of cores used.
 
-Figure~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2} also show the performance limits for the original
+Figures~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2} also show the performance limits for the original
 \eqref{eq:rm:simple} and the modified roofline model \eqref{eq:rm:mod}
 as green and blue bars, respectively.
 As the traditional model misses the serial fraction of the execution it scales
@@ -278,16 +278,16 @@ This is increasingly pronounced, the larger the serial fraction becomes.
 %core bandwidth.
 %
 Systems saturating with one core nearly the total memory bandwidth exhibit
-only a marginal gap, like HSW-D (second column in Figure~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2}) or
-slightly more pronounced ZEN-D (seventh column in Figure~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2}).
+only a marginal gap, like HSW-D (second column in Figures~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2}) or
+slightly more pronounced ZEN-D (seventh column in Figures~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2}).
 
 In general the modified roofline model captures the behavior of the measured
 performance over all systems and matrices as Figures~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2} show.
 %
 %
-IVB and HSW-D, ZEN-D, and ZEN-S exhibit a model error of around $20$\,\% shown
-in the bottom row of Figure~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2}.
-For HSW-S, BDW, and SKX the model deviates up to $60$\,\% from the measurements.
+IVB and HSW-D, ZEN-D, and ZEN-S exhibit a model error of around $20\,\%$ shown
+in the bottom row of Figures~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2}.
+For HSW-S, BDW, and SKX the model deviates up to $60\,\%$ from the measurements.
 %
 % Especially the predictions for the \mymat{omen} matrices are around $10$\,\%
 % worse than for the other matrices.
@@ -309,7 +309,7 @@ Depending on the matrix and the size of its separator, L2 or memory bandwidth ca
 now be the bottleneck.
 %
 In order to keep the model simple, for KNL, we show
-as red bars in Figure~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2},
+as red bars in Figures~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2},
 in addition
 to the modified
 roofline model, 

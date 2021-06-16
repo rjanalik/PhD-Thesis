@@ -2,7 +2,7 @@
 
 %\begin{chapter_preamble}
 This chapter presents an overview of combinatorial algorithms in sparse elimination methods.
-Beside well-established techniques that have been developed in the last twenty years a modern
+Beside well-established techniques that have been developed in the last twenty years, a modern
 viewpoint of sparse $LU$ and $LDL^T$ decomposition is presented that illustrates how the
 evolution of techniques in the last decade improved the performance of sparse direct solvers by
 three to four orders of magnitude. Some parts of this chapter have been published as an invited
@@ -38,7 +38,7 @@ This chapter reviews some of the basic technologies together
 with the latest developments for sparse direct solution methods that have led to
 state-of-the-art $LU$ decomposition methods.
 The chapter is organized as follows. In Section \ref{sec:mwm}
-is introduced maximum weighted matching which is one of the key
+maximum weighted matching is introduced which is one of the key
 tools in combinatorial optimization to dramatically improve the diagonal dominance
 of the underlying system.
 Next, Section \ref{sec:reordering} reviews multilevel nested dissection
@@ -46,42 +46,42 @@ as a combinatorial method to reorder a system symmetrically
 such that fill-in and parallelization are improved simultaneously, once
 pivoting can be more or less ignored.
 After that, established graph-theoretical approaches are reviewed
-in Section \ref{sec:lu}, in particular the elimination tree, from which
+in Section \ref{sec:lu}, in particular, the elimination tree, from which
 most of the properties of the $LU$ factorization can be concluded. Among
 these properties is the prediction of dense submatrices in the
 factorization. In this way several subsequent
 columns of the factors $L$ and $U^T$ are collected in a single dense block. 
-This is the basis for the use of dense matrix kernels using optimized
-level-3 BLAS as well to exploit fast computation using the cache hierarchy which 
+This is the basis for the use of dense matrix kernels, using optimized
+level-3 BLAS as well, to exploit fast computation using the cache hierarchy which
 is discussed in Section~\ref{sec:parallel}.
 %Finally, we show in Section~\ref{sec:appl} how the ongoing developments in parallel sparse direct solution methods have advanced integrated circuit simulations.
 We assume that the reader
  is familiar with some elementary knowledge from
-graph theory, see; e.g., \cite{doi:10.1137/1.9780898718881} and some simple
-computational algorithms based on graphs \cite{AhoHU83}.
-Finally Section \ref{sec:sparse-solvers} shows how are the building blocks described in previous sections used to implement efficient sparse direct solver on modern hardware. Solving a sparse linear system is a computational kernel of many applications in science and engineering, thus an efficient solver is a key component of such applications.
+graph theory; see, e.g., \cite{doi:10.1137/1.9780898718881} and some simple
+computational algorithms based on graphs in \cite{AhoHU83}.
+Finally Section \ref{sec:sparse-solvers} shows how the building blocks described in previous sections are used to implement the efficient sparse direct solver on modern hardware. Solving a sparse linear system is a computational kernel of many applications in science and engineering, thus an efficient solver is a key component of such applications.
 
 \section{Maximum weight matching to enable static data structures}
 \label{sec:mwm}
 In modern sparse elimination methods the key to success 
-is ability to work with efficient data structures and their underlying
+is the ability to work with efficient data structures and their underlying
 numerical templates. If we can increase the size of the diagonal entries
 as much as possible in advance, pivoting during Gaussian elimination can often 
 be bypassed and we may work with static data structures and
 the numerical method will be significantly accelerated. 
 A popular method to achieve this goal is the
 maximum weight matching method~(\cite{DufK99S,olschowka:1996})
-which permutes (e.g.) the rows of a given
+which permutes, e.g., the rows of a given
 nonsingular matrix $A\in\R^{n,n}$ by a permutation matrix $\Pi\in\R^{n,n}$ 
 such that $\Pi^TA$
-has a non-zero diagonal. Moreover, it maximizes
+has a nonzero diagonal. Moreover, it maximizes
 the product of the absolute diagonal values  and yields diagonal
-scaling matrices $D_r, D_c\in\R^{n,n}$ such that $\tilde A=\Pi^TD_rAD_c$ satisfies
+scaling matrices $D_r, D_c\in\R^{n,n}$, such that $\tilde A=\Pi^TD_rAD_c$ satisfies
 $|\tilde a_{ij}|\leqslant 1$ and $|\tilde a_{ii}|=1$ for all $i,j=1,\dots,n$.
 The original idea on which these nonsymmetric permutations and scalings are
 based is to find a maximum weighted matching of a
-bipartite graphs. Finding a maximum weighted matching is a well
-known assignment problem in operation research and combinatorial
+bipartite graph. Finding a maximum weighted matching is a well
+known assignment problem in operations research and combinatorial
 analysis.
 \begin{definition}\label{def:bipartite}
 A graph $G=(V,E)$ with vertices $V$ and edges $E\subset V^2$ 
@@ -106,8 +106,8 @@ For the bipartite graph $G_b(A)$ we see immediately that
 If $a_{ij}\not=0$, 
 then we have that $r_i \in V_r$ from the row set
 is connected by an edge $(r_i,c_j) \in E$ to the column $c_j \in V_c$,
-but neither rows are connected with each other nor do the columns have
-inter connections.
+but neither row is connected to each other nor do the columns have
+interconnections.
 \begin{definition}\label{def:matching}
 A matching $\cM$
 of a given graph $G= (V,E)$ is a subset of edges
@@ -150,7 +150,7 @@ exists a perfect matching $\cM$.
 %                          \end{array} \right.
 %\]
 %\end{theorem}
-\begin{example}{Perfect Matching}\label{exm:perfect_matching}
+\begin{example}{Perfect matching}\label{exm:perfect_matching}
 In Figure \ref{fig:unsym_perm}, the set of edges $\cM= \{(1,2), (2,4),
 (3,5), (4,1), (5,3), (6,6) \}$ represents a perfect maximum matching
 of the bipartite graph $G_b(A)$.
@@ -220,11 +220,11 @@ introduce some graph terminology for the
 matchings. 
 \begin{definition}\label{def:path}
 If an edge $e=(u,v)$ in a graph $G=(V,E)$
-joins a vertices $u,v\in V$, then we denote it as $uv$. 
+joins vertices $u,v\in V$, then we denote it as $uv$.
 A path then consists of edges $u_1u_2,u_2u_3,u_3u_4 \ldots,u_{k-1}u_k$, where 
 each $(u_i,u_{i+1})\in E$, $i=1,\dots,k-1$.
 \end{definition}
-If $G_b=(V_r,V_c,E)$ is a bipartite graph, then by definition of a path, 
+If $G_b=(V_r,V_c,E)$ is a bipartite graph, then by the definition of a path,
 any path is alternating between the vertices of $V_r$ and $V_c$, e.g.,
 paths in $G_b$ could be such as $r_1c_2,c_2r_3,r_3c_4,\dots$.
 \begin{definition}\label{def:various-paths}
@@ -237,7 +237,7 @@ between $E \setminus \cM$ and $\cM$. An
 augmenting path relative to a matching $\cM$ is an alternating
 path of odd length and both of it vertex endpoints are free. 
 \end{definition}
-\begin{example}{Augmenting Path}\label{exm:augmenting_path}
+\begin{example}{Augmenting path}\label{exm:augmenting_path}
 Consider Figure \ref{fig:unsym_perm}.
 To better distinguish between row and column vertices we use
 $\fbox{$1$},\fbox{$2$},\dots,\fbox{$6$}$ for the rows and \circn{1},\circn{2},\dots,\circn{6} for the
@@ -262,19 +262,19 @@ constructive algorithm for finding perfect matchings in bipartite
 graphs.
 
 \begin{theorem}\label{theo:Berge}
-If $\cM$ is non-maximum matching of a bipartite graph $G_b= (V_r, V_c,E)$, 
+If $\cM$ is a nonmaximum matching of a bipartite graph $G_b= (V_r, V_c,E)$,
 then there exists an augmenting path $P$ relative to $\cM$ such that
  $P=\tilde{\cM} \oplus \cM$ and $\tilde{\cM}$
 is a matching with cardinality $|\cM|+1$.
 \end{theorem}
-According to this theorem, a combinatorial method of finding perfect
+According to this theorem, a combinatorial method of finding a perfect
 matching in a bipartite graph is to seek augmenting paths. 
 
 The
 perfect matching as discussed so far only takes the nonzero structure
 of the matrix into account. 
 For their use as static pivoting methods prior to the $LU$ decomposition
-one requires in addition to
+one requires, in addition, to
 maximize the absolute value of the product of the diagonal entries. 
 This is referred to as
 maximum weighted matching. In this case a permutation
@@ -286,8 +286,8 @@ The maximization of this product is transferred into a minimization of a sum as 
 \[
   c_{ij} = 
   \begin{cases}
-    \log a_i - \log |a_{ij}| & a_{ij} \neq 0 \\
-    \infty                     & \text{otherwise},
+    \log a_i - \log |a_{ij}|, & a_{ij} \neq 0, \\
+    \infty,                     & \text{otherwise},
   \end{cases}
 \]
 where $a_i = \max_j |a_{ij}|$  is the maximum element in row $i$ of
@@ -297,12 +297,12 @@ matrix $A$. A permutation $\pi$ which minimizes the sum
   \sum_{i=1}^n c_{\pi(i)i} 
 \]
 also maximizes the product~(\ref{eq:1}). The minimization problem is
-known as linear-sum assignment problem or bipartite weighted matching
+known as the linear-sum assignment problem or bipartite weighted matching
 problem in combinatorial optimization.  The problem is solved by a
 sparse variant of the Hungarian method. The complexity is
  $\mathcal{O}(n \tau \log n )$ for
 sparse matrices with $\tau$ entries. For matrices, whose associated
-graph fulfill special requirements, this bound can be reduced further
+graphs fulfill special requirements, this bound can be reduced further
 to $\mathcal{O}(n^\alpha (\tau + n \log n))$ with $\alpha < 1$.  All graphs
 arising from finite-difference or finite element discretizations meet
 the conditions~(\cite{gupta:99}). As before, we finally get a perfect
@@ -311,8 +311,8 @@ matching which in turn defines a nonsymmetric permutation.
 When solving the assignment problem, two dual vectors $u = (u_i)$ and
 $v = (v_i)$ are computed which satisfy
 \begin{align}
-  u_i + v_j & = c_{ij} \qquad  (i,j) \in \cM, \label{eq:11} \\
-  u_i + v_j & \leq c_{ij} \qquad \text{otherwise}. \label{eq:12}
+  u_i + v_j & = c_{ij}, \qquad  (i,j) \in \cM, \label{eq:11} \\
+  u_i + v_j & \leq c_{ij}, \qquad \text{otherwise}. \label{eq:12}
 \end{align}
 Using the exponential function these vectors can be used to scale the 
 initial matrix. To do so define
@@ -321,15 +321,15 @@ two diagonal matrices $D_r$ and $D_c$ through
   D_r & = \text{diag}(d_1^r,d_2^r,\dots,d_n^r), \qquad d_i^r = \exp(u_i),\\ 
   D_c & = \text{diag}(d_1^c,d_2^c,\dots,d_n^c), \qquad d_j^c = \exp(v_j)/a_j.
 \end{align}
-Using equations (\ref{eq:11}) and (\ref{eq:12}) and the definition of $C$, 
-it immediately follows that $\tilde A = \Pi^T D_r A D_c$ satisfies
+Using (\ref{eq:11}) and (\ref{eq:12}) and the definition of $C$,
+it immediately follows that \linebreak $\tilde A = \Pi^T D_r A D_c$ satisfies
 \begin{align}
   |\tilde a_{ii}| & = 1, \label{eq:13}\\
   |\tilde a_{ij}| & \le 1. \label{eq:14}
 \end{align}
 The permuted and scaled system $\tilde A$ has been observed to
 have significantly better numerical properties when being used
-for direct methods or for preconditioned iterative methods, cf. e.g. 
+for direct methods or for preconditioned iterative methods; cf., e.g.,
 \cite{benzi:2000:phi,DufK99S}. \cite{olschowka:1996} introduced these scalings and
 permutation for reducing pivoting in Gaussian elimination of full
 matrices. The first implementation for sparse matrix problems was
@@ -343,16 +343,16 @@ to $0$~(\cite{dupr:04a}).
 Recently, successful parallel approaches to compute maximum weighted matchings have
 been proposed~(\cite{LanPM11,LanAM14}).
 
-\begin{example}{Maximum Weight Matching}\label{exm:west0479-match}
+\begin{example}{Maximum weight matching}\label{exm:west0479-match}
 To conclude this section we demonstrate the effectiveness of maximum weight matchings using a simple sample matrix ``west0479'' from the SuiteSparse Matrix Collection.
-The matrix can also directly be loaded in \ml{} using \texttt{load west0479}.
+The matrix can also directly be loaded into \ml{} using \texttt{load west0479}.
 In Figure \ref{fig:mwm} we display the matrix before and after applying maximum
 weighted matchings. To illustrate the improved diagonal dominance we further
-compute $r_i=|a_{ii}|/\sum_{j=1}^n|a_{ij}|$ for each row of $A$ and $\tilde A=\Pi^TD_rAD_s$, $i=1,\dots,n$. $r_i$ can be read as relative diagonal dominance of row $i$ 
+compute $r_i=|a_{ii}|/\sum_{j=1}^n|a_{ij}|$ for each row of $A$ and $\tilde A=\Pi^TD_rAD_s$, $i=1,\dots,n$. $r_i$ can be read as the relative diagonal dominance of row $i$
 and yields a number between $0$ and $1$. Moreover, whenever $r_i>\frac12$, the row
 is strictly diagonal dominant, i.e., $|a_{ii}|>\sum_{j:j\not=i}|a_{ij}|$.
 In Figure \ref{fig:mwm} we display for both matrices $r_i$ by sorting its values
-in increasing order and taking $\frac12$ as reference line. We can see the
+in increasing order and taking $\frac12$ as the reference line. We can see the
 dramatic impact of maximum weighted matchings in improving the diagonal dominance
 of the given matrix and thus paving the way to a static pivoting approach
 in incomplete or complete $LU$ decomposition methods.
@@ -433,13 +433,13 @@ edge $(i,j)$ for any nonzero entry $a_{ij}$ in $G_d(A)$ whereas the
 orientation of the edge is ignored in $G(A)$.
 
 The research on graph-partitioning
-methods in the mid-nineties has resulted in high-quality software
-packages, e.g. \metis {} (\cite{karypis:98}).
-These methods often compute orderings that on the one hand lead to small fill-in 
+methods in the mid nineties has resulted in high-quality software
+packages, e.g., \metis {} (\cite{karypis:98}).
+These methods often compute orderings that, on the one hand, lead to small fill-in
 for (incomplete) factorization methods while on the other hand they
 provide a high level of concurrency.
 We will briefly review the main idea of multilevel nested dissection in
-terms of graph-partitioning.
+terms of graph partitioning.
 \begin{definition}\label{def:partitioning-and-separator}
 Let $A\in\R^{n,n}$
 and consider its graph $G(A)=(V,E)$. 
@@ -448,14 +448,14 @@ partitioning $V$ into $k$ disjoint subsets
 $V_1, V_2, \ldots, V_k$ such that $V_i \cap V_j = \emptyset$ for $i
 \ne j$, $\cup_i V_i=V$.
 The subset $E_s = E\cap \bigcup_{i\not=j} (V_i\times V_j)$ is called 
-edge separator.
+the edge separator.
 \end{definition}
 Typically we want a $k$-way partitioning to be balanced, i.e., 
 each $V_i$ should satisfy $|V_i|\approx n/k$. The edge separator $E_s$
 refers to the edges that have to be taken away from the graph
 in order to have $k$ separate
 subgraphs associated with $V_1,\dots,V_k$ and the number of elements of
-$E_s$ is usually referred to as edge-cut. 
+$E_s$ is usually referred to as the edge-cut.
 
 \begin{definition}\label{def:vertex-separator}
 Given $A\in\R^{n,n}$,
@@ -476,7 +476,7 @@ equal parts by constructing a vertex separator $V_s$
 until the desired number $k$ 
 of partitionings are obtained. If $k$ is a power of $2$, then a natural
 way of obtaining a vertex separator
-is to first obtain a $2$-way partitioning of the graph, a so called
+is to first obtain a $2$-way partitioning of the graph, a so-called
 graph bisection with its associated edge separator $E_s$.
 After that a vertex separator $V_s$ is computed from $E_s$, which
 gives a $2$-way partitioning $V_1,V_2$ of $V\setminus V_s$.
@@ -488,12 +488,12 @@ followed by $V_2$ and $V_s$. This reordering is repeated similarly during
 repeated bisection of each $V_i$. In general, vertex separators
 of small size result in low fill-in.
 
-\begin{example}{Vertex Separators}\label{exm:vsep}
+\begin{example}{Vertex separators}\label{exm:vsep}
 To illustrate vertex separators, we consider the reordered matrix $\Pi^TA$
 from Figure \ref{fig:unsym_perm} after a  matching is applied.
 In Figure \ref{fig:matrixvertex} we display its graph $G(\Pi^T A)$ ignoring
 the orientation of the edges. A 
-$2$-way partitioning is obtained with $V_1 = \{3,5\}$, $V_2 = \{2,6\}$ and
+$2$-way partitioning is obtained with $V_1 = \{3,5\}$, $V_2 = \{2,6\}$, and
 a vertex separator $V_s = \{1,4\}$. The associated reordering
 refers to taking the rows and the columns of $\Pi^T A$ in the order
 $3,5,2,6,1,4$.
@@ -535,20 +535,20 @@ accelerate the process. The basic structure is simple. The multilevel approach
 consists of three phases: at first there is a coarsening phase
 which compresses the given graph successively
 level by level by about half of its size. When the coarsest graph with about
-a few hundred vertices is reached, the second phase,  namely the so-called
+a few hundred vertices is reached, the second phase, namely, the so-called
 bisection is applied. This is a high quality partitioning algorithm.
 After that, during the uncoarsening phase, the given
 bisection is successively refined as it is prolongated towards the original
 graph. 
 
-\subsubsection*{Coarsening Phase}
+\subsubsection*{Coarsening phase}
 The initial graph $G_0=(V_0,E_0)=G(A)$ of $A\in\R^{n,n}$ is transformed during
 the coarsening phase
 into a sequence of graphs $G_1, G_2, \ldots, G_m$ of decreasing size 
 such that $|V_0|\gg|V_1|\gg|V_2|\gg\cdots\gg|V_m|$. 
 Given the graph $G_i=(V_i,E_i)$, the
 next coarser graph $G_{i+1}$ is  obtained from $G_i$ by collapsing adjacent
-vertices. This can be done e.g. by using a maximal matching $\cM_i$ of $G_i$ (cf. Definitions \ref{def:matching} and \ref{def:maxmatching}).
+vertices. This can be done, e.g., by using a maximal matching $\cM_i$ of $G_i$ (cf. Definitions \ref{def:matching} and \ref{def:maxmatching}).
 Using $\cM_i$, the next  coarser graph $G_{i+1}$ is 
 constructed from $G_i$ collapsing the vertices 
 being matched into multinodes, i.e., the elements of  $\cM_i$ together with the
@@ -560,13 +560,13 @@ There are various differences in the construction of maximal matchings
 One of the most popular and efficient methods is heavy edge
 matching (\cite{karypis:98}).
 
-\subsubsection*{Partitioning Phase}
+\subsubsection*{Partitioning phase}
 At the coarsest level $m$,
 a $2$-way partitioning $V_{m,1}\dot{\cup}V_{m,2}=V_m$ of $G_m=(V_m,E_m)$ is computed,
 each of them containing about half of the vertices of $G_m$.
 This specific partitioning of $G_m$ can be obtained by using various
 algorithms such as spectral bisection (\cite{fiedler:75}) or
-combinatorial methods based on Kernighan-Lin variants
+combinatorial methods based on Kernighan--Lin variants
 (\cite{KerL70,FidM97}). It is demonstrated in \cite{karypis:98} that
 for the coarsest graph, combinatorial
 methods typically compute smaller edge-cut separators compared with
@@ -574,20 +574,20 @@ spectral bisection methods. However, since
 the size of the coarsest graph $G_m$ is small (typically $|V_m|<100)$, this
 step is negligible with respect to the total amount of computation time.
 
-\subsubsection*{Uncoarsening Phase}
+\subsubsection*{Uncoarsening phase}
 Suppose that at the coarsest level $m$, an edge separator $E_{m,s}$ 
-of $G_m$ associated with the  $2$-way partitioning has been computed 
-that has lead to a sufficient edge-cut of $G_m$ with $V_{m,1}$, $V_{m,2}$
+of $G_m$ associated with the $2$-way partitioning has been computed
+that has led to a sufficient edge-cut of $G_m$ with $V_{m,1}$, $V_{m,2}$
 of almost equal size.
 Then $E_{m,s}$ is prolongated to $G_{m-1}$ by reversing the process of
 collapsing matched vertices. This leads to an initial edge separator
 $E_{m-1,s}$ for $G_{m-1}$. But since $G_{m-1}$ is finer, $E_{m-1,s}$ is 
-sub-optimal and one usually decreases the edge-cut of the partitioning
+suboptimal and one usually decreases the edge-cut of the partitioning
 by local refinement heuristics such as the
-Kernighan-Lin partitioning algorithm (\cite{KerL70})
-or the Fiduccia-Mattheyses method (\cite{FidM97}).
+Kernighan--Lin partitioning algorithm (\cite{KerL70})
+or the Fiduccia--Mattheyses method (\cite{FidM97}).
 Repeating this refinement procedure level-by-level we obtain a sequence
-of edge separators $E_{m,s},E_{m-1,s},\dots,E_{0,s}$ and eventually and
+of edge separators $E_{m,s},E_{m-1,s},\dots,E_{0,s}$ and, eventually, an
 edge separator $E_{s}=E_{0,s}$ of the initial graph $G(A)$ is obtained.
 If one is seeking for a vertex separator $V_s$ of $G(A)$, then one usually 
 computes $V_s$ from $E_s$ at the end.
@@ -597,7 +597,7 @@ e.g. \metis{}~(\cite{karypis:98}), a parallel MPI version \parmetis{}~(\cite{Kar
 or a recent multithreaded approach \mtmetis~(\cite{LasK13}).
 Another example for a parallel partitioning algorithm is \scotch~(\cite{CheP08}).
 
-\begin{example}{Multilevel Nested Dissection}\label{exm:west0479-metis}
+\begin{example}{Multilevel nested dissection}\label{exm:west0479-metis}
 We will continue Example \ref{exm:west0479-match} using the matrix
 $\tilde A=\Pi^TD_rAD_s$ that has been rescaled and permuted using
 maximum weight matching. We illustrate in Figure \ref{fig:metis} 
@@ -666,14 +666,14 @@ nested dissection after the matrix is already rescaled and permuted using maximu
 %as HALO structure), see e.g. \cite{PelRA00}.
 
 
-\section{Sparse $LU$ Factorization}
+\section{Sparse $LU$ factorization}
 \label{sec:lu}
 In this section we will assume that the given matrix $A\in\R^{n,n}$ is nonsingular and that it can be factorized as $A=LU$, where $L$ is a lower triangular matrix with unit diagonal and
 $U$ is an upper triangular matrix. 
-It is well-known (\cite{GeoL81}), if $A=LU$, where $L$ and $U^\top$ are lower
+It is well known (\cite{GeoL81}), if $A=LU$, where $L$ and $U^\top$ are lower
 triangular matrices, then in the generic case we will have
 $G_d(L+U)\supset G_d(A)$, i.e., we will only get additional edges unless some
-entries cancel by ``accident'' during the elimination. In the sequel
+entries cancel by ``accident'' during the elimination. In the following
 we will ignore cancellations. Throughout this section we will always assume
 that the diagonal entries of $A$ are nonzero as well. We also assume that $G_d(A)$
 is connected.
@@ -686,7 +686,7 @@ pivoting is restricted to some dense blocks inside the $LU$ factorization.
 Furthermore, reordering strategies such as multilevel nested dissection have 
 further symmetrically permuted the system such that the fill-in that occurs
 during Gaussian elimination is acceptable and even parallel approaches could
-be drawn from this reordering. Thus assuming that $A$ does not need further
+be drawn from this reordering, thus assuming that $A$ does not need further
 reordering and a factorization $A=LU$ exists 
 is a realistic scenario in what follows.
 
@@ -705,11 +705,11 @@ is a realistic scenario in what follows.
 % Whenever we refer to an \emph{undirected} graph we mean that $(i,j)\in G(A)$ if and only if $(j,i)\in G(A)$. In this case we may also use $\{i,j\}$ instead of $(i,j)$.
 
 
-\subsection{The Elimination Tree}
+\subsection{The elimination tree}
 \label{subsec:etree}
 % We assume that our matrix $A$ possesses an $LU$ decomposition (see e.g \cite{GolV96}). 
 The basis of determining the fill-in in the triangular factors 
-$L$ and $U$ as by-product of the Gaussian elimination can be characterized
+$L$ and $U$ as a by-product of the Gaussian elimination can be characterized
 as follows (see \cite{Gil94} and the references therein). 
 
 \begin{theorem}\label{thr:gilbert}
@@ -760,7 +760,7 @@ the fill-in obtained during Gaussian elimination   in Figure \ref{fig:fill}.
 The fastest known method for predicting the filled graph $G_d(L+U)$ is Gaussian elimination. 
 The situation is simplified if the
  graph is undirected. 
-In the sequel we ignore the orientation of the edges and simply consider
+In the following we ignore the orientation of the edges and simply consider
 the undirected graph $G(A)$ and $G(L+U)$, respectively.
 
 \begin{definition}\label{def:filled-graph}
@@ -882,9 +882,9 @@ of $j$ in the elimination tree $T(A)$.
 \end{remark}
 
 \begin{example}{Elimination tree}\label{exm:etree}
-We use the matrix ``west0479'' from Example \ref{exm:west0479-metis},
+We use the matrix west0479 from Example \ref{exm:west0479-metis},
 after maximum weight matching and multilevel nested dissection have
-been applied. We use \ml's \linebreak \texttt{etreeplot} to display its elimination
+been applied. We use the \ml \linebreak \texttt{etreeplot} to display its elimination
 tree (see Figure \ref{fig:etreeplot}). The elimination tree displays the high
 level of concurrency that is induced by nested dissection, since 
 by Remark \ref{rem:dependence} the computations can be executed independently
@@ -907,8 +907,8 @@ at each leaf node towards the root until a common parent vertex is reached.
 
 
 Further conclusions can be easily derived
-from the elimination tree, in particular
-Remark   \ref{rem:dependence} in conjunction with Theorem \ref{thr:gilbert}.
+from the elimination tree, in particular,
+Remark \ref{rem:dependence} in conjunction with Theorem \ref{thr:gilbert}.
 \begin{remark}\label{rem:path-compression}
 Consider some $k\in\{1,\dots,n\}$. Then there exists a (fill) edge $(j,k)$
 with $j<k$ if and only if there exists a common
@@ -1012,7 +1012,7 @@ This information can be computed from the elimination tree $T(A)$ together
 with $G(A)$. The basis for determining the fill-in in each column is 
 again Remark \ref{rem:path-compression}. Suppose we are interested in the
 nonzero entries of column $j$ of $L$ and $U^T$. Then for all descendants of $j$,
-i.e. the nodes of the subtree $T(j)$ rooted at vertex $j$, a nonzero entry
+i.e., the nodes of the subtree $T(j)$ rooted at vertex $j$, a nonzero entry
 $a_{ik}\not=0$ also implies $l_{kj}\not=0$. Thus, starting at any leaf $i$,
 we obtain its fill by all $a_{ik}\not=0$ such that $k>i$ and when we move forward
 from $i$ to its parent $j$, vertex $j$ will inherit the fill from node $i$ for
@@ -1040,10 +1040,10 @@ We summarize this result in a very simple algorithm
 
 
 Algorithm \ref{alg:compute_pattern} only deals with the fill pattern. 
-One additional aspect that allows to raise efficiency
+One additional aspect that allows one to raise efficiency
 and to speed up the numerical factorization significantly 
 is to detect dense submatrices in the factorization.
-Block structures  allow to collect parts
+Block structures allow one to collect parts
 of the matrix in dense blocks and to treat them commonly using 
 dense matrix kernels such as level-3 BLAS and LAPACK (\cite{AndBBDDDGHMOS99}).
 
@@ -1052,7 +1052,7 @@ Algorithm \ref{alg:compute_pattern}.
 \begin{definition}\label{def:supernode}
 Denote by $\mathcal{P}_j$ the nonzero indices of column $j$ of $P$
 as computed by Algorithm \ref{alg:compute_pattern}.
-A sequence $k,k+1,\dots,k+s-1$ is called supernode of size $s$
+A sequence $k,k+1,\dots,k+s-1$ is called a supernode of size $s$
 if the columns of $\mathcal{P}_{j}=\mathcal{P}_{j+1}\cup \{j+1\}$
 for all $j=k,\dots,k+s-2$.
 \end{definition}
@@ -1064,7 +1064,7 @@ Algorithm \ref{alg:compute_pattern} with a supernode detection.
 \begin{programcode}{Computation of fill-in and supernodes}\label{alg:compute_supernode}
 \begin{algorithmic}[1]
   \Require $A\in\R^{n,n}$ such that $A$ has the same pattern as $|A|+|A|^T$.
-  \Ensure sparse strict lower triangular pattern $P\in\R^{n,n}$ with
+  \Ensure sparse strict lower triangular pattern $P\in\R^{n,n}$ with the
   same pattern as $L$, $U^T$ as well as column size $s\in\R^m$ of each supernode.
   \State compute parent array $p$ of the elimination tree $T(A)$
   \State $m\leftarrow0$ 
@@ -1089,12 +1089,12 @@ Algorithm \ref{alg:compute_pattern} with a supernode detection.
 
 
 \clearpage
-\begin{example}{Supernode Computation}\label{exm:supernode_computation}
+\begin{example}{Supernode computation}\label{exm:supernode_computation}
 To illustrate the use of supernodes, we consider the matrix pattern
 from Figure \ref{fig:symfill} and illustrate the underlying
-dense block structure in Figure \ref{fig:supernode}.
+dense block structure in Figure \ref{fig:supernode}. \linebreak
 Supernodes are the columns $1$, $2$, $3$ as scalar columns as well as columns
-$4$-$6$ as one single supernode.
+$4$--$6$ as one single supernode.
 \end{example}
 \begin{figure}
    \centering
@@ -1140,12 +1140,12 @@ Next the use of dense submatrices allows the usage of dense matrix kernels
 using level-3 BLAS
 (\cite{AndBBDDDGHMOS99}).
 \begin{example}{Supernodes}\label{exm:supernodes}
-We use the matrix ``west0479'' from Example \ref{exm:west0479-metis},
+We use the matrix west0479 from Example \ref{exm:west0479-metis},
 after maximum weight matching and multilevel nested dissection have
 been applied. 
 We use its undirected graph to compute the supernodal
 structure. Certainly, since the matrix is nonsymmetric, the block structure
-is only sub-optimal. We display the supernodal structure for the associated
+is only suboptimal. We display the supernodal structure for the associated
 Cholesky factor, i.e., for the Cholesky factor of a symmetric positive definite
 matrix with same undirected graph as our matrix (see
 top part of Figure \ref{fig:supernodal_structure}). Furthermore, we display
@@ -1195,11 +1195,11 @@ broad success of scalable high-performance computing in computational
 sciences.  In this section we demonstrate the benefit of supernodal data structures within the 
 sparse solver package PARDISO~(\cite{schenk-2004,Bollhofer2020}). We illustrate it by using
 the triangular solution process. The forward and backward substitution is performed
-column wise with respect to the columns of $L$, starting with the
+columnwise with respect to the columns of $L$, starting with the
 first column, as depicted in Figure~\ref{algo:triangular}.
-The data dependencies here allow to store vectors $y$, $z$, $b$, and $x$ in only one
+The data dependencies here allow one to store vectors $y$, $z$, $b$, and $x$ in only one
 vector $r$. When column $j$ is reached, $r_j$ contains the solution for $y_j$. 
-All other elements of $L$ in this column, i.\,e.\ $L_{ij}$ with $i = j + 1,
+All other elements of $L$ in this column, i.e., $L_{ij}$ with $i = j + 1,
 \ldots, N$, are used to update the remaining entries in $r$ by 
 %
 \be
@@ -1207,12 +1207,12 @@ All other elements of $L$ in this column, i.\,e.\ $L_{ij}$ with $i = j + 1,
   \label{eq:algo:fw:pardiso}
 \ee
 %
-The backward substitution with~$L^T$ will take place row wise, since we
-use $L$ and perform the substitution column wise with respect to $L$, as shown in the lower part of
+The backward substitution with~$L^T$ will take place rowwise, since we
+use $L$ and perform the substitution columnwise with respect to $L$, as shown in the lower part of
 Figure~\ref{algo:triangular}.  In contrast to the forward substitution the
 iteration over columns starts at the last column $N$ and proceeds to
 the first one.  If column $j$ is reached, then $r_j$, which contains the $j$-component of the solution vector $x_j$,
-is computed by subtracting the dot-product of the remaining elements in
+is computed by subtracting the dot product of the remaining elements in
 the column $L_{ij}$ and the corresponding elements of $r_i$ with $i =
 j + 1, \ldots, N$ from it:
 %
@@ -1223,7 +1223,7 @@ j + 1, \ldots, N$ from it:
 %
 After all columns have been processed $r$ contains the required solution $x$. It is important to note that
 line 5 represents in both substitutions an indexed DAXPY and indexed
-DDOT kernel operations that has to be computed during the streaming 
+DDOT kernel operations that have to be computed during the streaming
 operations of the vector $r$ and the column $j$ of the numerical factor $L$. 
 As we are dealing with sparse matrices it makes no sense to store the lower
 triangular matrix $L$ as a dense matrix.
@@ -1281,7 +1281,7 @@ Figure~\ref{fig:algo:ds}.
   \caption{Sparse matrix data structures in PARDISO. Adjacent columns of $L$ exhibiting the same
 structure form panels also known as supernodes. 
 Groups of panels which touch independent elements of the right hand side $r$ are
-parts. The last part in the lower triangular matrix $L$ is called separator.}
+parts. The last part in the lower triangular matrix $L$ is called the separator.}
   \label{fig:algo:ds}
 \end{figure}
 
@@ -1320,14 +1320,14 @@ parts. The last part in the lower triangular matrix $L$ is called separator.}
   \end{algorithmic}
   \caption{Forward substitution in PARDISO. Note that in case of serial
 execution separated updates to temporary arrays in line
-\ref{algo:fw:seploop}-\ref{algo:fw:seploop:end} are not necessary
+\ref{algo:fw:seploop}--\ref{algo:fw:seploop:end} are not necessary
 and can be handled via the loop in lines
-\ref{algo:fw:rloop}-\ref{algo:fw:rloop:end}.}
+\ref{algo:fw:rloop}--\ref{algo:fw:rloop:end}.}
   \label{alg:algo:fw}
 \end{algorithm}
 
 Adjacent columns exhibiting the same row sparsity structure form a \textit{panel}, also known
-as \textit{supernode}.
+as a \textit{supernode}.
 A panel's column count is called the \textit{panel size} $n_p$.
 The columns of a panel are stored consecutively in memory excluding the zero
 entries. 
@@ -1338,7 +1338,7 @@ for the PARDISO solver to use Level-3 BLAS and LAPACK functionalities~(\cite{20.
 Row and column information is now stored in accompanying arrays.
 The \texttt{xsuper} array stores for each panel the index of its first column. 
 Also note that here column indices are the running count of nonzero columns.
-Column indices are used as indices into \vxlnz{} array to lookup the start of
+Column indices are used as indices into the \vxlnz{} array to look up the start of
 the column in the \vlnz{} array which contains the numerical values of the factor $L$.
 To determine the row index of a column's element an additional array \vindx{} is
 used, which holds for each panel the row indices.
@@ -1684,7 +1684,7 @@ panels are iterated over in reversed (rev.) order.}
 %as PARDISO that completely satisfy the needs of various circuit
 %simulation methods is necessary for continued performance gains.
 
-\section[Sparse Linear Factorization Solvers]{High-Performance Computing Mathematical Libraries -- Sparse Linear Factorization Solvers}
+\section[Sparse Linear Factorization Solvers]{High-Performance Computing Mathematical Libraries --- Sparse Linear Factorization Solvers}
 \label{sec:sparse-solvers}
 High-performance  computing mathematical libraries have been a very important part of scientific and engineering computing for years, and their importance continues to grow as microprocessor architectures become more complex and software libraries become better designed to integrate easily within applications. Despite the fact that there are various science and engineering applications, the underlying algorithms typically have remarkable similarities, especially those algorithms that are most challenging to implement well in parallel. It is not too strong a statement to say that these software libraries are essential to the broad success of scalable high-performance computing in computational sciences (\cite{kothe-2007,pitac-2005,bader-2007}).
 
@@ -1695,33 +1695,33 @@ High-performance  computing mathematical libraries have been a very important pa
   \label{fig:machine-balance-evolution}
 \end{figure}
 
-The recent trends in hardware development have added additional questions to this scenario, because today's codes are not guaranteed to exploit the performance of next-generation hardware to a satisfying degree. The so-called memory wall, i.e., the increasing performance gap between memory access and processor speed, will force scientific computing software to deal with the efficient use of complex multiple memory hierarchies. This is illustrated in Figure \ref{fig:machine-balance-evolution}, which shows how many floating point operations are needed per memory access on various processors to fully utilize their power. We can clearly see the increasing trend over the years. In addition, many-core architectures with hundreds of cores using a decreased processor clock rate will add additional algorithmic and software challenges to scientific computing. Autotuning tools, libraries, and software tools based on dwarfs (\cite{10.1145/1562764.1562783}) will be designed that will help researcher and application developer to improve the performance of a given application.
+The recent trends in hardware development have added additional questions to this scenario because today's codes are not guaranteed to exploit the performance of next-generation hardware to a satisfying degree. The so-called memory wall, i.e., the increasing performance gap between memory access and processor speed, will force scientific computing software to deal with the efficient use of complex multiple memory hierarchies. This is illustrated in Figure \ref{fig:machine-balance-evolution}, which shows how many floating point operations are needed per memory access on various processors to fully utilize their power. We can clearly see the increasing trend over the years. In addition, manycore architectures with hundreds of cores using a decreased processor clock rate will add additional algorithmic and software challenges to scientific computing. Autotuning tools, libraries, and software tools based on dwarfs (\cite{10.1145/1562764.1562783}) will be designed that will help researchers and application developers to improve the performance of a given application.
 
 In this work we will focus on systems of linear equations that arise at the heart of many scientific and engineering applications. Many of these linear systems are sparse, i.e., most of the elements in the coefficient matrix are zero. Direct methods based on matrix factorizations are sometimes needed to ensure accurate solutions. For example, an accurate solution of sparse linear systems is needed in shift-invert Lanczos to compute interior eigenvalues (\cite{lanczos-1980,https://doi.org/10.1002/nme.6640}). The performance and resource usage of sparse matrix factorizations are critical to time-to-solution and maximum problem size solvable on a given platform.
 
-The innermost computational kernels of many large-scale scientific applications and industrial numerical simulations are often either a large sparse matrix problem or a nonlinear optimization method which again can be reduced to a large sparse matrix problem. Sparse direct linear solvers are a core part of many problems in computational science and typically consume a significant portion of the overall computational time required by the simulations. While on one hand modern computer architectures provide larger memory resources and faster multicore processors, on the other hand the need for solving large scale application problems often compensates for these developments. The request for fast and memory efficient -- and robust -- solvers has been important for many years and remains an open field for further developments.
+The innermost computational kernels of many large-scale scientific applications and industrial numerical simulations are often either a large sparse matrix problem or a nonlinear optimization method which again can be reduced to a large sparse matrix problem. Sparse direct linear solvers are a core part of many problems in computational science and typically consume a significant portion of the overall computational time required by the simulations. While on one hand modern computer architectures provide larger memory resources and faster multicore processors, on the other hand the need for solving large scale application problems often compensates for these developments. The request for fast and memory efficient --- and robust --- solvers has been important for many years and remains an open field for further developments.
 
-As mentioned before, the use of graph pivoting techniques as an alternative approach to traditional pivoting methods emerged two decades ago (\cite{schenk-2004}). These graph-based methods
+As mentioned before, the use of graph-pivoting techniques as an alternative approach to traditional pivoting methods emerged two decades ago (\cite{schenk-2004}). These graph-based methods
 typically build a bipartite graph of a symmetric indefinite matrix A and, by traversing vertices and edges in the graph, these approaches compute a maximum weighted matching that
 in turn defines a permutation of the rows and/or columns in A. The important advantage of
-all these methods is that they allow -- in a parallel environment -- the precomputation of the
+all these methods is that they allow --- in a parallel environment --- the precomputation of the
 underlying elimination process, thus making the Gaussian elimination process much more
 scalable. Almost all modern parallel sparse direct solver tools (see Table \ref{tab:solvers})
 are now using these kinds of graph-pivoting techniques, since they are the key for high sequential and parallel efficiency.
 
-For sparse direct algorithms there exist a wide range of possible methods, such as multifrontal, left- or right-looking supernodal methods, or a combination of these methods (\cite{doi:10.1137/1.9780898718881}). As a result, different high-level implementations are available, such as SuperLU (\cite{superlu_dist}), MUMPS (\cite{amestoy:2000:mpd}), PARDISO (\cite{schenk-2004,schenk-2006,Bollhofer2020}) and WSMP (\cite{gup02}). The communication patterns of all these different packages and methods are -- more or less -- very similar. All of them are using supernodal blocking strategies and this data structure will be used for performance modeling in the next chapters.
+For sparse direct algorithms there exist a wide range of possible methods, such as multifrontal, left- or right-looking supernodal methods, or a combination of these methods (\cite{doi:10.1137/1.9780898718881}). As a result, different high-level implementations are available, such as SuperLU (\cite{superlu_dist}), MUMPS (\cite{amestoy:2000:mpd}), PARDISO (\cite{schenk-2004,schenk-2006,Bollhofer2020}) and WSMP (\cite{gup02}). The communication patterns of all these different packages and methods are --- more or less --- very similar. All of them are using supernodal blocking strategies and this data structure will be used for performance modeling in the next chapters.
 
-The Table \ref{tab:solvers} lists a few available software packages for the direct solution of sparse linear algebra problems. Comparison of the most popular direct solvers can be found in a study by \cite{10.1145/1236463.1236465}. The interest is in software for high-performance computers for solving problems in numerical linear algebra, especially sparse direct systems.
+Table \ref{tab:solvers} lists a few available software packages for the direct solution of sparse linear algebra problems. Comparison of the most popular direct solvers can be found in a study by \cite{10.1145/1236463.1236465}. The interest is in software for high-performance computers for solving problems in numerical linear algebra, especially sparse direct systems.
 We are, in particular, interested in the forward and backward solution process of sparse direct solvers since they build the computational kernel, e.g., in FETI-DP methods. FETI-DP are known to be highly parallelizable, but all implementations are using sparse direct solvers as building blocks on each compute node in order to efficiently solve the coarse grid (\cite{ISI:000471881700007,ISI:000469334300010,klawonn-fetidp}).
-Another application domain relying on efficient direct sparse solvers stem from applying interior point methods to problems in power grid sector (\cite{8846109}).
+Another application domain relying on efficient direct sparse solvers stem from applying interior point methods to problems in the power grid sector (\cite{8846109}).
 
-We will investigate and analyze the performance of the forward/backward solution process of PARDISO library~(\cite{schenk-2004,schenk-2006,Bollhofer2020}). Detailed performance analysis for a representative sparse solver kernel based on a modified Berkeley Roofline Model will be presented in the next chapters.
+We will investigate and analyze the performance of the forward/backward solution process of the PARDISO library~(\cite{schenk-2004,schenk-2006,Bollhofer2020}). Detailed performance analysis for a representative sparse solver kernel based on a modified Berkeley roofline model will be presented in the next chapters.
 In addition to PARDISO, the considerations in this thesis may also be relevant to the sparse triangular solve phases of other solvers like SuperLU~(\cite{li-2005}), UMFPACK~(\cite{davis-1997}), or MUMPS~(\cite{amestoy-2000,amestoy-2001,amestoy-2006}). The performance of sparse direct solvers has, of course, been considered earlier
 by many different authors, e.\,g.,~\cite{heath-1999,sherry-2008,marrakchi-2017,park-2014,weifeng-2016},
-using hardware relevant at the time of publication. Often, the performance is reported for the proposed implementation on a certain processor or GPU together with related metrics, e.\,g., data volume or cache misses. More advanced works such as~\cite{vuduc-2002} provide upper and lower bounds for the performance. In this thesis, the goal is to apply analytical performance models which allow us not only to evaluate performance, but also to anticipate and prevent bottlenecks. Traditionally, the Roofline
+using hardware relevant at the time of publication. Often, the performance is reported for the proposed implementation on a certain processor or GPU together with related metrics, e.\,g., data volume or cache misses. More advanced works such as~\cite{vuduc-2002} provide upper and lower bounds for the performance. In this thesis, the goal is to apply analytical performance models which allow us not only to evaluate performance, but also to anticipate and prevent bottlenecks. Traditionally, the Berkeley roofline
 model~(\cite{callahan88,hockney89,schoenauer00,williams-2009}) has been used
 for this task to relate the performance of a code with the hardware's capabilities.
-The Berkeley Roofline model is introduced in Chapter \ref{sec:roofline}. Our modification of the model, which allows us to model combination of sequential and parallel execution, is described in Chapter \ref{sec:mrm}. Finally in Chapter \ref{sec:performance} the model is evaluated on various matrices and CPU architectures.
+The Berkeley roofline model is introduced in Chapter \ref{sec:roofline}. Our modification of the model, which allows us to model a combination of sequential and parallel executions, is described in Chapter \ref{sec:mrm}. Finally in Chapter \ref{sec:performance} the model is evaluated on various matrices and CPU architectures.
 
 \begin{table}[]
    \centering
@@ -1749,7 +1749,7 @@ Trilinos/Amesos       & LGPL     & X          &              & C/C++     & X    
 Trilinos/Amesos2      & BSD      & X          & X            & C++       & X       &         & M     & X           &          & X         & 2017-09-07        \\ \hline
 \end{tabular}
    \end{adjustbox}
-   \caption{List of sparse direct solvers colledted by \cite{list-of-solvers}.}
+   \caption{List of sparse direct solvers collected by \cite{list-of-solvers}.}
    \label{tab:solvers}
 \end{table}
 
