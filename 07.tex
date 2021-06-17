@@ -70,6 +70,7 @@ show any performance improvement.
     %and $80$, respectively.
     Blue and gray horizontal bars show predictions of the modified roofline model 
     with scalar and vectorized read bandwidth, respectively.
+    Orange and magenta horizontal bars show the worst and the best performance predictions of the ECM model for the HSW-S architecture.
     }%
   \label{fig:p:single-core}%
 \end{figure}
@@ -107,6 +108,7 @@ For panel sizes $s=1$ and $s=2$ with matrix \mymat{dense}, the worst case code b
 of $B_c=6$\,B/F and $B_c=5$\,B/F is reached, respectively. 
 With a panel size $s=80$ the code balance for the $8$-way unrolled loop
 becomes nearly $B_c=4$\,B/F.
+The orange and magenta bars indicate the worst and the best performance limits from the ECM model. With a panel size $s=1$ we expect the worst performance (close to the orange bar) as the unrolling is not possible. With a panel size $s=80$ we expect the best performance (close to the magenta bar) because the most efficient 8-way unrolled code is used and the array \vindx{} is many times reused in cache.
   
 The modified roofline model predictions for the Intel based systems (except for
 KNL) deviate up to $25$\,\% from the measurements, but achieve a higher
@@ -184,7 +186,8 @@ panel size $s=80$ on one NUMA LD for each hardware system.
   Green and blue bars show predictions of the original and modified roofline
 model, respectively.
   HSW-S and ZEN-S have 14 and 24 cores in total and using all cores could
-achieve, with correct NUMA placement, a higher performance, respectively.}
+achieve, with correct NUMA placement, a higher performance, respectively.
+  Orange and magenta bars show the worst and the best sequential performance predictions of the ECM model for the HSW-S architecture.}
   %\ContinuedFloat
   \label{fig:p:pardiso-1}
 \end{figure}
@@ -200,7 +203,8 @@ panel size $s=80$ on one NUMA LD for each hardware system.
   Green and blue bars show predictions of the original and modified roofline
 model, respectively.
   HSW-S and ZEN-S have 14 and 24 cores in total and using all cores could
-achieve, with correct NUMA placement, a higher performance, respectively.}
+achieve, with correct NUMA placement, a higher performance, respectively.
+  Orange and magenta bars show the worst and the best sequential performance predictions of the ECM model for the HSW-S architecture.}
   \label{fig:p:pardiso-2}
 \end{figure}
 
@@ -327,3 +331,7 @@ nearly no benefit from using more than two cores.
 % The gray lines in Fig.~\ref{fig:p:pardiso} show the modified Roofline model
 % based on the vectorized read-only bandwidth. \todo{vectorization} 
 % \todo{potential of vectorization}
+
+Figures~\ref{fig:p:pardiso-1} and \ref{fig:p:pardiso-2} also show the worst and the best performance predictions of the ECM model
+as orange and magenta bars, respectively.
+In Section \ref{sec:ecm-fwbw} the performance predictions for forward and backward substitution are computed. The sparse triangular solve consists of the forward substitution followed by the backward substitution. For this reason the avarage of the two is shown in the figures. The ECM model is created only for one core of the HSW-S architecture.
