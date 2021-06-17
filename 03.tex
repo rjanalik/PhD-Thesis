@@ -923,7 +923,7 @@ studied for stencil kernels.
 \section{Application of Erlangen ECM model on sparse triangular solve}
 \label{sec:ecm-fwbw}
 
-As shown in Chapter \ref{sec:sds}, there are many factors influencing the performance. For example unrolling, active part of \vr{}, or presence of \vindx{} in the cache. Detailed performance evaluation would require a model for every combination of these parameters and combining these models based on detailed analysis of a matrix $A$ and its factor $L$. For real world matrices, this is not possible.
+As shown in Chapter \ref{sec:sds}, there are many factors influencing the performance: for example, unrolling, active part of \vr{}, or presence of \vindx{} in the cache. Detailed performance evaluation would require a model for every combination of these parameters and combining these models based on detailed analysis of a matrix $A$ and its factor $L$. For real world matrices, this is not possible.
 To make the modeling feasible, we focus only on two extreme cases: first, we consider the code without unrolling that reads \vindx{} from the memory and second, 8-way unrolled code that already has \vindx{} in cache. In both cases we are assuming the active part of \vr{} is large and the data reside in the L3 cache. The first scenario achieves the worst possible performance, while the second one can perform close to the theoretical maximum. These two cases give us a range of expected performance, such that for any matrix the sparse triangular solve algorithm should be within these bounds.
 
 %\todop{Worst case}
