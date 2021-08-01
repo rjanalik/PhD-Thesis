@@ -351,7 +351,7 @@ weighted matchings. To illustrate the improved diagonal dominance we further
 compute $r_i=|a_{ii}|/\sum_{j=1}^n|a_{ij}|$ for each row of $A$ and $\tilde A=\Pi^TD_rAD_s$, $i=1,\dots,n$. $r_i$ can be read as the relative diagonal dominance of row $i$
 and yields a number between $0$ and $1$. Moreover, whenever $r_i>\frac12$, the row
 is strictly diagonal dominant, i.e., $|a_{ii}|>\sum_{j:j\not=i}|a_{ij}|$.
-In Figure \ref{fig:mwm} we display for both matrices $r_i$ by sorting its values
+In Figure \ref{fig:mwm-dd} we display for both matrices $r_i$ by sorting its values
 in increasing order and taking $\frac12$ as the reference line. We can see the
 dramatic impact of maximum weighted matchings in improving the diagonal dominance
 of the given matrix and thus paving the way to a static pivoting approach
@@ -398,7 +398,7 @@ in incomplete or complete $LU$ decomposition methods.
 \includegraphics[width=0.95\textwidth,height=0.5\textwidth]{figures/west0479-match-dd} 
  \end{center}  
 \end{minipage}
-    \caption{Diagonal dominance. Left side: $r_i$ for $A$. Right side: $r_i$  $\tilde A=\Pi^TD_rAD_c$.}
+    \caption{Diagonal dominance. Left side: $r_i$ for $A$. Right side: $r_i$ for \linebreak $\tilde A=\Pi^TD_rAD_c$.}
     \label{fig:mwm-dd}
 \end{figure}
 

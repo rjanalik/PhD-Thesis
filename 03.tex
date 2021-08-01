@@ -28,7 +28,7 @@ multiprocessing architectures.
 The parallel pivoting methods for unsymmetric matrices allow complete supernode pivoting in order to ensure numerical stability and scalability during the factorization process. For sufficiently large problem sizes numerical experiments demonstrate that the scalability of the parallel algorithm is nearly independent of the shared-memory multiprocessing architecture and a speedup of up to seven using eight processors has been observed. The package is implemented using multithreading using OpenMP directives. PARDISO performs the analysis steps depending on the structure
 of the input matrix $A$. See \cite{Bollhofer2020} for further details.
 
-For comparison and to motivate the usage of the PARDISO solver, we run initial benchmarks on varouos matrices. Here we used CHOLMOD~(\cite{cholmod2008,doi:10.1137/1.9780898718881}), MUMPS~(\cite{amestoy-2000,amestoy-2001,amestoy-2006}), and PARDISO~(\cite{schenk-2004,kuzmin-2013}) solvers. For CHOLMOD and MUMPS we set METIS reordering, so all solvers have about the same factors. We measured duration of the forward/backward substitution for our benchmark
+For comparison and to motivate the usage of the PARDISO solver, we run initial benchmarks on various matrices. Here we used CHOLMOD~(\cite{cholmod2008,doi:10.1137/1.9780898718881}), MUMPS~(\cite{amestoy-2000,amestoy-2001,amestoy-2006}), and PARDISO~(\cite{schenk-2004,kuzmin-2013}) solvers. For CHOLMOD and MUMPS we set METIS reordering, so all solvers have about the same factors. We measured duration of the forward/backward substitution for our benchmark
 matrices. The results for the Ivy Bridge system are shown in Figure~\ref{fig:solvers}.
 
 %
@@ -39,7 +39,7 @@ matrices. The results for the Ivy Bridge system are shown in Figure~\ref{fig:sol
   \label{fig:solvers}
 \end{figure}
 
-In this chapter, we will mainly analyze the data transfer between the different cache levels and the FLOPs performed during the sparse triangular solve phase. The results of this analysis are used as input for our performance model. Therefore, we mostly inspect the different instantiations of the loops resulting from Algorithms~\ref{alg:algo:fw} and \ref{alg:algo:bw} on page \pageref{alg:algo:fw} and \pageref{alg:algo:bw}. We only consider the innermost loops because all the arithmetics are performed here. Our assumption is that the instructions regarding control variables of the loops are negligible, hence we do not them into account.
+In this chapter, we will mainly analyze the data transfer between the different cache levels and the FLOPs performed during the sparse triangular solve phase. The results of this analysis are used as input for our performance model. Therefore, we mostly inspect the different instantiations of the loops resulting from Algorithms~\ref{alg:algo:fw} and \ref{alg:algo:bw} on page \pageref{alg:algo:fw} and \pageref{alg:algo:bw}. We only consider the innermost loops because all the arithmetics are performed here. Our assumption is that the instructions regarding control variables of the loops are negligible, hence we do not take them into account.
 %Here, we only consider the innermost loops and do not
 %distinguish between updates of~\vr{} or temporary arrays~\vtemp{}.
 
